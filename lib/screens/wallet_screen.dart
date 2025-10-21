@@ -2,6 +2,7 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow_breez/providers/sdk_provider.dart';
+import 'package:glow_breez/screens/debug_screen.dart';
 import 'package:glow_breez/screens/payment_detail_screen.dart';
 import 'package:glow_breez/screens/receive_screen.dart';
 
@@ -12,7 +13,6 @@ class WalletScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final balance = ref.watch(balanceProvider);
     final payments = ref.watch(allPaymentsProvider);
-    final network = ref.watch(networkProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -20,45 +20,14 @@ class WalletScreen extends ConsumerWidget {
         title: Padding(padding: const EdgeInsets.only(left: 8.0), child: const Text('Glow')),
         backgroundColor: Colors.transparent,
         actions: [
-          TextButton(
+          IconButton(
             onPressed: () {
-              showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(MediaQuery.of(context).size.width, kToolbarHeight, 0, 0),
-                items: [
-                  PopupMenuItem(
-                    value: Network.mainnet,
-                    child: Text(
-                      'Mainnet',
-                      style: TextStyle(
-                        fontWeight: network == Network.mainnet ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: Network.regtest,
-                    child: Text(
-                      'Regtest',
-                      style: TextStyle(
-                        fontWeight: network == Network.regtest ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ],
-              ).then((value) {
-                if (value != null) {
-                  ref.read(networkProvider.notifier).setNetwork(value);
-                }
-              });
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugScreen()));
             },
-            child: Text(
-              network == Network.mainnet ? 'Mainnet' : 'Regtest',
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-            ),
+            icon: const Icon(Icons.settings),
           ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         height: 60,
         color: Theme.of(context).colorScheme.primary,
@@ -71,7 +40,6 @@ class WalletScreen extends ConsumerWidget {
                 child: Text('SEND', textAlign: TextAlign.center, maxLines: 1),
               ),
             ),
-            const SizedBox(width: 64),
             Expanded(
               child: TextButton(
                 style: TextButton.styleFrom(foregroundColor: Colors.white, padding: EdgeInsets.zero),
