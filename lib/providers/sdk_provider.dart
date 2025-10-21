@@ -1,6 +1,6 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow_breez/logging/app_logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 // ============================================================================
@@ -43,20 +43,40 @@ const _kApiKey = 'your_api_key_here';
 const _kLnAddress = 'your_ln_address';
 const _kLnAddressUsername = 'your_ln_address_username';
 
+final _log = AppLogger.getLogger('SdkProvider');
+
 /// Current selected network
 ///
 /// `NotifierProvider` - For mutable state with methods
 /// `Notifier<T>` - Base class for stateful logic, T is the state type
 class NetworkNotifier extends Notifier<Network> {
+  final _log = AppLogger.getLogger('NetworkNotifier');
+
   @override
   Network build() => Network.mainnet;
 
   void setNetwork(Network network) {
+    _log.i('Network changed: ${network.name}');
     state = network; // Updates state and notifies listeners
   }
 }
 
 final networkProvider = NotifierProvider<NetworkNotifier, Network>(NetworkNotifier.new);
+
+/// Current mnemonic seed
+class MnemonicNotifier extends Notifier<String> {
+  final _log = AppLogger.getLogger('MnemonicNotifier');
+
+  @override
+  String build() => _kMnemonic;
+
+  void setMnemonic(String mnemonic) {
+    _log.i('Mnemonic changed');
+    state = mnemonic; // Updates state and notifies listeners
+  }
+}
+
+final mnemonicProvider = NotifierProvider<MnemonicNotifier, String>(MnemonicNotifier.new);
 
 // ============================================================================
 // Core SDK
@@ -67,8 +87,12 @@ final networkProvider = NotifierProvider<NetworkNotifier, Network>(NetworkNotifi
 /// `FutureProvider` - For async operations that complete once
 /// Automatically caches the result, only reconnects when dependencies change
 final sdkProvider = FutureProvider<BreezSdk>((ref) async {
-  // Reconnect on network changes
+  _log.i('Initializing Breez SDK...');
+
+  // Reconnect on network or mnemonic changes
   final network = ref.watch(networkProvider);
+  final mnemonic = ref.watch(mnemonicProvider);
+  _log.d('Using network: ${network.name}');
 
   final config = Config(
     apiKey: _kApiKey,
@@ -78,14 +102,26 @@ final sdkProvider = FutureProvider<BreezSdk>((ref) async {
   );
 
   final directory = await getApplicationDocumentsDirectory();
+  _log.d('Storage directory: ${directory.path}');
 
-  return await connect(
-    request: ConnectRequest(
-      config: config,
-      seed: Seed.mnemonic(mnemonic: _kMnemonic),
-      storageDir: directory.path,
-    ),
-  );
+  try {
+    _log.i('Connecting to Breez SDK...');
+    var breezSdk = await connect(
+      request: ConnectRequest(
+        config: config,
+        seed: Seed.mnemonic(mnemonic: mnemonic),
+        storageDir: directory.path,
+      ),
+    );
+
+    _log.i('Successfully connected to Breez SDK');
+    AppLogger.registerBreezSdkLog(breezSdk);
+
+    return breezSdk;
+  } catch (e, stack) {
+    _log.e('Failed to connect to Breez SDK', error: e, stackTrace: stack);
+    rethrow;
+  }
 });
 
 // ============================================================================
@@ -97,17 +133,24 @@ final sdkProvider = FutureProvider<BreezSdk>((ref) async {
 /// `StreamProvider` - For continuous data streams
 /// Yields events as they arrive, widgets rebuild on each new event
 final sdkEventsProvider = StreamProvider<SdkEvent>((ref) async* {
+  final log = AppLogger.getLogger('SdkEvents');
   final sdk = await ref.watch(sdkProvider.future);
+  log.i('Started listening to SDK events');
+
   await for (final event in sdk.addEventListener()) {
+    log.t('Event: ${event.runtimeType}');
     yield event;
   }
 });
 
 /// Stream of successful payments
 final paymentSuccessEventsProvider = StreamProvider<Payment>((ref) async* {
+  final log = AppLogger.getLogger('PaymentSuccessEvents');
   final sdk = await ref.watch(sdkProvider.future);
+
   await for (final event in sdk.addEventListener()) {
     if (event is SdkEvent_PaymentSucceeded) {
+      log.i('Payment succeeded: ${event.payment.id}, amount: ${event.payment.amount}');
       yield event.payment;
     }
   }
@@ -115,9 +158,12 @@ final paymentSuccessEventsProvider = StreamProvider<Payment>((ref) async* {
 
 /// Stream of failed payments
 final paymentFailedEventsProvider = StreamProvider<Payment>((ref) async* {
+  final log = AppLogger.getLogger('PaymentFailedEvents');
   final sdk = await ref.watch(sdkProvider.future);
+
   await for (final event in sdk.addEventListener()) {
     if (event is SdkEvent_PaymentFailed) {
+      log.w('Payment failed: ${event.payment.id}');
       yield event.payment;
     }
   }
@@ -125,9 +171,12 @@ final paymentFailedEventsProvider = StreamProvider<Payment>((ref) async* {
 
 /// Stream of claim deposit success events
 final claimDepositsSuccessEventsProvider = StreamProvider<List<DepositInfo>>((ref) async* {
+  final log = AppLogger.getLogger('ClaimDepositsEvents');
   final sdk = await ref.watch(sdkProvider.future);
+
   await for (final event in sdk.addEventListener()) {
     if (event is SdkEvent_ClaimDepositsSucceeded) {
+      log.i('Deposits claimed: ${event.claimedDeposits.length}');
       yield event.claimedDeposits;
     }
   }
@@ -135,9 +184,12 @@ final claimDepositsSuccessEventsProvider = StreamProvider<List<DepositInfo>>((re
 
 /// Stream of sync events
 final syncEventsProvider = StreamProvider<void>((ref) async* {
+  final log = AppLogger.getLogger('SyncEvents');
   final sdk = await ref.watch(sdkProvider.future);
+
   await for (final event in sdk.addEventListener()) {
     if (event is SdkEvent_Synced) {
+      log.i('Wallet synced');
       yield null;
     }
   }
@@ -152,17 +204,29 @@ final syncEventsProvider = StreamProvider<void>((ref) async* {
 /// `ref.listen()` - Reacts to changes without rebuilding
 /// `ref.invalidateSelf()` - Forces provider to refetch data
 final nodeInfoProvider = FutureProvider<GetInfoResponse>((ref) async {
+  final log = AppLogger.getLogger('NodeInfo');
   final sdk = await ref.watch(sdkProvider.future);
 
   /* TODO(erdemyerebasmaz): Invalidate on payment success or sync (updates balance and payment metadata)
    after debugging why balance & payment list did not update for certain payments
    */
   // Listen to SDK events and invalidate when they occur
-  ref.listen(sdkEventsProvider, (_, _) {
-    ref.invalidateSelf(); // Triggers refetch
+  ref.listen(sdkEventsProvider, (_, event) {
+    if (event.hasValue) {
+      log.d('SDK event received, invalidating node info');
+      ref.invalidateSelf(); // Triggers refetch
+    }
   });
 
-  return sdk.getInfo(request: GetInfoRequest());
+  try {
+    log.d('Fetching node info...');
+    final info = await sdk.getInfo(request: GetInfoRequest());
+    log.i('Node info: balance=${info.balanceSats} sats, tokens=${info.tokenBalances.length}');
+    return info;
+  } catch (e, stack) {
+    log.e('Failed to get node info', error: e, stackTrace: stack);
+    rethrow;
+  }
 });
 
 /// Bitcoin balance in sats
@@ -192,28 +256,44 @@ final paymentsProvider = FutureProvider.autoDispose.family<List<Payment>, ListPa
   ref,
   request,
 ) async {
+  final log = AppLogger.getLogger('Payments');
   final sdk = await ref.watch(sdkProvider.future);
   // Refresh on payment success events
   ref.watch(paymentSuccessEventsProvider);
+
+  log.d('Fetching payments with filters...');
   final response = await sdk.listPayments(request: request);
+  log.i('Fetched ${response.payments.length} payments');
   return response.payments;
 });
 
 /// Get all payments (no filters)
 final allPaymentsProvider = FutureProvider<List<Payment>>((ref) async {
+  final log = AppLogger.getLogger('AllPayments');
   final sdk = await ref.watch(sdkProvider.future);
 
   // Refresh whenever node info refreshes
   ref.watch(nodeInfoProvider);
 
-  final response = await sdk.listPayments(request: ListPaymentsRequest());
-  return response.payments;
+  try {
+    log.d('Fetching all payments...');
+    final response = await sdk.listPayments(request: ListPaymentsRequest());
+    log.i('Fetched ${response.payments.length} total payments');
+    return response.payments;
+  } catch (e, stack) {
+    log.e('Failed to fetch payments', error: e, stackTrace: stack);
+    rethrow;
+  }
 });
 
 /// Get single payment by ID
 final paymentProvider = FutureProvider.autoDispose.family<Payment, String>((ref, paymentId) async {
+  final log = AppLogger.getLogger('Payment');
   final sdk = await ref.watch(sdkProvider.future);
+
+  log.d('Fetching payment: $paymentId');
   final response = await sdk.getPayment(request: GetPaymentRequest(paymentId: paymentId));
+  log.i('Payment fetched: ${response.payment.amount} sats');
   return response.payment;
 });
 
@@ -222,19 +302,20 @@ final paymentProvider = FutureProvider.autoDispose.family<Payment, String>((ref,
 // ============================================================================
 
 /// Prepare send payment (calculates fees, validates)
-///
-/// Usage:
-/// ```dart
-/// final prepareSendPaymentResponse = await ref.read(
-///   prepareSendPaymentProvider(
-///     PrepareSendPaymentRequest(paymentRequest: invoice),
-///   ).future,
-/// );
-/// ```
 final prepareSendPaymentProvider = FutureProvider.autoDispose
     .family<PrepareSendPaymentResponse, PrepareSendPaymentRequest>((ref, request) async {
+      final log = AppLogger.getLogger('PrepareSendPayment');
       final sdk = await ref.watch(sdkProvider.future);
-      return sdk.prepareSendPayment(request: request);
+
+      log.i('Preparing send payment...');
+      try {
+        final response = await sdk.prepareSendPayment(request: request);
+        log.i('Send payment prepared: amount=${response.amount} sats');
+        return response;
+      } catch (e, stack) {
+        log.e('Failed to prepare send payment', error: e, stackTrace: stack);
+        rethrow;
+      }
     });
 
 /// Send payment
@@ -242,9 +323,18 @@ final sendPaymentProvider = FutureProvider.autoDispose.family<Payment, SendPayme
   ref,
   request,
 ) async {
+  final log = AppLogger.getLogger('SendPayment');
   final sdk = await ref.watch(sdkProvider.future);
-  final response = await sdk.sendPayment(request: request);
-  return response.payment;
+
+  log.i('Sending payment...');
+  try {
+    final response = await sdk.sendPayment(request: request);
+    log.i('Payment sent successfully: ${response.payment.id}');
+    return response.payment;
+  } catch (e, stack) {
+    log.e('Failed to send payment', error: e, stackTrace: stack);
+    rethrow;
+  }
 });
 
 // ============================================================================
@@ -254,8 +344,18 @@ final sendPaymentProvider = FutureProvider.autoDispose.family<Payment, SendPayme
 /// Generate payment request (invoice, address, etc)
 final receivePaymentProvider = FutureProvider.autoDispose
     .family<ReceivePaymentResponse, ReceivePaymentRequest>((ref, request) async {
+      final log = AppLogger.getLogger('ReceivePayment');
       final sdk = await ref.watch(sdkProvider.future);
-      return sdk.receivePayment(request: request);
+
+      log.i('Generating payment request...');
+      try {
+        final response = await sdk.receivePayment(request: request);
+        log.i('Payment request generated, fee: ${response.feeSats} sats');
+        return response;
+      } catch (e, stack) {
+        log.e('Failed to generate payment request', error: e, stackTrace: stack);
+        rethrow;
+      }
     });
 
 /// Wait for a payment to complete
@@ -263,8 +363,12 @@ final waitForPaymentProvider = FutureProvider.autoDispose.family<Payment, WaitFo
   ref,
   request,
 ) async {
+  final log = AppLogger.getLogger('WaitForPayment');
   final sdk = await ref.watch(sdkProvider.future);
+
+  log.d('Waiting for payment...');
   final response = await sdk.waitForPayment(request: request);
+  log.i('Payment completed: ${response.payment.id}');
   return response.payment;
 });
 
@@ -275,8 +379,13 @@ final waitForPaymentProvider = FutureProvider.autoDispose.family<Payment, WaitFo
 /// Prepare LNURL pay
 final prepareLnurlPayProvider = FutureProvider.autoDispose
     .family<PrepareLnurlPayResponse, PrepareLnurlPayRequest>((ref, request) async {
+      final log = AppLogger.getLogger('PrepareLnurlPay');
       final sdk = await ref.watch(sdkProvider.future);
-      return sdk.prepareLnurlPay(request: request);
+
+      log.i('Preparing LNURL pay...');
+      final response = await sdk.prepareLnurlPay(request: request);
+      log.i('LNURL pay prepared: ${response.amountSats} sats');
+      return response;
     });
 
 /// Execute LNURL pay
@@ -284,8 +393,13 @@ final lnurlPayProvider = FutureProvider.autoDispose.family<LnurlPayResponse, Lnu
   ref,
   request,
 ) async {
+  final log = AppLogger.getLogger('LnurlPay');
   final sdk = await ref.watch(sdkProvider.future);
-  return sdk.lnurlPay(request: request);
+
+  log.i('Executing LNURL pay...');
+  final response = await sdk.lnurlPay(request: request);
+  log.i('LNURL pay completed');
+  return response;
 });
 
 // ============================================================================
@@ -294,23 +408,41 @@ final lnurlPayProvider = FutureProvider.autoDispose.family<LnurlPayResponse, Lnu
 
 /// Check if lightning address username is available
 final checkLightningAddressProvider = FutureProvider.autoDispose.family<bool, String>((ref, username) async {
+  final log = AppLogger.getLogger('CheckLightningAddress');
   final sdk = await ref.watch(sdkProvider.future);
-  return sdk.checkLightningAddressAvailable(request: CheckLightningAddressRequest(username: username));
+
+  log.d('Checking Lightning Address availability: $username');
+  final available = await sdk.checkLightningAddressAvailable(
+    request: CheckLightningAddressRequest(username: username),
+  );
+  log.i('Lightning Address "$username" available: $available');
+  return available;
 });
 
 /// Register lightning address
 final registerLightningAddressProvider = FutureProvider.autoDispose
     .family<LightningAddressInfo, RegisterLightningAddressRequest>((ref, request) async {
+      final log = AppLogger.getLogger('RegisterLightningAddress');
       final sdk = await ref.watch(sdkProvider.future);
-      return sdk.registerLightningAddress(request: request);
+
+      log.i('Registering Lightning Address: ${request.username}');
+      final info = await sdk.registerLightningAddress(request: request);
+      log.i('Lightning Address registered: ${info.lightningAddress}');
+      return info;
     });
 
 /// Get current lightning address
 final lightningAddressProvider = FutureProvider<LightningAddressInfo?>((ref) async {
+  final log = AppLogger.getLogger('LightningAddress');
   final sdk = await ref.watch(sdkProvider.future);
+
+  log.d('Fetching Lightning Address...');
   final address = await sdk.getLightningAddress();
-  if (kDebugMode) {
-    print('Lightning Address from SDK: ${address?.lightningAddress}');
+
+  if (address != null) {
+    log.i('Lightning Address: ${address.lightningAddress}');
+  } else {
+    log.w('No Lightning Address found, using fallback');
   }
 
   // TODO(erdemyerebasmaz): Remove hardcoded value after investigating why LN address from SDK is empty
@@ -333,8 +465,12 @@ final lightningAddressProvider = FutureProvider<LightningAddressInfo?>((ref) asy
 
 /// List unclaimed deposits
 final unclaimedDepositsProvider = FutureProvider<List<DepositInfo>>((ref) async {
+  final log = AppLogger.getLogger('UnclaimedDeposits');
   final sdk = await ref.watch(sdkProvider.future);
+
+  log.d('Fetching unclaimed deposits...');
   final response = await sdk.listUnclaimedDeposits(request: ListUnclaimedDepositsRequest());
+  log.i('Found ${response.deposits.length} unclaimed deposits');
   return response.deposits;
 });
 
@@ -343,8 +479,12 @@ final claimDepositProvider = FutureProvider.autoDispose.family<Payment, ClaimDep
   ref,
   request,
 ) async {
+  final log = AppLogger.getLogger('ClaimDeposit');
   final sdk = await ref.watch(sdkProvider.future);
+
+  log.i('Claiming deposit: ${request.txid}:${request.vout}');
   final response = await sdk.claimDeposit(request: request);
+  log.i('Deposit claimed successfully');
   return response.payment;
 });
 
@@ -353,8 +493,13 @@ final refundDepositProvider = FutureProvider.autoDispose.family<RefundDepositRes
   ref,
   request,
 ) async {
+  final log = AppLogger.getLogger('RefundDeposit');
   final sdk = await ref.watch(sdkProvider.future);
-  return sdk.refundDeposit(request: request);
+
+  log.i('Refunding deposit: ${request.txid}:${request.vout}');
+  final response = await sdk.refundDeposit(request: request);
+  log.i('Deposit refunded: ${response.txId}');
+  return response;
 });
 
 // ============================================================================
@@ -366,10 +511,14 @@ final tokensMetadataProvider = FutureProvider.autoDispose.family<List<TokenMetad
   ref,
   tokenIdentifiers,
 ) async {
+  final log = AppLogger.getLogger('TokensMetadata');
   final sdk = await ref.watch(sdkProvider.future);
+
+  log.d('Fetching metadata for ${tokenIdentifiers.length} tokens');
   final response = await sdk.getTokensMetadata(
     request: GetTokensMetadataRequest(tokenIdentifiers: tokenIdentifiers),
   );
+  log.i('Token metadata fetched: ${response.tokensMetadata.length} tokens');
   return response.tokensMetadata;
 });
 
@@ -379,15 +528,23 @@ final tokensMetadataProvider = FutureProvider.autoDispose.family<List<TokenMetad
 
 /// List all supported fiat currencies
 final fiatCurrenciesProvider = FutureProvider<List<FiatCurrency>>((ref) async {
+  final log = AppLogger.getLogger('FiatCurrencies');
   final sdk = await ref.watch(sdkProvider.future);
+
+  log.d('Fetching fiat currencies...');
   final response = await sdk.listFiatCurrencies();
+  log.i('Fetched ${response.currencies.length} fiat currencies');
   return response.currencies;
 });
 
 /// Get current fiat exchange rates
 final fiatRatesProvider = FutureProvider<List<Rate>>((ref) async {
+  final log = AppLogger.getLogger('FiatRates');
   final sdk = await ref.watch(sdkProvider.future);
+
+  log.d('Fetching fiat rates...');
   final response = await sdk.listFiatRates();
+  log.i('Fetched ${response.rates.length} fiat rates');
   return response.rates;
 });
 
@@ -397,11 +554,20 @@ final fiatRatesProvider = FutureProvider<List<Rate>>((ref) async {
 
 /// Parse payment string (invoice, address, LNURL, etc)
 final parseInputProvider = FutureProvider.autoDispose.family<InputType, String>((ref, input) async {
-  return parse(input: input);
+  final log = AppLogger.getLogger('ParseInput');
+  log.d('Parsing input: ${input.substring(0, 20)}...');
+
+  final result = await parse(input: input);
+  log.i('Parsed as: ${result.runtimeType}');
+  return result;
 });
 
 /// Sync wallet
 final syncWalletProvider = FutureProvider.autoDispose<void>((ref) async {
+  final log = AppLogger.getLogger('SyncWallet');
   final sdk = await ref.watch(sdkProvider.future);
+
+  log.i('Manually syncing wallet...');
   await sdk.syncWallet(request: SyncWalletRequest());
+  log.i('Wallet sync completed');
 });
