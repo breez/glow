@@ -1,6 +1,7 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow_breez/logging/app_logger.dart';
+import 'package:glow_breez/providers/wallet_provider.dart';
 import 'package:path_provider/path_provider.dart';
 
 // ============================================================================
@@ -38,7 +39,6 @@ import 'package:path_provider/path_provider.dart';
 // Configuration
 // ============================================================================
 
-const _kMnemonic = 'your twelve word mnemonic phrase goes here for testing purposes only';
 const _kApiKey = 'your_api_key_here';
 const _kLnAddress = 'your_ln_address';
 const _kLnAddressUsername = 'your_ln_address_username';
@@ -63,20 +63,9 @@ class NetworkNotifier extends Notifier<Network> {
 
 final networkProvider = NotifierProvider<NetworkNotifier, Network>(NetworkNotifier.new);
 
-/// Current mnemonic seed
-class MnemonicNotifier extends Notifier<String> {
-  final _log = AppLogger.getLogger('MnemonicNotifier');
-
-  @override
-  String build() => _kMnemonic;
-
-  void setMnemonic(String mnemonic) {
-    _log.i('Mnemonic changed');
-    state = mnemonic; // Updates state and notifies listeners
-  }
-}
-
-final mnemonicProvider = NotifierProvider<MnemonicNotifier, String>(MnemonicNotifier.new);
+/// REMOVED: Old hardcoded mnemonic notifier
+/// Now using wallet system with activeWalletProvider and activeWalletMnemonicProvider
+/// from wallet_provider.dart for proper multi-wallet support
 
 // ============================================================================
 // Core SDK
@@ -84,15 +73,42 @@ final mnemonicProvider = NotifierProvider<MnemonicNotifier, String>(MnemonicNoti
 
 /// Connected Breez SDK instance
 ///
+/// MULTI-WALLET SUPPORT:
+/// - Watches activeWalletProvider for wallet changes
+/// - Automatically disconnects and reconnects when wallet switches
+/// - Each wallet has isolated storage directory: {appDir}/wallets/{wallet_id}/
+/// - Uses mnemonic from activeWalletMnemonicProvider
+///
+/// SDK LIFECYCLE:
+/// 1. App start → Load active wallet → connect()
+/// 2. Wallet switch → disconnect() → Load new wallet → connect()
+/// 3. Network change → disconnect() → connect() (same wallet, new network)
+///
 /// `FutureProvider` - For async operations that complete once
 /// Automatically caches the result, only reconnects when dependencies change
 final sdkProvider = FutureProvider<BreezSdk>((ref) async {
   _log.i('Initializing Breez SDK...');
 
-  // Reconnect on network or mnemonic changes
+  // Watch for wallet and network changes - causes automatic reconnection
+  final activeWallet = await ref.watch(activeWalletProvider.future);
   final network = ref.watch(networkProvider);
-  final mnemonic = ref.watch(mnemonicProvider);
-  _log.d('Using network: ${network.name}');
+
+  // Early return if no active wallet
+  if (activeWallet == null) {
+    _log.w('No active wallet - SDK not connected');
+    throw Exception('No active wallet selected');
+  }
+
+  _log.i('Connecting SDK for wallet: ${activeWallet.id} (${activeWallet.name}) on ${network.name}');
+
+  // Get mnemonic for active wallet
+  final storage = ref.read(walletStorageServiceProvider);
+  final mnemonic = await storage.loadMnemonic(activeWallet.id);
+
+  if (mnemonic == null) {
+    _log.e('Mnemonic not found for wallet: ${activeWallet.id}');
+    throw Exception('Wallet mnemonic not found');
+  }
 
   final config = Config(
     apiKey: _kApiKey,
@@ -101,8 +117,11 @@ final sdkProvider = FutureProvider<BreezSdk>((ref) async {
     preferSparkOverLightning: true,
   );
 
-  final directory = await getApplicationDocumentsDirectory();
-  _log.d('Storage directory: ${directory.path}');
+  // CRITICAL: Each wallet gets isolated storage directory
+  // This prevents wallet data from mixing
+  final appDir = await getApplicationDocumentsDirectory();
+  final walletStorageDir = '${appDir.path}/wallets/${activeWallet.id}';
+  _log.d('Wallet storage directory: $walletStorageDir');
 
   try {
     _log.i('Connecting to Breez SDK...');
@@ -110,11 +129,11 @@ final sdkProvider = FutureProvider<BreezSdk>((ref) async {
       request: ConnectRequest(
         config: config,
         seed: Seed.mnemonic(mnemonic: mnemonic),
-        storageDir: directory.path,
+        storageDir: walletStorageDir,
       ),
     );
 
-    _log.i('Successfully connected to Breez SDK');
+    _log.i('Successfully connected to Breez SDK for wallet: ${activeWallet.id}');
     AppLogger.registerBreezSdkLog(breezSdk);
 
     return breezSdk;

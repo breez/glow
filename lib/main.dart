@@ -1,7 +1,10 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow_breez/providers/wallet_provider.dart';
 import 'package:glow_breez/screens/wallet_screen.dart';
+import 'package:glow_breez/screens/wallet_setup_screen.dart';
 
 import 'logging/app_logger.dart';
 
@@ -12,45 +15,157 @@ void main() async {
   runApp(const ProviderScope(child: MainApp()));
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'Glow',
-      home: const WalletScreen(),
+      // Use named routes for proper navigation
+      initialRoute: '/',
+      routes: {'/': (context) => const _AppRouter()},
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0, scrolledUnderElevation: 0),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF1A2B4A), // Lighter variant of your dark blue
-          secondary: Color(0xFF2A3B5A), // Slightly lighter for secondary
-          tertiary: Color(0xFF3A4B6A), // Even lighter for tertiary
-          surface: Color(0xFF00091C), // Your first color
-          onPrimary: Colors.white,
-          onSecondary: Colors.white,
-          onTertiary: Colors.white,
-          onSurface: Colors.white,
-          onSurfaceVariant: Color(0xFFB0B8C8), // Light gray for text on dark
-          outline: Color(0xFF4A5B7A), // Subtle outline color
-          error: Color(0xFFCF6679), // Material 3 error color
-          onError: Colors.white,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color(0xFF0085fb),
+          surface: const Color(0xFFf9f9f9),
+          surfaceContainerLow: const Color(0xFFf9f9f9),
+          brightness: Brightness.light,
+          dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
         ),
         useMaterial3: true,
         appBarTheme: const AppBarTheme(
           centerTitle: false,
           elevation: 0,
           scrolledUnderElevation: 0,
-          backgroundColor: Color(0xFF00091C), // Use your first color for app bar
-          foregroundColor: Colors.white,
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
         ),
-        scaffoldBackgroundColor: const Color(0xFF0A1428), // Use your second color for scaffold
+        bottomAppBarTheme: const BottomAppBarThemeData(height: 60, elevation: 0, color: Color(0xFF0085fb)),
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF00091c),
+          surface: Color.fromRGBO(10, 20, 40, 1),
+          surfaceContainerLow: Color.fromRGBO(10, 20, 40, 1.33),
+          brightness: Brightness.dark,
+          dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
+        ),
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF00091c),
+          centerTitle: false,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF00091c),
+        bottomAppBarTheme: const BottomAppBarThemeData(height: 60, elevation: 0, color: Color(0xFF0085fb)),
       ),
       themeMode: ThemeMode.dark,
     );
+  }
+}
+
+/// Internal router that handles wallet state-based navigation
+///
+/// This widget watches wallet state and routes accordingly:
+/// - No wallets → WalletSetupScreen (create or import)
+/// - Has active wallet → WalletScreen (main app)
+/// - Loading → Loading indicator
+class _AppRouter extends ConsumerWidget {
+  const _AppRouter();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasWalletsAsync = ref.watch(hasWalletsProvider);
+    final activeWallet = ref.watch(activeWalletProvider);
+
+    // Show loading while checking if wallets exist
+    if (hasWalletsAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    // Error loading wallet list
+    if (hasWalletsAsync.hasError) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
+                const SizedBox(height: 16),
+                Text('Failed to load wallets', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8),
+                Text(
+                  hasWalletsAsync.error.toString(),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: () {
+                    ref.invalidate(walletListProvider);
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final hasWallets = hasWalletsAsync.value ?? false;
+
+    // No wallets exist - show setup screen
+    if (!hasWallets) {
+      return const WalletSetupScreen();
+    }
+
+    // Wallet loading
+    if (activeWallet.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    // Wallet load error
+    if (activeWallet.hasError) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
+                const SizedBox(height: 16),
+                Text('Failed to load wallet', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8),
+                Text(
+                  activeWallet.error.toString(),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: () {
+                    ref.invalidate(activeWalletProvider);
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Has active wallet - show main app
+    if (activeWallet.hasValue && activeWallet.value != null) {
+      return const WalletScreen();
+    }
+
+    // Fallback: No active wallet but wallets exist - shouldn't happen
+    return const WalletSetupScreen();
   }
 }

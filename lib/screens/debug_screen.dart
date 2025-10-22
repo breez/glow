@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow_breez/logging/app_logger.dart';
 import 'package:glow_breez/providers/sdk_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:glow_breez/providers/wallet_provider.dart';
+import 'package:glow_breez/screens/wallet_list_screen.dart';
 
 class DebugScreen extends ConsumerWidget {
   const DebugScreen({super.key});
@@ -13,12 +15,62 @@ class DebugScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final network = ref.watch(networkProvider);
-    final mnemonic = ref.watch(mnemonicProvider);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Debug')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // Wallet Management Card
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Wallets', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Manage your wallets',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Wallet count
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final walletCount = ref.watch(walletCountProvider);
+                      return Text(
+                        'Total wallets: $walletCount',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Manage wallets button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const WalletListScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.account_balance_wallet),
+                      label: const Text('Manage Wallets'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
           // Network Switch Card
           Card(
             child: Padding(
@@ -52,7 +104,14 @@ class DebugScreen extends ConsumerWidget {
                                 ? Theme.of(context).colorScheme.onPrimary
                                 : null,
                           ),
-                          child: const Text('Mainnet'),
+                          child: Text(
+                            'Mainnet',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: network == Network.mainnet
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : null,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -71,73 +130,14 @@ class DebugScreen extends ConsumerWidget {
                                 ? Theme.of(context).colorScheme.onPrimary
                                 : null,
                           ),
-                          child: const Text('Regtest'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Mnemonic Management Card
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Mnemonic', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Manage your wallet seed phrase',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Display masked mnemonic
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Text(
-                      _maskMnemonic(mnemonic),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontFamily: 'monospace',
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Action buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => _showChangeMnemonicDialog(context, ref),
-                          icon: const Icon(Icons.edit),
-                          label: const Text('Change Mnemonic'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => _showMnemonicDialog(context, mnemonic),
-                          icon: const Icon(Icons.visibility),
-                          label: const Text('View Full'),
+                          child: Text(
+                            'Regtest',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: network == Network.regtest
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : null,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -284,137 +284,5 @@ class DebugScreen extends ConsumerWidget {
     } catch (e) {
       return 0;
     }
-  }
-
-  String _maskMnemonic(String mnemonic) {
-    final words = mnemonic.split(' ');
-    if (words.length != 12) return '•••• •••• •••• •••• •••• •••• •••• •••• •••• •••• •••• ••••';
-    
-    // Show first 2 characters of each word, mask the rest
-    return words.map((word) {
-      if (word.length <= 2) return word;
-      return '${word.substring(0, 2)}${'•' * (word.length - 2)}';
-    }).join(' ');
-  }
-
-  void _showMnemonicDialog(BuildContext context, String mnemonic) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Wallet Mnemonic'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Your wallet seed phrase (keep this secure):',
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                ),
-              ),
-              child: Text(
-                mnemonic,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontFamily: 'monospace',
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '⚠️ Never share this with anyone!',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.error,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showChangeMnemonicDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Change Mnemonic'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Enter new mnemonic (12 words):',
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                hintText: 'word1 word2 word3 ... word12',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '⚠️ This will disconnect and reconnect with the new wallet!',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.error,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final newMnemonic = controller.text.trim();
-              if (newMnemonic.split(' ').length == 12) {
-                ref.read(mnemonicProvider.notifier).setMnemonic(newMnemonic);
-                Navigator.of(context).pop();
-                
-                // Show success message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Mnemonic changed! Wallet will reconnect...'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter a valid 12-word mnemonic'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
-            child: const Text('Change'),
-          ),
-        ],
-      ),
-    );
   }
 }

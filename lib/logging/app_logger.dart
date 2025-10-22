@@ -50,10 +50,22 @@ class AppLogger {
     if (_instance == null) return;
 
     final sdkLog = getLogger('BreezSDK');
-    _instance!._sdkLogStream ??= initLogging().asBroadcastStream();
-    _instance!._sdkLogStream!.listen((entry) => _logSdkEntry(entry, sdkLog));
 
-    getLogger('AppLogger').i('Registered Breez SDK log listener');
+    // Only initialize the log stream if it hasn't been created yet
+    // This prevents calling initLogging() multiple times on hot restart
+    if (_instance!._sdkLogStream == null) {
+      try {
+        _instance!._sdkLogStream = initLogging().asBroadcastStream();
+        _instance!._sdkLogStream!.listen((entry) => _logSdkEntry(entry, sdkLog));
+        getLogger('AppLogger').i('Registered Breez SDK log listener');
+      } catch (e) {
+        // If initLogging() was already called (e.g., after hot restart),
+        // log the error but don't crash the app
+        getLogger('AppLogger').w('Failed to register SDK log listener (already initialized): $e');
+      }
+    } else {
+      getLogger('AppLogger').d('SDK log listener already registered, skipping');
+    }
   }
 
   /// Creates a new log file for this session
