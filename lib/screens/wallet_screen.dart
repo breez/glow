@@ -2,9 +2,11 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow_breez/providers/sdk_provider.dart';
+import 'package:glow_breez/providers/wallet_provider.dart';
 import 'package:glow_breez/screens/debug_screen.dart';
 import 'package:glow_breez/screens/payment_detail_screen.dart';
 import 'package:glow_breez/screens/receive_screen.dart';
+import 'package:glow_breez/screens/wallet_list_screen.dart';
 
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
@@ -13,11 +15,42 @@ class WalletScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final balance = ref.watch(balanceProvider);
     final payments = ref.watch(allPaymentsProvider);
+    final activeWallet = ref.watch(activeWalletProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Padding(padding: const EdgeInsets.only(left: 8.0), child: const Text('Glow')),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Row(
+            children: [
+              const Text('Glow'),
+              const SizedBox(width: 8),
+              // Show active wallet name
+              activeWallet.when(
+                data: (wallet) => wallet != null
+                    ? GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const WalletListScreen()),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(wallet.name, style: const TextStyle(fontSize: 12)),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                loading: () => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ),
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
@@ -29,15 +62,13 @@ class WalletScreen extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        height: 60,
-        color: Theme.of(context).colorScheme.primary,
         child: Row(
           children: [
             Expanded(
               child: TextButton(
                 style: TextButton.styleFrom(foregroundColor: Colors.white, padding: EdgeInsets.zero),
                 onPressed: null,
-                child: Text('SEND', textAlign: TextAlign.center, maxLines: 1),
+                child: const Text('SEND', textAlign: TextAlign.center, maxLines: 1),
               ),
             ),
             Expanded(
@@ -46,7 +77,7 @@ class WalletScreen extends ConsumerWidget {
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const ReceiveScreen()));
                 },
-                child: Text('RECEIVE', textAlign: TextAlign.center, maxLines: 1),
+                child: const Text('RECEIVE', textAlign: TextAlign.center, maxLines: 1),
               ),
             ),
           ],
@@ -91,128 +122,138 @@ class WalletScreen extends ConsumerWidget {
 
           // Transactions List
           Expanded(
-            child: payments.when(
-              data: (list) {
-                if (list.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No transactions yet',
-                      style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            child: Container(
+              color: Theme.of(context).colorScheme.surface,
+              child: payments.when(
+                data: (list) {
+                  if (list.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No transactions yet',
+                        style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    );
+                  }
+
+                  return ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: list.length,
+                    separatorBuilder: (context, index) => Divider(
+                      height: 1,
+                      indent: 72,
+                      endIndent: 24,
+                      color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
                     ),
+                    itemBuilder: (context, index) {
+                      final payment = list[index];
+                      final isReceive = payment.paymentType == PaymentType.receive;
+
+                      return ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => PaymentDetailScreen(payment: payment)),
+                          );
+                        },
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        leading: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: (isReceive ? Colors.green : Colors.orange).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            isReceive ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+                            color: isReceive ? Colors.green : Colors.orange,
+                            size: 20,
+                          ),
+                        ),
+                        title: Text(
+                          _getPaymentTitle(payment),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: -0.3,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            _formatTimestamp(payment.timestamp),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${isReceive ? '+' : '-'}${_formatSats(payment.amount)}',
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.3,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 16,
+                              child: payment.fees > BigInt.zero
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        'fee ${_formatSats(payment.fees)}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   );
-                }
-
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: list.length,
-                  separatorBuilder: (context, index) => Divider(
-                    height: 1,
-                    indent: 72,
-                    endIndent: 24,
-                    color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
-                  ),
-                  itemBuilder: (context, index) {
-                    final payment = list[index];
-                    final isReceive = payment.paymentType == PaymentType.receive;
-
-                    return ListTile(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => PaymentDetailScreen(payment: payment)),
-                        );
-                      },
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      leading: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: (isReceive ? Colors.green : Colors.orange).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, _) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline_rounded,
+                          size: 48,
+                          color: Theme.of(context).colorScheme.error,
                         ),
-                        child: Icon(
-                          isReceive ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
-                          color: isReceive ? Colors.green : Colors.orange,
-                          size: 20,
+                        const SizedBox(height: 16),
+                        Text(
+                          'Failed to load transactions',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
-                      ),
-                      title: Text(
-                        _getPaymentTitle(payment),
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: -0.3,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          _formatTimestamp(payment.timestamp),
+                        const SizedBox(height: 8),
+                        Text(
+                          err.toString(),
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
-                      ),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${isReceive ? '+' : '-'}${_formatSats(payment.amount)}',
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16,
-                            child: payment.fees > BigInt.zero
-                                ? Padding(
-                                    padding: const EdgeInsets.only(top: 2),
-                                    child: Text(
-                                      'fee ${_formatSats(payment.fees)}',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  )
-                                : null,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error_outline_rounded, size: 48, color: Theme.of(context).colorScheme.error),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Failed to load transactions',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        err.toString(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
