@@ -46,3 +46,6 @@ app.*.map.json
 
 # Test generated files
 test/**/*.mocks.dart
+
+# Environment variables
+secrets.json

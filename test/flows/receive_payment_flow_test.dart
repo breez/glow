@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glow_breez/logging/app_logger.dart';
@@ -13,9 +13,8 @@ import '../helpers/test_container.dart';
 import '../helpers/test_setup.dart';
 
 void main() {
-  setUpAll(() async {
+  setUpAll(() {
     initializeTestEnvironment();
-    await AppLogger.initialize();
   });
 
   group('Receive Payment Flow', () {
@@ -26,7 +25,6 @@ void main() {
       mockSdk = MockBreezSdk();
       eventController = StreamController<SdkEvent>.broadcast();
 
-      // Setup default mocks
       when(
         mockSdk.getInfo(request: argThat(isA<GetInfoRequest>(), named: 'request')),
       ).thenAnswer((_) async => TestFixtures.createTestNodeInfo(balance: BigInt.from(100000)));
@@ -38,22 +36,17 @@ void main() {
       when(mockSdk.addEventListener()).thenAnswer((_) => eventController.stream);
     });
 
-    tearDown(() {
-      eventController.close();
-    });
+    tearDown(() => eventController.close());
 
-    test('complete receive flow: generate invoice -> receive -> balance updates', () async {
-      // Arrange
+    test('generate invoice -> receive -> balance updates', () async {
       when(
         mockSdk.receivePayment(request: argThat(isA<ReceivePaymentRequest>(), named: 'request')),
-      ).thenAnswer((_) async {
-        return TestFixtures.createTestInvoice(invoice: 'lnbc5000test', fee: BigInt.zero);
-      });
+      ).thenAnswer((_) async => TestFixtures.createTestInvoice(invoice: 'lnbc5000test', fee: BigInt.zero));
 
       final container = createMockedContainer(mockSdk: mockSdk);
 
-      // Step 1: Generate invoice
-      final invoiceResponse = await container.read(
+      // Generate invoice
+      final invoice = await container.read(
         receivePaymentProvider(
           ReceivePaymentRequest(
             paymentMethod: ReceivePaymentMethod.bolt11Invoice(
@@ -64,16 +57,16 @@ void main() {
         ).future,
       );
 
-      expect(invoiceResponse.paymentRequest, 'lnbc5000test');
+      expect(invoice.paymentRequest, 'lnbc5000test');
 
-      // Step 2: Get initial balance
+      // Get initial balance
       final initialInfo = await waitForProvider(container, nodeInfoProvider);
       final initialBalance = initialInfo.balanceSats;
 
-      // Step 3: Simulate payment received
+      // Simulate payment received
       final payment = TestFixtures.createTestPayment(amount: BigInt.from(5000), type: PaymentType.receive);
 
-      // Update mocks to reflect new state
+      // Update mocks for new state
       when(
         mockSdk.getInfo(request: argThat(isA<GetInfoRequest>(), named: 'request')),
       ).thenAnswer((_) async => TestFixtures.createTestNodeInfo(balance: initialBalance + BigInt.from(5000)));
@@ -82,24 +75,23 @@ void main() {
         mockSdk.listPayments(request: argThat(isA<ListPaymentsRequest>(), named: 'request')),
       ).thenAnswer((_) async => ListPaymentsResponse(payments: [payment]));
 
-      // Emit event
+      // Emit payment event
       eventController.add(SdkEvent.paymentSucceeded(payment: payment));
 
-      // Create a completer to wait for the refresh
+      // Wait for balance update
       final completer = Completer<GetInfoResponse>();
-      container.listen(nodeInfoProvider, (previous, next) {
+      container.listen(nodeInfoProvider, (_, next) {
         if (next.hasValue && next.value!.balanceSats == BigInt.from(105000)) {
           completer.complete(next.value!);
         }
       });
 
-      final updatedInfo = await completer.future.timeout(Duration(seconds: 2));
+      final updated = await completer.future.timeout(Duration(seconds: 2));
+      expect(updated.balanceSats, initialBalance + BigInt.from(5000));
 
-      expect(updatedInfo.balanceSats, initialBalance + BigInt.from(5000));
-
-      // Step 5: Verify payment in list
-      container.invalidate(allPaymentsProvider);
-      final payments = await waitForProvider(container, allPaymentsProvider);
+      // Verify payment in list
+      container.invalidate(paymentsProvider);
+      final payments = await waitForProvider(container, paymentsProvider);
 
       expect(payments, hasLength(1));
       expect(payments.first.paymentType, PaymentType.receive);

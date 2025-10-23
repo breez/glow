@@ -14,7 +14,7 @@ class WalletScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final balance = ref.watch(balanceProvider);
-    final payments = ref.watch(allPaymentsProvider);
+    final payments = ref.watch(paymentsProvider);
     final activeWallet = ref.watch(activeWalletProvider);
 
     return Scaffold(

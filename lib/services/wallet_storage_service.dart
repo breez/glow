@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:glow_breez/logging/logger_mixin.dart';
 import 'package:glow_breez/models/wallet_metadata.dart';
@@ -46,8 +47,7 @@ class WalletStorageService with LoggerMixin {
         return [];
       }
 
-      final List<dynamic> list = jsonDecode(json);
-      final wallets = list.map((e) => WalletMetadata.fromJson(e as Map<String, dynamic>)).toList();
+      final wallets = (jsonDecode(json) as List).map((e) => WalletMetadata.fromJson(e)).toList();
 
       log.i('Loaded ${wallets.length} wallets from storage');
       return wallets;
@@ -62,8 +62,7 @@ class WalletStorageService with LoggerMixin {
   /// This overwrites the entire wallet list
   Future<void> saveWallets(List<WalletMetadata> wallets) async {
     try {
-      final json = jsonEncode(wallets.map((w) => w.toJson()).toList());
-      await _storage.write(key: _walletListKey, value: json);
+      await _storage.write(key: _walletListKey, value: jsonEncode(wallets.map((w) => w.toJson()).toList()));
       log.i('Saved ${wallets.length} wallets to storage');
     } catch (e, stack) {
       log.e('Failed to save wallets', error: e, stackTrace: stack);
@@ -76,15 +75,10 @@ class WalletStorageService with LoggerMixin {
   /// SECURITY: Also stores the mnemonic encrypted separately
   Future<void> addWallet(WalletMetadata wallet, String mnemonic) async {
     try {
-      // Store mnemonic separately (SECURITY CRITICAL)
       await _saveMnemonic(wallet.id, mnemonic);
-
-      // Add to wallet list
       final wallets = await loadWallets();
-      wallets.add(wallet);
-      await saveWallets(wallets);
-
-      log.i('Added wallet: ${wallet.id} (${wallet.name}) on ${wallet.network}');
+      await saveWallets([...wallets, wallet]);
+      log.i('Added wallet: ${wallet.id} (${wallet.name})');
     } catch (e, stack) {
       log.e('Failed to add wallet: ${wallet.id}', error: e, stackTrace: stack);
       rethrow;
@@ -98,14 +92,9 @@ class WalletStorageService with LoggerMixin {
     try {
       final wallets = await loadWallets();
       final index = wallets.indexWhere((w) => w.id == wallet.id);
+      if (index == -1) throw Exception('Wallet not found: ${wallet.id}');
 
-      if (index == -1) {
-        throw Exception('Wallet not found: ${wallet.id}');
-      }
-
-      wallets[index] = wallet;
-      await saveWallets(wallets);
-
+      await saveWallets([...wallets]..[index] = wallet);
       log.i('Updated wallet: ${wallet.id}');
     } catch (e, stack) {
       log.e('Failed to update wallet: ${wallet.id}', error: e, stackTrace: stack);
@@ -118,21 +107,14 @@ class WalletStorageService with LoggerMixin {
   /// SECURITY: Ensures mnemonic is also deleted
   Future<void> deleteWallet(String walletId) async {
     try {
-      // Delete mnemonic first (SECURITY CRITICAL)
       await _deleteMnemonic(walletId);
-
-      // Remove from wallet list
       final wallets = await loadWallets();
-      wallets.removeWhere((w) => w.id == walletId);
-      await saveWallets(wallets);
+      await saveWallets(wallets.where((w) => w.id != walletId).toList());
 
-      // Clear active wallet if it was deleted
-      final activeId = await getActiveWalletId();
-      if (activeId == walletId) {
+      if (await getActiveWalletId() == walletId) {
         await _storage.delete(key: _activeWalletKey);
         log.i('Cleared active wallet reference');
       }
-
       log.i('Deleted wallet: $walletId');
     } catch (e, stack) {
       log.e('Failed to delete wallet: $walletId', error: e, stackTrace: stack);
@@ -150,11 +132,7 @@ class WalletStorageService with LoggerMixin {
   Future<String?> getActiveWalletId() async {
     try {
       final id = await _storage.read(key: _activeWalletKey);
-      if (id != null) {
-        log.d('Active wallet ID: $id');
-      } else {
-        log.d('No active wallet set');
-      }
+      log.d(id != null ? 'Active wallet ID: $id' : 'No active wallet set');
       return id;
     } catch (e, stack) {
       log.e('Failed to get active wallet ID', error: e, stackTrace: stack);
@@ -248,24 +226,14 @@ class WalletStorageService with LoggerMixin {
   ///
   /// SECURITY: The ID doesn't reveal the mnemonic, but allows
   /// verification that two mnemonics are the same
-  static String generateWalletId(String mnemonic) {
-    final bytes = utf8.encode(mnemonic);
-    final hash = sha256.convert(bytes);
-    return hash.toString().substring(0, 8);
-  }
-
-  /// Clear all wallet data (for debugging/testing only)
-  ///
-  /// DANGER: This deletes everything including all mnemonics
-  /// Should only be used in development or for reset functionality
-  Future<void> clearAllData() async {
-    try {
-      log.w('CLEARING ALL WALLET DATA - This cannot be undone!');
-      await _storage.deleteAll();
-      log.i('All wallet data cleared');
-    } catch (e, stack) {
-      log.e('Failed to clear all data', error: e, stackTrace: stack);
-      rethrow;
-    }
-  }
+  static String generateWalletId(String mnemonic) =>
+      sha256.convert(utf8.encode(mnemonic)).toString().substring(0, 8);
 }
+
+/// Provider for WalletStorageService
+///
+/// Single instance shared across the app
+/// Usage: `ref.read(walletStorageServiceProvider).loadWallets()`
+final walletStorageServiceProvider = Provider<WalletStorageService>((ref) {
+  return WalletStorageService();
+});
