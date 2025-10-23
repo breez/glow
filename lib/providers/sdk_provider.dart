@@ -115,6 +115,7 @@ final sdkProvider = FutureProvider<BreezSdk>((ref) async {
     network: network,
     syncIntervalSecs: 60,
     preferSparkOverLightning: true,
+    useDefaultExternalInputParsers: false,
   );
 
   // CRITICAL: Each wallet gets isolated storage directory
