@@ -1,4 +1,4 @@
-/// Minimal wallet metadata stored in secure storage.
+/// Non-sensitive metadata for a wallet stored in secure storage.
 ///
 /// SECURITY CRITICAL:
 /// - Mnemonic is NEVER stored in this model

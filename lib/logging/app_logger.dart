@@ -5,7 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
-/// Central logging system with file output and session management
+/// Session-based logging system with ZIP archival utilities.
+///
+/// - Writes logs to per-session files.
+/// - Can archive current or all session logs.
+/// - Automatically manages old logs.
 class AppLogger {
   static AppLogger? _instance;
   static File? _logFile;

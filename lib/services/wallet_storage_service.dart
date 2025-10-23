@@ -6,23 +6,11 @@ import 'package:glow_breez/logging/logger_mixin.dart';
 import 'package:glow_breez/models/wallet_metadata.dart';
 
 /// Manages secure storage of wallet metadata and mnemonics.
-///
-/// SECURITY CRITICAL: All mnemonic storage is encrypted at rest using
-/// flutter_secure_storage which leverages platform-specific secure storage:
-/// - Android: EncryptedSharedPreferences (AES encryption)
-/// - iOS: Keychain
-///
-/// Storage Keys:
-/// - `wallet_list`: JSON array of wallet metadata
-/// - `active_wallet_id`: ID of currently active wallet
-/// - `wallet_mnemonic_{id}`: Encrypted mnemonic for wallet {id}
-///
-/// Security Notes:
-/// - Mnemonics are NEVER logged
-/// - Mnemonics are stored separately from metadata
-/// - Each mnemonic is keyed by wallet ID for isolation
-/// - All read/write operations are async to avoid blocking UI
 class WalletStorageService with LoggerMixin {
+  /// Storage Keys:
+  /// - `wallet_list`: JSON array of wallet metadata
+  /// - `active_wallet_id`: ID of currently active wallet
+  /// - `wallet_mnemonic_{id}`: Encrypted mnemonic for wallet {id}
   static const _walletListKey = 'wallet_list';
   static const _activeWalletKey = 'active_wallet_id';
   static const _mnemonicPrefix = 'wallet_mnemonic_';
@@ -58,8 +46,6 @@ class WalletStorageService with LoggerMixin {
   }
 
   /// Save wallet list to secure storage
-  ///
-  /// This overwrites the entire wallet list
   Future<void> saveWallets(List<WalletMetadata> wallets) async {
     try {
       await _storage.write(key: _walletListKey, value: jsonEncode(wallets.map((w) => w.toJson()).toList()));
@@ -103,8 +89,6 @@ class WalletStorageService with LoggerMixin {
   }
 
   /// Delete a wallet and its mnemonic
-  ///
-  /// SECURITY: Ensures mnemonic is also deleted
   Future<void> deleteWallet(String walletId) async {
     try {
       await _deleteMnemonic(walletId);
@@ -127,8 +111,6 @@ class WalletStorageService with LoggerMixin {
   // ============================================================================
 
   /// Get the ID of the currently active wallet
-  ///
-  /// Returns null if no active wallet is set
   Future<String?> getActiveWalletId() async {
     try {
       final id = await _storage.read(key: _activeWalletKey);
@@ -141,8 +123,6 @@ class WalletStorageService with LoggerMixin {
   }
 
   /// Set the currently active wallet
-  ///
-  /// This is used to remember which wallet to load on app start
   Future<void> setActiveWalletId(String walletId) async {
     try {
       await _storage.write(key: _activeWalletKey, value: walletId);
@@ -165,13 +145,10 @@ class WalletStorageService with LoggerMixin {
   }
 
   // ============================================================================
-  // Mnemonic Management (SECURITY CRITICAL)
+  // Mnemonic Management
   // ============================================================================
 
   /// Load mnemonic for a specific wallet
-  ///
-  /// SECURITY: Never logs the mnemonic content
-  /// Returns null if mnemonic not found (should not happen in normal flow)
   Future<String?> loadMnemonic(String walletId) async {
     try {
       final mnemonic = await _storage.read(key: '$_mnemonicPrefix$walletId');
@@ -189,8 +166,6 @@ class WalletStorageService with LoggerMixin {
   }
 
   /// Save mnemonic for a specific wallet
-  ///
-  /// SECURITY: Never logs the mnemonic content
   Future<void> _saveMnemonic(String walletId, String mnemonic) async {
     try {
       await _storage.write(key: '$_mnemonicPrefix$walletId', value: mnemonic);
@@ -203,14 +178,13 @@ class WalletStorageService with LoggerMixin {
   }
 
   /// Delete mnemonic for a specific wallet
-  ///
-  /// SECURITY: Ensures mnemonic is removed from secure storage
   Future<void> _deleteMnemonic(String walletId) async {
     try {
       await _storage.delete(key: '$_mnemonicPrefix$walletId');
       log.d('Deleted mnemonic for wallet: $walletId');
-    } catch (e, stack) {
-      log.e('Failed to delete mnemonic for wallet: $walletId', error: e, stackTrace: stack);
+    } catch (e) {
+      // SECURITY: Do NOT log the error details as they might contain mnemonic
+      log.e('Failed to delete mnemonic for wallet: $walletId (details hidden for security)');
       rethrow;
     }
   }
@@ -230,10 +204,6 @@ class WalletStorageService with LoggerMixin {
       sha256.convert(utf8.encode(mnemonic)).toString().substring(0, 8);
 }
 
-/// Provider for WalletStorageService
-///
-/// Single instance shared across the app
-/// Usage: `ref.read(walletStorageServiceProvider).loadWallets()`
 final walletStorageServiceProvider = Provider<WalletStorageService>((ref) {
   return WalletStorageService();
 });
