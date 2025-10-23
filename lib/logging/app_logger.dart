@@ -257,39 +257,24 @@ class AppLogger {
 /// Custom printer that includes class/file name for context
 class _CustomPrinter extends LogPrinter {
   final String className;
+  // Fixed column widths for consistent alignment.
+  // Adjust based on the expected longest class and level names.
+  // Includes +2 padding for wrapping brackets.
+  static const _classWidth = 22;
+  static const _levelWidth = 9;
 
   _CustomPrinter(this.className);
 
   @override
-  List<String> log(LogEvent event) {
-    final time = DateTime.now().toString().split(' ')[1].split('.')[0];
-    final levelEmoji = _getLevelEmoji(event.level);
-    final levelName = event.level.toString().split('.').last.toUpperCase();
+  List<String> log(LogEvent e) {
+    final time = e.time.toUtc().toIso8601String();
+    final source = '[$className]'.padRight(_classWidth);
+    final level = '{${e.level.name.toUpperCase()}}'.padLeft(_levelWidth);
 
-    final message = event.message;
-    final error = event.error != null ? '\n${event.error}' : '';
-    final stack = event.stackTrace != null ? '\n${event.stackTrace}' : '';
-
-    return ['$time $levelEmoji [$className] $levelName: $message$error$stack'];
-  }
-
-  String _getLevelEmoji(Level level) {
-    switch (level) {
-      case Level.trace:
-        return '🔍';
-      case Level.debug:
-        return '🐛';
-      case Level.info:
-        return '💡';
-      case Level.warning:
-        return '⚠️';
-      case Level.error:
-        return '⛔';
-      case Level.fatal:
-        return '💀';
-      default:
-        return '📝';
-    }
+    final b = StringBuffer('$time $source $level: ${e.message}');
+    if (e.error != null) b.writeln(e.error);
+    if (e.stackTrace != null) b.writeln(e.stackTrace);
+    return [b.toString()];
   }
 }
 
