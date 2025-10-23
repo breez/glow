@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow_breez/logging/logger_mixin.dart';
 import 'package:glow_breez/models/wallet_metadata.dart';
 import 'package:glow_breez/providers/wallet_provider.dart';
+import 'package:glow_breez/screens/wallet_setup_screen.dart';
 import 'package:glow_breez/services/wallet_storage_service.dart';
 import 'package:glow_breez/screens/wallet_backup_screen.dart';
 import 'package:glow_breez/screens/wallet_create_screen.dart';
@@ -98,17 +99,19 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
     }
   }
 
-  Future<void> _deleteWallet(WalletMetadata wallet) async {
+  Future<void> _removeWallet(WalletMetadata wallet) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${wallet.name}?'),
-        content: Text('This will permanently delete the wallet and its recovery phrase.'),
+        title: Text('Remove ${wallet.name}?'),
+        content: Text(
+          'This will remove the wallet from the app. You can re-import it later using your recovery phrase.',
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel')),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Remove', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -118,19 +121,27 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
 
     try {
       await ref.read(walletListProvider.notifier).deleteWallet(wallet.id);
+
+      final wallets = ref.read(walletListProvider).value ?? [];
       final activeWallet = ref.read(activeWalletProvider).value;
+
       if (activeWallet?.id == wallet.id) {
-        final wallets = ref.read(walletListProvider).value ?? [];
         if (wallets.isNotEmpty) {
           await ref.read(activeWalletProvider.notifier).switchWallet(wallets.first.id);
         } else {
           await ref.read(activeWalletProvider.notifier).clearActiveWallet();
         }
       }
-      if (mounted) _showSnackBar('Deleted ${wallet.name}', Colors.orange);
+
+      if (mounted) _showSnackBar('Removed ${wallet.name}', Colors.orange);
+
+      // Reroute if no wallets remain
+      if (wallets.isEmpty && mounted) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => WalletSetupScreen()));
+      }
     } catch (e) {
-      log.e('Failed to delete wallet', error: e);
-      if (mounted) _showSnackBar('Failed to delete: $e', Colors.red);
+      log.e('Failed to remove wallet', error: e);
+      if (mounted) _showSnackBar('Failed to remove: $e', Colors.red);
     }
   }
 
@@ -265,12 +276,12 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
                       ),
                     ),
                     PopupMenuItem(
-                      value: 'delete',
+                      value: 'remove',
                       child: Row(
                         children: [
                           Icon(Icons.delete, size: 20, color: Colors.red),
                           SizedBox(width: 12),
-                          Text('Delete', style: TextStyle(color: Colors.red)),
+                          Text('Remove', style: TextStyle(color: Colors.red)),
                         ],
                       ),
                     ),
@@ -283,8 +294,8 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
                         _startEditing(wallet);
                       case 'view':
                         _showBackup(wallet);
-                      case 'delete':
-                        _deleteWallet(wallet);
+                      case 'remove':
+                        _removeWallet(wallet);
                     }
                   },
                 ),
