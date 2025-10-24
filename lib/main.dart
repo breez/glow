@@ -2,9 +2,9 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow_breez/providers/wallet_provider.dart';
-import 'package:glow_breez/screens/wallet_screen.dart';
-import 'package:glow_breez/screens/wallet_setup_screen.dart';
+import 'package:glow/providers/wallet_provider.dart';
+import 'package:glow/screens/wallet_screen.dart';
+import 'package:glow/screens/wallet_setup_screen.dart';
 
 import 'logging/app_logger.dart';
 

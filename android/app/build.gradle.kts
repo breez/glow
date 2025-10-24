@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.breez.spark.glow_breez"
+    namespace = "com.breez.spark.glow"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.breez.spark.glow_breez"
+        applicationId = "com.breez.spark.glow"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

@@ -1,4 +1,4 @@
-import 'package:glow_breez/logging/app_logger.dart';
+import 'package:glow/logging/app_logger.dart';
 import 'package:logger/logger.dart';
 
 /// Mixin that provides automatic logger with class name

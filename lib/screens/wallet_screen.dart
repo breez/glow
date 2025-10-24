@@ -1,12 +1,12 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow_breez/providers/sdk_provider.dart';
-import 'package:glow_breez/providers/wallet_provider.dart';
-import 'package:glow_breez/screens/debug_screen.dart';
-import 'package:glow_breez/screens/payment_detail_screen.dart';
-import 'package:glow_breez/screens/receive_screen.dart';
-import 'package:glow_breez/screens/wallet_list_screen.dart';
+import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/providers/wallet_provider.dart';
+import 'package:glow/screens/debug_screen.dart';
+import 'package:glow/screens/payment_detail_screen.dart';
+import 'package:glow/screens/receive_screen.dart';
+import 'package:glow/screens/wallet_list_screen.dart';
 
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});

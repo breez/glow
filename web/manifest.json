@@ -1,6 +1,6 @@
 {
-    "name": "glow_breez",
-    "short_name": "glow_breez",
+    "name": "glow",
+    "short_name": "glow",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

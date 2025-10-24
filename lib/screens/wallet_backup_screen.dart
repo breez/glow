@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow_breez/logging/logger_mixin.dart';
-import 'package:glow_breez/models/wallet_metadata.dart';
-import 'package:glow_breez/providers/wallet_provider.dart';
+import 'package:glow/logging/logger_mixin.dart';
+import 'package:glow/models/wallet_metadata.dart';
+import 'package:glow/providers/wallet_provider.dart';
 
 class WalletBackupScreen extends ConsumerStatefulWidget {
   final WalletMetadata wallet;

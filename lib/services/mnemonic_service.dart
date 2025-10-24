@@ -1,6 +1,6 @@
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow_breez/logging/app_logger.dart';
+import 'package:glow/logging/app_logger.dart';
 
 /// Service for mnemonic generation and validation
 class MnemonicService {

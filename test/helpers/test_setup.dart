@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glow_breez/logging/app_logger.dart';
+import 'package:glow/logging/app_logger.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 /// Fake path provider for tests

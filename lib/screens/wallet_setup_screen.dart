@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:glow_breez/screens/wallet_create_screen.dart';
-import 'package:glow_breez/screens/wallet_import_screen.dart';
+import 'package:glow/screens/wallet_create_screen.dart';
+import 'package:glow/screens/wallet_import_screen.dart';
 
 class WalletSetupScreen extends StatelessWidget {
   const WalletSetupScreen({super.key});

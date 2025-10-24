@@ -1,8 +1,8 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow_breez/providers/wallet_provider.dart';
-import 'package:glow_breez/services/breez_sdk_service.dart';
-import 'package:glow_breez/services/wallet_storage_service.dart';
+import 'package:glow/providers/wallet_provider.dart';
+import 'package:glow/services/breez_sdk_service.dart';
+import 'package:glow/services/wallet_storage_service.dart';
 
 /// Network selection state
 class NetworkNotifier extends Notifier<Network> {

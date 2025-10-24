@@ -1,9 +1,9 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow_breez/logging/logger_mixin.dart';
-import 'package:glow_breez/services/mnemonic_service.dart';
-import 'package:glow_breez/providers/wallet_provider.dart';
+import 'package:glow/logging/logger_mixin.dart';
+import 'package:glow/services/mnemonic_service.dart';
+import 'package:glow/providers/wallet_provider.dart';
 
 class WalletImportScreen extends ConsumerStatefulWidget {
   const WalletImportScreen({super.key});

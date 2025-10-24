@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = glow_breez
+PRODUCT_NAME = glow
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.breez.spark.glowBreez
+PRODUCT_BUNDLE_IDENTIFIER = com.breez.spark.glow
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.breez.spark. All rights reserved.

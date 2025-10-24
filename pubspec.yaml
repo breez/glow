@@ -1,4 +1,4 @@
-name: glow_breez
+name: glow
 description: "Flutter app showcasing Breez SDK - Nodeless (Spark Implementation)."
 publish_to: 'none'
 version: 0.1.0

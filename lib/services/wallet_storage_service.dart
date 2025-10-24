@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:glow_breez/logging/logger_mixin.dart';
-import 'package:glow_breez/models/wallet_metadata.dart';
+import 'package:glow/logging/logger_mixin.dart';
+import 'package:glow/models/wallet_metadata.dart';
 
 /// Manages secure storage of wallet metadata and mnemonics.
 class WalletStorageService with LoggerMixin {
