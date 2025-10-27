@@ -2,6 +2,8 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/config/breez_config.dart';
+import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/providers/sdk_provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 
@@ -12,7 +14,7 @@ class ReceiveScreen extends ConsumerStatefulWidget {
   ConsumerState<ReceiveScreen> createState() => _ReceiveScreenState();
 }
 
-class _ReceiveScreenState extends ConsumerState<ReceiveScreen> {
+class _ReceiveScreenState extends ConsumerState<ReceiveScreen> with LoggerMixin {
   bool _showInvoiceInput = false;
   final _amountController = TextEditingController();
   BigInt? _amountSats;
@@ -49,53 +51,182 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> {
   }
 
   Widget _buildLightningAddressScreen(BuildContext context) {
-    final lightningAddress = ref.watch(lightningAddressProvider);
+    final lightningAddress = ref.watch(lightningAddressProvider(true)); // Enable auto-registration
+    final sdkAsync = ref.watch(sdkProvider);
+
+    // Show bottom sheet for manual Lightning Address registration
+    void showRegistrationBottomSheet(BreezSdk sdk) {
+      final usernameController = TextEditingController();
+      String? errorText;
+      bool isChecking = false;
+      bool isRegistering = false;
+
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (bottomSheetContext) => StatefulBuilder(
+          builder: (context, setModalState) {
+            Future<void> handleRegistration() async {
+              final value = usernameController.text.trim();
+              if (value.isEmpty) {
+                setModalState(() {
+                  errorText = 'Username cannot be empty';
+                });
+                return;
+              }
+
+              // Check availability
+              setModalState(() {
+                isChecking = true;
+                errorText = null;
+              });
+
+              try {
+                final available = await sdk.checkLightningAddressAvailable(
+                  request: CheckLightningAddressRequest(username: value),
+                );
+
+                if (!available) {
+                  setModalState(() {
+                    isChecking = false;
+                    errorText = 'Username not available';
+                  });
+                  return;
+                }
+
+                // Register the address
+                setModalState(() {
+                  isChecking = false;
+                  isRegistering = true;
+                });
+
+                await sdk.registerLightningAddress(request: RegisterLightningAddressRequest(username: value));
+
+                if (mounted) {
+                  Navigator.of(bottomSheetContext).pop();
+
+                  // Reset manual deletion flag since user is registering again
+                  ref.read(lightningAddressManuallyDeletedProvider.notifier).reset();
+
+                  ref.invalidate(lightningAddressProvider(true));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Lightning Address registered: $value@${BreezConfig.lnurlDomain}'),
+                    ),
+                  );
+                }
+              } catch (e) {
+                setModalState(() {
+                  isChecking = false;
+                  isRegistering = false;
+                  errorText = 'Error: ${e.toString()}';
+                });
+              }
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 24,
+                right: 24,
+                top: 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text('Register Lightning Address', style: Theme.of(context).textTheme.headlineSmall),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Choose a unique username for your Lightning Address',
+                    style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: usernameController,
+                    autofocus: true,
+                    enabled: !isRegistering && !isChecking,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      errorText: errorText,
+                      suffixText: '@${BreezConfig.lnurlDomain}',
+                      suffixStyle: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      border: const OutlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      // Clear error when user types
+                      if (errorText != null) {
+                        setModalState(() {
+                          errorText = null;
+                        });
+                      }
+                    },
+                    onSubmitted: (_) => handleRegistration(),
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: isChecking || isRegistering ? null : handleRegistration,
+                    child: isChecking || isRegistering
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Register'),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Receive')),
       body: lightningAddress.when(
         data: (address) {
           if (address == null) {
+            // Show manual registration option
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.alternate_email,
-                      size: 64,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No Lightning Address',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
+                    Icon(Icons.alternate_email, size: 64, color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(height: 24),
+                    Text('No Lightning Address', style: Theme.of(context).textTheme.headlineSmall),
                     const SizedBox(height: 8),
                     Text(
-                      'Register a Lightning Address to receive payments',
+                      'Register a Lightning Address to receive payments easily',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
                     FilledButton.icon(
+                      onPressed: () async {
+                        final sdk = await sdkAsync.whenOrNull(data: (sdk) async => sdk);
+                        if (sdk != null && mounted) {
+                          showRegistrationBottomSheet(sdk);
+                        }
+                      },
+                      icon: const Icon(Icons.add),
+                      label: const Text('Register Lightning Address'),
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton.tonalIcon(
                       onPressed: () {
                         setState(() {
                           _showInvoiceInput = true;
                         });
                       },
                       icon: const Icon(Icons.bolt),
-                      label: const Text('Generate Invoice Instead'),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Or register a Lightning Address in settings',
-                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      label: const Text('Generate Invoice'),
                     ),
                   ],
                 ),
@@ -165,27 +296,69 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> {
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      // Delete Lightning Address button (for testing)
+                      Center(
+                        child: FilledButton.icon(
+                          onPressed: () async {
+                            final sdk = await sdkAsync.whenOrNull(data: (sdk) async => sdk);
+                            if (sdk != null) {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => const Center(child: CircularProgressIndicator()),
+                              );
+                              try {
+                                await sdk.deleteLightningAddress();
+                                if (context.mounted) {
+                                  Navigator.of(context).pop(); // Remove progress
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(const SnackBar(content: Text('Lightning Address deleted!')));
+
+                                  // Mark as manually deleted to prevent auto-registration
+                                  ref.read(lightningAddressManuallyDeletedProvider.notifier).markAsDeleted();
+
+                                  ref.invalidate(lightningAddressProvider(true));
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
+                                }
+                              }
+                            }
+                          },
+                          icon: const Icon(Icons.delete_outline, size: 20),
+                          label: const Text('Delete Lightning Address'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                            foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // Generate Invoice Button
-                OutlinedButton.icon(
+                // Request with amount button
+                FilledButton.tonal(
                   onPressed: () {
                     setState(() {
                       _showInvoiceInput = true;
                     });
                   },
-                  icon: const Icon(Icons.bolt),
-                  label: const Text('Generate Invoice'),
+                  child: const Text('Request with Amount'),
                 ),
               ],
             ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(
+        error: (err, stack) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -201,15 +374,11 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> {
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 24),
-                FilledButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _showInvoiceInput = true;
-                    });
-                  },
-                  icon: const Icon(Icons.bolt),
-                  label: const Text('Generate Invoice'),
+                const SizedBox(height: 8),
+                Text(
+                  err.toString(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -222,13 +391,13 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> {
   Widget _buildAmountInput(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Generate Invoice'),
+        title: const Text('Request Payment'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             setState(() {
               _showInvoiceInput = false;
-              _amountSats = null;
+              _amountController.clear();
             });
           },
         ),
