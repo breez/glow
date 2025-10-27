@@ -23,6 +23,8 @@ class BreezSdkService with LoggerMixin {
       apiKey: BreezConfig.apiKey,
       network: network,
       syncIntervalSecs: BreezConfig.syncIntervalSecs,
+      maxDepositClaimFee: BreezConfig.maxDepositClaimFee,
+      lnurlDomain: BreezConfig.lnurlDomain,
       preferSparkOverLightning: true,
       useDefaultExternalInputParsers: false,
     );
