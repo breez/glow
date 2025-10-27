@@ -54,8 +54,233 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> with LoggerMixin 
     final lightningAddress = ref.watch(lightningAddressProvider(true)); // Enable auto-registration
     final sdkAsync = ref.watch(sdkProvider);
 
-    // Show bottom sheet for manual Lightning Address registration
-    void showRegistrationBottomSheet(BreezSdk sdk) {
+    // Show bottom sheet for editing Lightning Address (delete or change username)
+    void showEditBottomSheet(BreezSdk sdk, String currentUsername) {
+      final usernameController = TextEditingController(text: currentUsername);
+      String? errorText;
+      bool isChecking = false;
+      bool isProcessing = false;
+      bool showDeleteConfirmation = false;
+
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (bottomSheetContext) => StatefulBuilder(
+          builder: (context, setModalState) {
+            Future<void> handleSave() async {
+              final value = usernameController.text.trim().toLowerCase().replaceAll(' ', '');
+
+              // If username unchanged, just close
+              if (value == currentUsername) {
+                Navigator.of(bottomSheetContext).pop();
+                return;
+              }
+
+              if (value.isEmpty) {
+                setModalState(() {
+                  errorText = 'Username cannot be empty';
+                });
+                return;
+              }
+
+              String result = value;
+              // Remove leading dots
+              while (result.isNotEmpty && result.startsWith('.')) {
+                result = result.substring(1);
+              }
+
+              // Remove trailing dots
+              while (result.isNotEmpty && result.endsWith('.')) {
+                result = result.substring(0, result.length - 1);
+              }
+
+              // Check availability
+              setModalState(() {
+                isChecking = true;
+                errorText = null;
+              });
+
+              try {
+                final available = await sdk.checkLightningAddressAvailable(
+                  request: CheckLightningAddressRequest(username: result),
+                );
+
+                if (!available) {
+                  setModalState(() {
+                    isChecking = false;
+                    errorText = 'Username not available';
+                  });
+                  return;
+                }
+
+                // Delete old and register new
+                setModalState(() {
+                  isChecking = false;
+                  isProcessing = true;
+                });
+
+                await sdk.deleteLightningAddress();
+                await sdk.registerLightningAddress(
+                  request: RegisterLightningAddressRequest(username: result),
+                );
+
+                if (mounted) {
+                  Navigator.of(bottomSheetContext).pop();
+                  ref.invalidate(lightningAddressProvider(true));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Lightning Address updated: $value@${BreezConfig.lnurlDomain}')),
+                  );
+                }
+              } catch (e) {
+                setModalState(() {
+                  isChecking = false;
+                  isProcessing = false;
+                  errorText = 'Error: ${e.toString()}';
+                });
+              }
+            }
+
+            Future<void> handleDelete() async {
+              setModalState(() {
+                isProcessing = true;
+              });
+
+              try {
+                await sdk.deleteLightningAddress();
+
+                if (mounted) {
+                  Navigator.of(bottomSheetContext).pop();
+
+                  // Mark as manually deleted to prevent auto-registration
+                  ref.read(lightningAddressManuallyDeletedProvider.notifier).markAsDeleted();
+
+                  ref.invalidate(lightningAddressProvider(true));
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('Lightning Address deleted')));
+                }
+              } catch (e) {
+                setModalState(() {
+                  isProcessing = false;
+                  errorText = 'Failed to delete: ${e.toString()}';
+                });
+              }
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 24,
+                right: 24,
+                top: 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (!showDeleteConfirmation) ...[
+                    Text('Edit Lightning Address', style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Change your username or delete your Lightning Address',
+                      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 24),
+                    TextField(
+                      controller: usernameController,
+                      autofocus: true,
+                      enabled: !isProcessing && !isChecking,
+                      decoration: InputDecoration(
+                        labelText: 'Username',
+                        errorText: errorText,
+                        suffixText: '@${BreezConfig.lnurlDomain}',
+                        suffixStyle: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        border: const OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        // Clear error when user types
+                        if (errorText != null) {
+                          setModalState(() {
+                            errorText = null;
+                          });
+                        }
+                      },
+                      onSubmitted: (_) => handleSave(),
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: isChecking || isProcessing ? null : handleSave,
+                      child: isChecking || isProcessing
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Save Changes'),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: isProcessing
+                          ? null
+                          : () {
+                              setModalState(() {
+                                showDeleteConfirmation = true;
+                              });
+                            },
+                      icon: const Icon(Icons.delete_outline),
+                      label: const Text('Delete Lightning Address'),
+                      style: OutlinedButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                    ),
+                  ] else ...[
+                    Text('Delete Lightning Address?', style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: 8),
+                    Text(
+                      'This will permanently delete your Lightning Address. You can register a new one later.',
+                      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton.icon(
+                      onPressed: isProcessing ? null : handleDelete,
+                      icon: isProcessing
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.delete_outline),
+                      label: const Text('Delete'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                        foregroundColor: Theme.of(context).colorScheme.onError,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton(
+                      onPressed: isProcessing
+                          ? null
+                          : () {
+                              setModalState(() {
+                                showDeleteConfirmation = false;
+                                errorText = null;
+                              });
+                            },
+                      child: const Text('Cancel'),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    // Show bottom sheet for registering new Lightning Address
+    void showRegisterBottomSheet(BreezSdk sdk) {
       final usernameController = TextEditingController();
       String? errorText;
       bool isChecking = false;
@@ -67,12 +292,23 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> with LoggerMixin 
         builder: (bottomSheetContext) => StatefulBuilder(
           builder: (context, setModalState) {
             Future<void> handleRegistration() async {
-              final value = usernameController.text.trim();
+              final value = usernameController.text.trim().toLowerCase().replaceAll(' ', '');
               if (value.isEmpty) {
                 setModalState(() {
                   errorText = 'Username cannot be empty';
                 });
                 return;
+              }
+
+              String result = value;
+              // Remove leading dots
+              while (result.isNotEmpty && result.startsWith('.')) {
+                result = result.substring(1);
+              }
+
+              // Remove trailing dots
+              while (result.isNotEmpty && result.endsWith('.')) {
+                result = result.substring(0, result.length - 1);
               }
 
               // Check availability
@@ -83,7 +319,7 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> with LoggerMixin 
 
               try {
                 final available = await sdk.checkLightningAddressAvailable(
-                  request: CheckLightningAddressRequest(username: value),
+                  request: CheckLightningAddressRequest(username: result),
                 );
 
                 if (!available) {
@@ -186,6 +422,7 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> with LoggerMixin 
       );
     }
 
+    // Show bottom sheet for editing Lightning Address (delete + register)
     return Scaffold(
       appBar: AppBar(title: const Text('Receive')),
       body: lightningAddress.when(
@@ -212,7 +449,7 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> with LoggerMixin 
                       onPressed: () async {
                         final sdk = await sdkAsync.whenOrNull(data: (sdk) async => sdk);
                         if (sdk != null && mounted) {
-                          showRegistrationBottomSheet(sdk);
+                          showRegisterBottomSheet(sdk);
                         }
                       },
                       icon: const Icon(Icons.add),
@@ -297,47 +534,77 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> with LoggerMixin 
                         ),
                       ),
                       const SizedBox(height: 16),
-                      // Delete Lightning Address button (for testing)
+                      // Edit Lightning Address button
                       Center(
-                        child: FilledButton.icon(
+                        child: FilledButton.tonalIcon(
                           onPressed: () async {
                             final sdk = await sdkAsync.whenOrNull(data: (sdk) async => sdk);
-                            if (sdk != null) {
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (context) => const Center(child: CircularProgressIndicator()),
-                              );
-                              try {
-                                await sdk.deleteLightningAddress();
-                                if (context.mounted) {
-                                  Navigator.of(context).pop(); // Remove progress
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(const SnackBar(content: Text('Lightning Address deleted!')));
-
-                                  // Mark as manually deleted to prevent auto-registration
-                                  ref.read(lightningAddressManuallyDeletedProvider.notifier).markAsDeleted();
-
-                                  ref.invalidate(lightningAddressProvider(true));
-                                }
-                              } catch (e) {
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
-                                }
-                              }
+                            if (sdk != null && mounted) {
+                              // Extract username from full Lightning Address
+                              final username = address.lightningAddress.split('@')[0];
+                              showEditBottomSheet(sdk, username);
                             }
                           },
-                          icon: const Icon(Icons.delete_outline, size: 20),
-                          label: const Text('Delete Lightning Address'),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                            foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+                          icon: const Icon(Icons.edit, size: 20),
+                          label: const Text('Edit Lightning Address'),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      // Debug & Testing section
+                      ExpansionTile(
+                        title: Text(
+                          'Debug & Testing',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: FilledButton.icon(
+                              onPressed: () async {
+                                final sdk = await sdkAsync.whenOrNull(data: (sdk) async => sdk);
+                                if (sdk != null) {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const Center(child: CircularProgressIndicator()),
+                                  );
+                                  try {
+                                    await sdk.deleteLightningAddress();
+                                    if (context.mounted) {
+                                      Navigator.of(context).pop(); // Remove progress
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Lightning Address deleted!')),
+                                      );
+
+                                      // Mark as manually deleted to prevent auto-registration
+                                      ref
+                                          .read(lightningAddressManuallyDeletedProvider.notifier)
+                                          .markAsDeleted();
+
+                                      ref.invalidate(lightningAddressProvider(true));
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
+                                    }
+                                  }
+                                }
+                              },
+                              icon: const Icon(Icons.delete_outline, size: 20),
+                              label: const Text('Delete (Testing Only)'),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                                foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
