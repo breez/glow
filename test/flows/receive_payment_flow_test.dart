@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/sdk_provider.dart';
 import 'package:mockito/mockito.dart';
 
