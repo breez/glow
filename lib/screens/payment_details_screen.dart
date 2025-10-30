@@ -2,10 +2,10 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class PaymentDetailScreen extends StatelessWidget {
+class PaymentDetailsScreen extends StatelessWidget {
   final Payment payment;
 
-  const PaymentDetailScreen({super.key, required this.payment});
+  const PaymentDetailsScreen({super.key, required this.payment});
 
   @override
   Widget build(BuildContext context) {

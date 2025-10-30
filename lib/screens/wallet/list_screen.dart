@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/models/wallet_metadata.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/wallet_setup_screen.dart';
+import 'package:glow/screens/wallet/wallet_setup_screen.dart';
 import 'package:glow/services/wallet_storage_service.dart';
-import 'package:glow/screens/wallet_verify_screen.dart';
-import 'package:glow/screens/wallet_create_screen.dart';
-import 'package:glow/screens/wallet_import_screen.dart';
+import 'package:glow/screens/wallet/wallet_verify_screen.dart';
+import 'package:glow/screens/wallet/wallet_create_screen.dart';
+import 'package:glow/screens/wallet/wallet_import_screen.dart';
 
 class WalletListScreen extends ConsumerStatefulWidget {
   const WalletListScreen({super.key});

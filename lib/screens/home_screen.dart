@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/providers/sdk_provider.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/screens/debug_screen.dart';
-import 'package:glow/screens/payment_detail_screen.dart';
+import 'package:glow/screens/payment_details_screen.dart';
 import 'package:glow/screens/receive/receive_screen.dart';
-import 'package:glow/screens/wallet_list_screen.dart';
-import 'package:glow/screens/wallet_verify_screen.dart';
+import 'package:glow/screens/wallet/list_screen.dart';
+import 'package:glow/screens/wallet/verify_screen.dart';
 import 'package:glow/services/wallet_storage_service.dart';
 
-class WalletScreen extends ConsumerWidget {
-  const WalletScreen({super.key});
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -176,7 +176,7 @@ class WalletScreen extends ConsumerWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => PaymentDetailScreen(payment: payment)),
+                            MaterialPageRoute(builder: (context) => PaymentDetailsScreen(payment: payment)),
                           );
                         },
                         contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

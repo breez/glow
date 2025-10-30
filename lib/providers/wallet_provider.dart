@@ -1,11 +1,13 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/logging/logger_mixin.dart';
+import 'package:glow/logging/app_logger.dart';
 import 'package:glow/models/wallet_metadata.dart';
 import 'package:glow/services/mnemonic_service.dart';
 import 'package:glow/services/wallet_storage_service.dart';
 
-class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> with LoggerMixin {
+final log = AppLogger.getLogger('WalletProvider');
+
+class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
   late final WalletStorageService _storage;
   late final MnemonicService _mnemonicService;
 
@@ -140,7 +142,7 @@ final walletListProvider = AsyncNotifierProvider<WalletListNotifier, List<Wallet
 // Active Wallet Management
 // ============================================================================
 
-class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> with LoggerMixin {
+class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
   late final WalletStorageService _storage;
   String? _activeWalletId;
 

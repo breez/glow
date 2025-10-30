@@ -7,7 +7,7 @@ import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/sdk_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/wallet_list_screen.dart';
+import 'package:glow/screens/wallet/wallet_list_screen.dart';
 
 class DebugScreen extends ConsumerWidget {
   const DebugScreen({super.key});

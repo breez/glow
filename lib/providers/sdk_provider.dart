@@ -159,6 +159,6 @@ final lightningAddressProvider = FutureProvider.autoDispose.family<LightningAddr
   log.d('Should auto-register lightning address: $shouldAutoRegister');
 
   final info = await service.getLightningAddress(sdk, autoRegister: shouldAutoRegister);
-  log.d('Lightning address info fetched: ${info?.address}');
+  log.d('Lightning address info fetched: ${info?.lightningAddress}');
   return info;
 });

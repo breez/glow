@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/wallet_screen.dart';
-import 'package:glow/screens/wallet_setup_screen.dart';
+import 'package:glow/screens/wallet/wallet_screen.dart';
+import 'package:glow/screens/wallet/wallet_setup_screen.dart';
 
 import 'logging/app_logger.dart';
 
@@ -162,7 +162,7 @@ class _AppRouter extends ConsumerWidget {
 
     // Has active wallet - show main app
     if (activeWallet.hasValue && activeWallet.value != null) {
-      return const WalletScreen();
+      return const HomeScreen();
     }
 
     // Fallback: No active wallet but wallets exist - shouldn't happen
