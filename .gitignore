@@ -49,3 +49,7 @@ test/**/*.mocks.dart
 
 # Environment variables
 secrets.json
+
+# VSCode settings
+.vscode/*
+!.vscode/launch.json
