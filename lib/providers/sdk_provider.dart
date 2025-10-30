@@ -1,8 +1,11 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/services/breez_sdk_service.dart';
 import 'package:glow/services/wallet_storage_service.dart';
+
+final log = AppLogger.getLogger('SdkProvider');
 
 /// Network selection state
 class NetworkNotifier extends Notifier<Network> {
@@ -13,6 +16,37 @@ class NetworkNotifier extends Notifier<Network> {
 }
 
 final networkProvider = NotifierProvider<NetworkNotifier, Network>(NetworkNotifier.new);
+
+/// Track if Lightning Address was manually deleted (to prevent auto-registration)
+class LightningAddressManuallyDeletedNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    log.d('LightningAddressManuallyDeletedNotifier initialized');
+    // Reset when wallet changes
+    ref.listen(activeWalletProvider, (previous, next) {
+      if (previous?.value?.id != next.value?.id) {
+        log.d('Wallet changed, resetting LightningAddressManuallyDeleted state');
+        state = false;
+      }
+    });
+    return false;
+  }
+
+  void markAsDeleted() {
+    log.d('Lightning address manually marked as deleted');
+    state = true;
+  }
+
+  void reset() {
+    log.d('Lightning address manual delete state reset');
+    state = false;
+  }
+}
+
+final lightningAddressManuallyDeletedProvider =
+    NotifierProvider<LightningAddressManuallyDeletedNotifier, bool>(
+      LightningAddressManuallyDeletedNotifier.new,
+    );
 
 /// Connected SDK instance - auto-reconnects on wallet/network changes
 final sdkProvider = FutureProvider<BreezSdk>((ref) async {
@@ -75,9 +109,22 @@ final receivePaymentProvider = FutureProvider.autoDispose
       return service.receivePayment(sdk, request);
     });
 
-/// Lightning address
-final lightningAddressProvider = FutureProvider<LightningAddressInfo?>((ref) async {
+/// Lightning address - with optional auto-registration
+final lightningAddressProvider = FutureProvider.autoDispose.family<LightningAddressInfo?, bool>((
+  ref,
+  autoRegister,
+) async {
+  log.d('lightningAddressProvider called, autoRegister=$autoRegister');
   final sdk = await ref.watch(sdkProvider.future);
   final service = ref.read(breezSdkServiceProvider);
-  return service.getLightningAddress(sdk);
+
+  // Don't auto-register if user manually deleted their address
+  final manuallyDeleted = ref.watch(lightningAddressManuallyDeletedProvider);
+  log.d('Lightning address manually deleted: $manuallyDeleted');
+  final shouldAutoRegister = autoRegister && !manuallyDeleted;
+  log.d('Should auto-register lightning address: $shouldAutoRegister');
+
+  final info = await service.getLightningAddress(sdk, autoRegister: shouldAutoRegister);
+  log.d('Lightning address info fetched: ${info?.address}');
+  return info;
 });
