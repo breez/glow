@@ -44,10 +44,7 @@ class _AmountInputSheetState extends ConsumerState<AmountInputSheet> {
       return _GeneratedPaymentRequest(
         amountSats: _generatedAmountSats!,
         receiveMethod: widget.receiveMethod,
-        onBack: () => setState(() {
-          _generatedAmountSats = null;
-          _amountController.clear();
-        }),
+        onBack: () => Navigator.of(context).pop(),
       );
     }
 
