@@ -33,7 +33,12 @@ class AppLogger {
     if (_instance == null) {
       throw StateError('AppLogger not initialized. Call AppLogger.initialize() first');
     }
-    return Logger(printer: _CustomPrinter(name), output: _fileOutput);
+    return Logger(
+      filter: kDebugMode ? DevelopmentFilter() : ProductionFilter(),
+      printer: _CustomPrinter(name),
+      output: _fileOutput,
+      level: kDebugMode ? Level.debug : Level.info,
+    );
   }
 
   static Future<File> _createSessionLogFile() async {
