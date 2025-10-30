@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/wallet_backup_screen.dart';
 
 class WalletCreateScreen extends ConsumerStatefulWidget {
   const WalletCreateScreen({super.key});
@@ -33,14 +32,21 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
           .read(walletListProvider.notifier)
           .createWallet(name: _nameController.text.trim(), network: _selectedNetwork);
 
+      // Set as active wallet
+      await ref.read(activeWalletProvider.notifier).setActiveWallet(wallet.id);
+
       if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (_) => WalletBackupScreen(wallet: wallet, mnemonic: mnemonic, isNewWallet: true),
-          ),
-          (_) => false,
-        );
+        // Go directly to home screen
+        Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+
+        // Show success message after navigation
+        Future.delayed(Duration(milliseconds: 300), () {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Wallet "${wallet.name}" created!'), backgroundColor: Colors.green),
+            );
+          }
+        });
       }
     } catch (e) {
       log.e('Failed to create wallet', error: e);

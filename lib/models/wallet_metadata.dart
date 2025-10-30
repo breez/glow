@@ -7,24 +7,29 @@
 class WalletMetadata {
   final String id;
   final String name;
+  final bool isVerified;
 
-  const WalletMetadata({required this.id, required this.name});
+  const WalletMetadata({required this.id, required this.name, this.isVerified = false});
 
-  WalletMetadata copyWith({String? id, String? name}) =>
-      WalletMetadata(id: id ?? this.id, name: name ?? this.name);
+  WalletMetadata copyWith({String? id, String? name, bool? isVerified}) =>
+      WalletMetadata(id: id ?? this.id, name: name ?? this.name, isVerified: isVerified ?? this.isVerified);
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name};
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'isVerified': isVerified};
 
-  factory WalletMetadata.fromJson(Map<String, dynamic> json) =>
-      WalletMetadata(id: json['id'] as String, name: json['name'] as String);
+  factory WalletMetadata.fromJson(Map<String, dynamic> json) => WalletMetadata(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    isVerified: json['isVerified'] as bool? ?? false,
+  );
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is WalletMetadata && other.id == id && other.name == name;
+      identical(this, other) ||
+      other is WalletMetadata && other.id == id && other.name == name && other.isVerified == isVerified;
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, isVerified);
 
   @override
-  String toString() => 'WalletMetadata(id: $id, name: $name)';
+  String toString() => 'WalletMetadata(id: $id, name: $name, isVerified: $isVerified)';
 }

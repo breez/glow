@@ -65,7 +65,8 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> with Logger
         throw Exception('This wallet already exists');
       }
 
-      final wallet = WalletMetadata(id: walletId, name: name);
+      // Imported wallets are marked as verified (user already has the phrase)
+      final wallet = WalletMetadata(id: walletId, name: name, isVerified: true);
       await _storage.addWallet(wallet, normalized);
 
       state = AsyncValue.data([...existingWallets, wallet]);
@@ -93,6 +94,25 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> with Logger
       log.i('Wallet name updated: $walletId');
     } catch (e, stack) {
       log.e('Failed to update wallet name', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
+  Future<void> markWalletAsVerified(String walletId) async {
+    try {
+      log.i('Marking wallet as verified: $walletId');
+
+      final wallets = state.value ?? [];
+      final index = wallets.indexWhere((w) => w.id == walletId);
+      if (index == -1) throw Exception('Wallet not found: $walletId');
+
+      final updated = wallets[index].copyWith(isVerified: true);
+      await _storage.updateWallet(updated);
+
+      state = AsyncValue.data([...wallets]..[index] = updated);
+      log.i('Wallet marked as verified: $walletId');
+    } catch (e, stack) {
+      log.e('Failed to mark wallet as verified', error: e, stackTrace: stack);
       rethrow;
     }
   }
