@@ -5,7 +5,7 @@ import 'package:glow/providers/sdk_provider.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/screens/debug_screen.dart';
 import 'package:glow/screens/payment_detail_screen.dart';
-import 'package:glow/screens/receive_screen.dart';
+import 'package:glow/screens/receive/receive_screen.dart';
 import 'package:glow/screens/wallet_list_screen.dart';
 import 'package:glow/screens/wallet_verify_screen.dart';
 import 'package:glow/services/wallet_storage_service.dart';
