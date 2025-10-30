@@ -1,5 +1,6 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/config/breez_config.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +23,7 @@ class ConfigService {
 
     if (type == null || value == null) {
       log.d('No persisted max deposit claim fee, using default');
-      return _getDefaultFee();
+      return BreezConfig.defaultMaxDepositClaimFee;
     }
 
     try {
@@ -38,7 +39,7 @@ class ConfigService {
       log.e('Failed to parse persisted fee, using default: $e');
     }
 
-    return _getDefaultFee();
+    return BreezConfig.defaultMaxDepositClaimFee;
   }
 
   /// Set the max deposit claim fee and persist it
@@ -63,11 +64,6 @@ class ConfigService {
     await _prefs.remove(_maxDepositClaimFeeTypeKey);
     await _prefs.remove(_maxDepositClaimFeeValueKey);
     log.i('Reset max deposit claim fee to default');
-  }
-
-  Fee _getDefaultFee() {
-    // Default: 5 sat/vByte (reasonable for most conditions)
-    return Fee.rate(satPerVbyte: BigInt.from(5));
   }
 }
 
