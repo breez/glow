@@ -1,0 +1,83 @@
+import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/logging/app_logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final log = AppLogger.getLogger('ConfigService');
+
+/// Service for managing persistent app configuration
+class ConfigService {
+  static const String _maxDepositClaimFeeTypeKey = 'max_deposit_claim_fee_type';
+  static const String _maxDepositClaimFeeValueKey = 'max_deposit_claim_fee_value';
+
+  final SharedPreferences _prefs;
+
+  ConfigService(this._prefs);
+
+  /// Get the current max deposit claim fee
+  /// Returns the persisted value or default if not set
+  Fee getMaxDepositClaimFee() {
+    final type = _prefs.getString(_maxDepositClaimFeeTypeKey);
+    final value = _prefs.getString(_maxDepositClaimFeeValueKey);
+
+    if (type == null || value == null) {
+      log.d('No persisted max deposit claim fee, using default');
+      return _getDefaultFee();
+    }
+
+    try {
+      final feeValue = BigInt.parse(value);
+      if (type == 'rate') {
+        log.d('Loaded max deposit claim fee: rate=$feeValue sat/vByte');
+        return Fee.rate(satPerVbyte: feeValue);
+      } else if (type == 'fixed') {
+        log.d('Loaded max deposit claim fee: fixed=$feeValue sats');
+        return Fee.fixed(amount: feeValue);
+      }
+    } catch (e) {
+      log.e('Failed to parse persisted fee, using default: $e');
+    }
+
+    return _getDefaultFee();
+  }
+
+  /// Set the max deposit claim fee and persist it
+  Future<void> setMaxDepositClaimFee(Fee fee) async {
+    final result = fee.when(
+      rate: (satPerVbyte) async {
+        await _prefs.setString(_maxDepositClaimFeeTypeKey, 'rate');
+        await _prefs.setString(_maxDepositClaimFeeValueKey, satPerVbyte.toString());
+        log.i('Saved max deposit claim fee: rate=$satPerVbyte sat/vByte');
+      },
+      fixed: (amount) async {
+        await _prefs.setString(_maxDepositClaimFeeTypeKey, 'fixed');
+        await _prefs.setString(_maxDepositClaimFeeValueKey, amount.toString());
+        log.i('Saved max deposit claim fee: fixed=$amount sats');
+      },
+    );
+    await result;
+  }
+
+  /// Reset to default fee
+  Future<void> resetMaxDepositClaimFee() async {
+    await _prefs.remove(_maxDepositClaimFeeTypeKey);
+    await _prefs.remove(_maxDepositClaimFeeValueKey);
+    log.i('Reset max deposit claim fee to default');
+  }
+
+  Fee _getDefaultFee() {
+    // Default: 5 sat/vByte (reasonable for most conditions)
+    return Fee.rate(satPerVbyte: BigInt.from(5));
+  }
+}
+
+/// Provider for ConfigService
+final configServiceProvider = Provider<ConfigService>((ref) {
+  throw UnimplementedError('ConfigService must be overridden in main.dart with SharedPreferences');
+});
+
+/// Provider for max deposit claim fee
+final maxDepositClaimFeeProvider = Provider<Fee>((ref) {
+  final configService = ref.watch(configServiceProvider);
+  return configService.getMaxDepositClaimFee();
+});

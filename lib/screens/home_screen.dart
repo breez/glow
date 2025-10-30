@@ -6,15 +6,19 @@ import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/screens/debug_screen.dart';
 import 'package:glow/screens/payment_details_screen.dart';
 import 'package:glow/screens/receive/receive_screen.dart';
+import 'package:glow/screens/unclaimed_deposits_screen.dart';
 import 'package:glow/screens/wallet/list_screen.dart';
 import 'package:glow/screens/wallet/verify_screen.dart';
 import 'package:glow/services/wallet_storage_service.dart';
+import 'package:glow/widgets/unclaimed_deposits_icon.dart';
+import 'package:glow/widgets/unclaimed_deposits_warning.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(sdkEventsStreamProvider);
     final balance = ref.watch(balanceProvider);
     final payments = ref.watch(paymentsProvider);
     final activeWallet = ref.watch(activeWalletProvider);
@@ -55,6 +59,14 @@ class HomeScreen extends ConsumerWidget {
         ),
         backgroundColor: Colors.transparent,
         actions: [
+          UnclaimedDepositsIcon(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UnclaimedDepositsScreen()),
+              );
+            },
+          ),
           // Show warning icon for unverified wallets
           activeWallet.when(
             data: (wallet) => wallet != null && !wallet.isVerified
@@ -109,6 +121,15 @@ class HomeScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
+          // Unclaimed Deposits Warning banner
+          UnclaimedDepositsWarning(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UnclaimedDepositsScreen()),
+              );
+            },
+          ),
           // Balance Section
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),

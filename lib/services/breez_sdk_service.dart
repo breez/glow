@@ -15,6 +15,7 @@ class BreezSdkService with LoggerMixin {
     required String walletId,
     required String mnemonic,
     required Network network,
+    Fee? maxDepositClaimFee,
   }) async {
     log.i('Connecting SDK for wallet: $walletId on ${network.name}');
 
@@ -24,8 +25,8 @@ class BreezSdkService with LoggerMixin {
     final config = Config(
       apiKey: BreezConfig.apiKey,
       network: network,
-      syncIntervalSecs: BreezConfig.syncIntervalSecs,
-      maxDepositClaimFee: BreezConfig.maxDepositClaimFee,
+      syncIntervalSecs: BreezConfig.defaultSyncIntervalSecs,
+      maxDepositClaimFee: maxDepositClaimFee ?? BreezConfig.defaultMaxDepositClaimFee,
       lnurlDomain: BreezConfig.lnurlDomain,
       preferSparkOverLightning: true,
       useDefaultExternalInputParsers: false,
@@ -155,6 +156,31 @@ class BreezSdkService with LoggerMixin {
       log.i('Lightning Address deleted');
     } catch (e, stack) {
       log.e('Failed to delete Lightning Address', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
+  /// Claim a pending deposit (for manual retry)
+  Future<ClaimDepositResponse> claimDeposit(BreezSdk sdk, ClaimDepositRequest request) async {
+    try {
+      log.i('Manually claiming deposit: ${request.txid}:${request.vout}');
+      final response = await sdk.claimDeposit(request: request);
+      log.i('Deposit claimed successfully');
+      return response;
+    } catch (e, stack) {
+      log.e('Failed to claim deposit', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
+  /// List unclaimed deposits
+  Future<List<DepositInfo>> listUnclaimedDeposits(BreezSdk sdk) async {
+    try {
+      final response = await sdk.listUnclaimedDeposits(request: const ListUnclaimedDepositsRequest());
+      log.i('Found ${response.deposits.length} unclaimed deposits');
+      return response.deposits;
+    } catch (e, stack) {
+      log.e('Failed to list unclaimed deposits', error: e, stackTrace: stack);
       rethrow;
     }
   }
