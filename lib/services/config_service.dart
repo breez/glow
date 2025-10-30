@@ -76,8 +76,28 @@ final configServiceProvider = Provider<ConfigService>((ref) {
   throw UnimplementedError('ConfigService must be overridden in main.dart with SharedPreferences');
 });
 
+/// Notifier for max deposit claim fee
+class MaxDepositClaimFeeNotifier extends Notifier<Fee> {
+  @override
+  Fee build() {
+    final configService = ref.watch(configServiceProvider);
+    return configService.getMaxDepositClaimFee();
+  }
+
+  Future<void> setFee(Fee fee) async {
+    final configService = ref.read(configServiceProvider);
+    await configService.setMaxDepositClaimFee(fee);
+    state = fee;
+  }
+
+  Future<void> reset() async {
+    final configService = ref.read(configServiceProvider);
+    await configService.resetMaxDepositClaimFee();
+    state = configService.getMaxDepositClaimFee();
+  }
+}
+
 /// Provider for max deposit claim fee
-final maxDepositClaimFeeProvider = Provider<Fee>((ref) {
-  final configService = ref.watch(configServiceProvider);
-  return configService.getMaxDepositClaimFee();
-});
+final maxDepositClaimFeeProvider = NotifierProvider<MaxDepositClaimFeeNotifier, Fee>(
+  MaxDepositClaimFeeNotifier.new,
+);

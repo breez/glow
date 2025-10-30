@@ -277,16 +277,15 @@ class DebugScreen extends ConsumerWidget {
         currentFee: currentFee,
         onSave: (fee) async {
           try {
-            final configService = ref.read(configServiceProvider);
-            await configService.setMaxDepositClaimFee(fee);
+            await ref.read(maxDepositClaimFeeProvider.notifier).setFee(fee);
 
             // Invalidate SDK to reconnect with new fee
             ref.invalidate(sdkProvider);
 
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Fee updated. Reconnecting...'), duration: Duration(seconds: 2)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Fee updated.'), duration: Duration(seconds: 2)));
             }
           } catch (e) {
             if (context.mounted) {
@@ -300,16 +299,12 @@ class DebugScreen extends ConsumerWidget {
           }
         },
         onReset: () async {
-          final configService = ref.read(configServiceProvider);
-          await configService.resetMaxDepositClaimFee();
+          await ref.read(maxDepositClaimFeeProvider.notifier).reset();
           ref.invalidate(sdkProvider);
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Reset to default. Reconnecting...'),
-                duration: Duration(seconds: 2),
-              ),
+              const SnackBar(content: Text('Reset to default.'), duration: Duration(seconds: 2)),
             );
           }
         },
@@ -497,7 +492,7 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                    color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -508,20 +503,21 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                           Text(
                             _speedLabel,
                             style: theme.textTheme.labelLarge?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.onPrimary,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                              color: theme.colorScheme.surface.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               _feeDescription,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
+                                color: theme.colorScheme.onPrimary.withValues(alpha: 0.5),
+                                fontWeight: FontWeight.w500,
                                 fontFamily: 'monospace',
                               ),
                             ),
