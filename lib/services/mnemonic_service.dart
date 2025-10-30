@@ -1,19 +1,17 @@
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/logging/app_logger.dart';
+import 'package:glow/logging/logger_mixin.dart';
 
 /// Service for mnemonic generation and validation
-class MnemonicService {
-  final _log = AppLogger.getLogger('MnemonicService');
-
+class MnemonicService with LoggerMixin {
   /// Generate a new 12-word BIP39 mnemonic
   String generateMnemonic() {
     try {
       final mnemonic = bip39.generateMnemonic(strength: 128);
-      _log.i('Generated new 12-word mnemonic');
+      log.i('Generated new 12-word mnemonic');
       return mnemonic;
     } catch (e, stack) {
-      _log.e('Failed to generate mnemonic', error: e, stackTrace: stack);
+      log.e('Failed to generate mnemonic', error: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -26,20 +24,20 @@ class MnemonicService {
 
       if (words.length != 12) {
         final error = 'Must be exactly 12 words (found ${words.length})';
-        _log.w('Mnemonic validation failed: $error');
+        log.w('Mnemonic validation failed: $error');
         return (false, error);
       }
 
       if (!bip39.validateMnemonic(cleaned)) {
         const error = 'Invalid mnemonic checksum';
-        _log.w('Mnemonic validation failed: $error');
+        log.w('Mnemonic validation failed: $error');
         return (false, error);
       }
 
-      _log.i('Mnemonic validated successfully');
+      log.i('Mnemonic validated successfully');
       return (true, null);
     } catch (e, stack) {
-      _log.e('Mnemonic validation error', error: e, stackTrace: stack);
+      log.e('Mnemonic validation error', error: e, stackTrace: stack);
       return (false, 'Validation error: ${e.toString()}');
     }
   }

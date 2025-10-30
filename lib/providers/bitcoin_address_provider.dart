@@ -9,6 +9,7 @@ final log = AppLogger.getLogger('BitcoinAddressProvider');
 /// Uses receivePayment with BitcoinAddress method (no amount)
 /// The SDK returns the cached static deposit address or generates a new one
 final bitcoinAddressProvider = FutureProvider.autoDispose<BitcoinAddressData?>((ref) async {
+  log.d('bitcoinAddressProvider initializing');
   final sdk = await ref.watch(sdkProvider.future);
 
   try {
@@ -29,7 +30,9 @@ final bitcoinAddressProvider = FutureProvider.autoDispose<BitcoinAddressData?>((
 
     return input.maybeWhen(
       bitcoinAddress: (details) {
-        log.d('Successfully parsed Bitcoin address: ${details.address}, network: ${details.network}');
+        log.d(
+          'Successfully parsed Bitcoin address: ${details.address}, network: ${details.network}, source: ${details.source}',
+        );
         return BitcoinAddressData(address: details.address, network: details.network, source: details.source);
       },
       orElse: () {
@@ -62,6 +65,7 @@ final generateBitcoinAddressProvider = FutureProvider.autoDispose.family<Bitcoin
   ref,
   _,
 ) async {
+  log.d('generateBitcoinAddressProvider initializing');
   final sdk = await ref.watch(sdkProvider.future);
 
   try {
@@ -80,7 +84,9 @@ final generateBitcoinAddressProvider = FutureProvider.autoDispose.family<Bitcoin
 
     final addressData = input.maybeWhen(
       bitcoinAddress: (details) {
-        log.d('Parsed generated address: ${details.address}, network: ${details.network}');
+        log.d(
+          'Parsed generated address: ${details.address}, network: ${details.network}, source: ${details.source}',
+        );
 
         return BitcoinAddressData(address: details.address, network: details.network, source: details.source);
       },
@@ -112,6 +118,7 @@ final bitcoinAddressWithAmountProvider = FutureProvider.autoDispose.family<Bitco
   ref,
   amountSats,
 ) async {
+  log.d('bitcoinAddressWithAmountProvider initializing');
   log.d('Creating BIP21 URI with amount: $amountSats sats');
 
   // First get the base address
@@ -143,12 +150,15 @@ final bitcoinAddressWithAmountProvider = FutureProvider.autoDispose.family<Bitco
 /// Provider for creating BIP21 URI from parameters
 /// This is a synchronous provider since we're just building a string
 final bip21UriProvider = Provider.family<String, Bip21UriParams>((ref, params) {
-  return _createBip21Uri(
+  log.d('bip21UriProvider called with params: $params');
+  final uri = _createBip21Uri(
     address: params.address,
     amountSats: params.amountSats,
     label: params.label,
     message: params.message,
   );
+  log.d('Generated BIP21 URI: $uri');
+  return uri;
 });
 
 /// Helper: Create BIP21 URI

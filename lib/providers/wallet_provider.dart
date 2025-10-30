@@ -11,6 +11,7 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> with Logger
 
   @override
   Future<List<WalletMetadata>> build() async {
+    log.d('WalletListNotifier initializing');
     _storage = ref.read(walletStorageServiceProvider);
     _mnemonicService = ref.read(mnemonicServiceProvider);
 
@@ -145,10 +146,12 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> with LoggerMix
 
   @override
   Future<WalletMetadata?> build() async {
+    log.d('ActiveWalletNotifier initializing');
     _storage = ref.read(walletStorageServiceProvider);
     log.i('Loading active wallet');
 
     _activeWalletId ??= await _storage.getActiveWalletId();
+    log.d('Active wallet id: $_activeWalletId');
 
     if (_activeWalletId == null) {
       log.i('No active wallet set');
@@ -156,6 +159,7 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> with LoggerMix
     }
 
     final wallets = await ref.watch(walletListProvider.future);
+    log.d('Wallets loaded for active wallet lookup: ${wallets.length}');
     final wallet = wallets.where((w) => w.id == _activeWalletId).firstOrNull;
 
     if (wallet != null) {
@@ -213,15 +217,39 @@ final activeWalletProvider = AsyncNotifierProvider<ActiveWalletNotifier, WalletM
 // ============================================================================
 
 final hasWalletsProvider = Provider<AsyncValue<bool>>((ref) {
+  log.d('hasWalletsProvider called');
   final wallets = ref.watch(walletListProvider);
   return wallets.when(
-    data: (list) => AsyncValue.data(list.isNotEmpty),
-    loading: () => const AsyncValue.loading(),
-    error: (err, stack) => AsyncValue.error(err, stack),
+    data: (list) {
+      log.d('Wallets count for hasWalletsProvider: ${list.length}');
+      return AsyncValue.data(list.isNotEmpty);
+    },
+    loading: () {
+      log.d('hasWalletsProvider loading');
+      return const AsyncValue.loading();
+    },
+    error: (err, stack) {
+      log.e('hasWalletsProvider error: $err');
+      return AsyncValue.error(err, stack);
+    },
   );
 });
 
 final walletCountProvider = Provider<int>((ref) {
+  log.d('walletCountProvider called');
   final wallets = ref.watch(walletListProvider);
-  return wallets.when(data: (list) => list.length, loading: () => 0, error: (_, _) => 0);
+  return wallets.when(
+    data: (list) {
+      log.d('Wallet count: ${list.length}');
+      return list.length;
+    },
+    loading: () {
+      log.d('walletCountProvider loading');
+      return 0;
+    },
+    error: (err, stack) {
+      log.e('walletCountProvider error: $err');
+      return 0;
+    },
+  );
 });
