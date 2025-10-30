@@ -177,7 +177,9 @@ class BreezSdkService with LoggerMixin {
   Future<List<DepositInfo>> listUnclaimedDeposits(BreezSdk sdk) async {
     try {
       final response = await sdk.listUnclaimedDeposits(request: const ListUnclaimedDepositsRequest());
-      log.i('Found ${response.deposits.length} unclaimed deposits');
+      if (response.deposits.isNotEmpty) {
+        log.i('Found ${response.deposits.length} unclaimed deposits');
+      }
       return response.deposits;
     } catch (e, stack) {
       log.e('Failed to list unclaimed deposits', error: e, stackTrace: stack);

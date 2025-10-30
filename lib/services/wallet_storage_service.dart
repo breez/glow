@@ -36,8 +36,10 @@ class WalletStorageService with LoggerMixin {
       }
 
       final wallets = (jsonDecode(json) as List).map((e) => WalletMetadata.fromJson(e)).toList();
-
-      log.i('Loaded ${wallets.length} wallets from storage');
+      if (wallets.isEmpty) {
+        log.d('Wallet list is empty after decoding');
+        return [];
+      }
       return wallets;
     } catch (e, stack) {
       log.e('Failed to load wallets', error: e, stackTrace: stack);
@@ -114,7 +116,9 @@ class WalletStorageService with LoggerMixin {
   Future<String?> getActiveWalletId() async {
     try {
       final id = await _storage.read(key: _activeWalletKey);
-      log.d(id != null ? 'Active wallet ID: $id' : 'No active wallet set');
+      if (id == null) {
+        log.d('No active wallet set');
+      }
       return id;
     } catch (e, stack) {
       log.e('Failed to get active wallet ID', error: e, stackTrace: stack);

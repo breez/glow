@@ -13,7 +13,6 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
 
   @override
   Future<List<WalletMetadata>> build() async {
-    log.d('WalletListNotifier initializing');
     _storage = ref.read(walletStorageServiceProvider);
     _mnemonicService = ref.read(mnemonicServiceProvider);
 
@@ -148,12 +147,11 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
 
   @override
   Future<WalletMetadata?> build() async {
-    log.d('ActiveWalletNotifier initializing');
     _storage ??= ref.read(walletStorageServiceProvider);
     log.i('Loading active wallet');
 
     _activeWalletId ??= await _storage!.getActiveWalletId();
-    log.d('Active wallet id: $_activeWalletId');
+    log.d('Active wallet ID: $_activeWalletId');
 
     if (_activeWalletId == null) {
       log.i('No active wallet set');
@@ -239,7 +237,6 @@ final activeWalletIdProvider = Provider<String?>((ref) {
 });
 
 final hasWalletsProvider = Provider<AsyncValue<bool>>((ref) {
-  log.d('hasWalletsProvider called');
   final wallets = ref.watch(walletListProvider);
   return wallets.when(
     data: (list) {

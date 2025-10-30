@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/logging/app_logger.dart';
@@ -58,7 +60,6 @@ final lightningAddressManuallyDeletedProvider =
 
 /// Connected SDK instance - auto-reconnects on wallet/network changes
 final sdkProvider = FutureProvider<BreezSdk>((ref) async {
-  log.d('sdkProvider initializing');
   final walletId = ref.watch(activeWalletIdProvider);
   log.d('Active wallet id: $walletId');
   final network = ref.watch(networkProvider);
@@ -93,58 +94,107 @@ final sdkProvider = FutureProvider<BreezSdk>((ref) async {
   return sdk;
 });
 
-/// SDK event stream
-final sdkEventsProvider = StreamProvider<SdkEvent>((ref) async* {
-  log.d('sdkEventsProvider initializing');
-  final sdk = await ref.watch(sdkProvider.future);
-  await for (final event in sdk.addEventListener()) {
-    log.d('SDK event received: ${event.runtimeType}');
-    yield event;
+/// Node info - only updates when data actually changes
+class NodeInfoNotifier extends AsyncNotifier<GetInfoResponse> {
+  @override
+  Future<GetInfoResponse> build() async {
+    final sdk = await ref.watch(sdkProvider.future);
+    final service = ref.read(breezSdkServiceProvider);
+    return await service.getNodeInfo(sdk);
   }
+
+  Future<void> refreshIfChanged() async {
+    if (!state.hasValue) return;
+
+    final sdk = await ref.read(sdkProvider.future);
+    final service = ref.read(breezSdkServiceProvider);
+    final newInfo = await service.getNodeInfo(sdk);
+
+    // Only update if balance actually changed
+    if (state.requireValue.balanceSats != newInfo.balanceSats) {
+      log.d('Balance changed: ${state.requireValue.balanceSats} -> ${newInfo.balanceSats}');
+      state = AsyncValue.data(newInfo);
+    } else {
+      log.t('Node info unchanged, skipping update');
+    }
+  }
+}
+
+final nodeInfoProvider = AsyncNotifierProvider<NodeInfoNotifier, GetInfoResponse>(() {
+  return NodeInfoNotifier();
 });
 
-/// Node info - auto-refreshes on SDK events
-final nodeInfoProvider = FutureProvider<GetInfoResponse>((ref) async {
-  log.d('nodeInfoProvider initializing');
-  final sdk = await ref.watch(sdkProvider.future);
-  final service = ref.read(breezSdkServiceProvider);
+/// Payments list - only updates when payments actually change
+class PaymentsNotifier extends AsyncNotifier<List<Payment>> {
+  @override
+  Future<List<Payment>> build() async {
+    final hasSynced = ref.watch(hasSyncedProvider);
+    if (!hasSynced) {
+      // Return empty list while waiting for sync instead of incomplete future
+      return Completer<List<Payment>>().future;
+    }
 
-  ref.listen(sdkEventsProvider, (_, _) {
-    log.d('SDK event detected, invalidating nodeInfoProvider');
-    ref.invalidateSelf();
-  });
+    final sdk = await ref.watch(sdkProvider.future);
+    final service = ref.read(breezSdkServiceProvider);
+    final payments = await service.listPayments(sdk, ListPaymentsRequest());
+    return payments;
+  }
 
-  final info = await service.getNodeInfo(sdk);
-  log.d('Node info fetched: balanceSats=${info.balanceSats}');
-  return info;
-});
+  Future<void> refreshIfChanged() async {
+    if (!state.hasValue) return;
 
-/// Balance derived from node info
+    final sdk = await ref.read(sdkProvider.future);
+    final service = ref.read(breezSdkServiceProvider);
+    final newPayments = await service.listPayments(sdk, ListPaymentsRequest());
+
+    // Only update if payment list actually changed (compare by length and latest payment ID)
+    final currentPayments = state.requireValue;
+    final hasChanged =
+        newPayments.length != currentPayments.length ||
+        (newPayments.isNotEmpty &&
+            currentPayments.isNotEmpty &&
+            newPayments.first.id != currentPayments.first.id);
+
+    if (hasChanged) {
+      log.d('Payments changed: ${currentPayments.length} -> ${newPayments.length}');
+      state = AsyncValue.data(newPayments);
+    } else {
+      log.t('Payments unchanged, skipping update');
+    }
+  }
+}
+
+final paymentsProvider = AsyncNotifierProvider<PaymentsNotifier, List<Payment>>(PaymentsNotifier.new);
+
+/// Balance - derived from node info, waits for payments to be loaded
 final balanceProvider = Provider<AsyncValue<BigInt>>((ref) {
-  log.d('balanceProvider initializing');
-  return ref.watch(nodeInfoProvider).whenData((info) {
-    log.d('Balance updated: ${info.balanceSats}');
-    return info.balanceSats;
-  });
-});
+  final hasSynced = ref.watch(hasSyncedProvider);
+  if (!hasSynced) {
+    return const AsyncValue.loading();
+  }
 
-/// Payments list - auto-refreshes on events
-final paymentsProvider = FutureProvider<List<Payment>>((ref) async {
-  log.d('paymentsProvider initializing');
-  final sdk = await ref.watch(sdkProvider.future);
-  final service = ref.read(breezSdkServiceProvider);
+  // Ensure payments are loaded before showing balance
+  // This prevents showing balance before transaction history is ready
+  final payments = ref.watch(paymentsProvider);
+  if (!payments.hasValue) {
+    return const AsyncValue.loading();
+  }
 
-  ref.watch(nodeInfoProvider); // Refresh trigger
-
-  final payments = await service.listPayments(sdk, ListPaymentsRequest());
-  log.d('Payments fetched: count=${payments.length}');
-  return payments;
+  final nodeInfo = ref.watch(nodeInfoProvider);
+  return nodeInfo.when(
+    data: (info) {
+      log.t('Balance: ${info.balanceSats}');
+      return AsyncValue.data(info.balanceSats);
+    },
+    loading: () => const AsyncValue.loading(),
+    error: (error, stack) => AsyncValue.error(error, stack),
+  );
 });
 
 /// Generate payment request
 final receivePaymentProvider = FutureProvider.autoDispose
     .family<ReceivePaymentResponse, ReceivePaymentRequest>((ref, request) async {
-      log.d('receivePaymentProvider called with request: $request');
+      log.d('receivePaymentProvider called with request: ${request.paymentMethod}');
       final sdk = await ref.watch(sdkProvider.future);
       final service = ref.read(breezSdkServiceProvider);
       final response = await service.receivePayment(sdk, request);
@@ -174,48 +224,56 @@ final lightningAddressProvider = FutureProvider.autoDispose.family<LightningAddr
 
 /// Listen for SDK events (all events)
 final sdkEventsStreamProvider = StreamProvider<SdkEvent>((ref) async* {
-  log.d('sdkEventsStreamProvider initializing');
   final sdk = await ref.watch(sdkProvider.future);
 
   await for (final event in sdk.addEventListener()) {
     log.d('SDK event received: ${event.runtimeType}');
-
-    // Handle events that need immediate provider invalidation
-    event.when(
-      synced: () {
-        log.i('Wallet synced');
-        ref.invalidate(nodeInfoProvider);
-        ref.invalidate(paymentsProvider);
-      },
-      claimDepositsSucceeded: (claimedDeposits) {
-        log.i('Deposits claimed successfully: ${claimedDeposits.length}');
-        ref.invalidate(nodeInfoProvider);
-        ref.invalidate(paymentsProvider);
-      },
-      claimDepositsFailed: (unclaimedDeposits) {
-        log.e('Failed to claim ${unclaimedDeposits.length} deposits');
-        for (final deposit in unclaimedDeposits) {
-          log.e('Failed deposit: ${deposit.txid}:${deposit.vout}, error: ${deposit.claimError}');
-        }
-      },
-      paymentSucceeded: (payment) {
-        log.i('Payment succeeded: ${payment.id}');
-        ref.invalidate(nodeInfoProvider);
-        ref.invalidate(paymentsProvider);
-      },
-      paymentFailed: (payment) {
-        log.e('Payment failed: ${payment.id}');
-        ref.invalidate(paymentsProvider);
-      },
-    );
-
     yield event;
   }
 });
 
+/// Keep the SDK event stream alive and handle events
+final sdkEventListenerProvider = Provider<void>((ref) {
+  // Keep this provider alive
+  ref.keepAlive();
+
+  // Watch the stream and handle events
+  ref.listen<AsyncValue<SdkEvent>>(sdkEventsStreamProvider, (previous, next) {
+    next.whenData((event) async {
+      // Handle events that need conditional provider updates
+      event.when(
+        synced: () async {
+          log.i('Wallet synced');
+          await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
+          await ref.read(paymentsProvider.notifier).refreshIfChanged();
+        },
+        claimDepositsSucceeded: (claimedDeposits) async {
+          log.i('Deposits claimed successfully: ${claimedDeposits.length}');
+          await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
+          await ref.read(paymentsProvider.notifier).refreshIfChanged();
+        },
+        claimDepositsFailed: (unclaimedDeposits) {
+          log.e('Failed to claim ${unclaimedDeposits.length} deposits');
+          for (final deposit in unclaimedDeposits) {
+            log.e('Failed deposit: ${deposit.txid}:${deposit.vout}, error: ${deposit.claimError}');
+          }
+        },
+        paymentSucceeded: (payment) async {
+          log.i('Payment succeeded: ${payment.id}');
+          await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
+          await ref.read(paymentsProvider.notifier).refreshIfChanged();
+        },
+        paymentFailed: (payment) async {
+          log.e('Payment failed: ${payment.id}');
+          await ref.read(paymentsProvider.notifier).refreshIfChanged();
+        },
+      );
+    });
+  });
+});
+
 /// Provider to list unclaimed deposits
 final unclaimedDepositsProvider = FutureProvider<List<DepositInfo>>((ref) async {
-  log.d('unclaimedDepositsProvider initializing');
   final sdk = await ref.watch(sdkProvider.future);
   final service = ref.read(breezSdkServiceProvider);
 
@@ -224,7 +282,9 @@ final unclaimedDepositsProvider = FutureProvider<List<DepositInfo>>((ref) async 
   ref.watch(sdkEventsStreamProvider);
 
   final deposits = await service.listUnclaimedDeposits(sdk);
-  log.d('Unclaimed deposits: ${deposits.length}');
+  if (deposits.isNotEmpty) {
+    log.d('Unclaimed deposits: ${deposits.length}');
+  }
   return deposits;
 });
 
@@ -259,10 +319,41 @@ final claimDepositProvider = FutureProvider.autoDispose.family<ClaimDepositRespo
     ClaimDepositRequest(txid: deposit.txid, vout: deposit.vout, maxFee: maxDepositClaimFee),
   );
 
-  // Refresh UI
-  ref.invalidate(nodeInfoProvider);
-  ref.invalidate(paymentsProvider);
+  // Refresh UI only if data changed
+  await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
+  await ref.read(paymentsProvider.notifier).refreshIfChanged();
   ref.invalidate(unclaimedDepositsProvider);
 
   return response;
+});
+
+// Track first sync state
+class HasSyncedNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    _initialize();
+    return false;
+  }
+
+  Future<void> _initialize() async {
+    log.d('HasSyncedNotifier: Waiting for SDK to connect...');
+
+    // Wait for SDK to be ready first
+    await ref.read(sdkProvider.future);
+    log.d('HasSyncedNotifier: SDK connected, now waiting for first sync...');
+
+    // Now listen for the first sync event
+    ref.listen(sdkEventsStreamProvider, (previous, next) {
+      (next as AsyncValue?)?.whenData((event) {
+        if (event is SdkEvent_Synced) {
+          log.d('First sync completed after SDK connection');
+          state = true;
+        }
+      });
+    });
+  }
+}
+
+final hasSyncedProvider = NotifierProvider<HasSyncedNotifier, bool>(() {
+  return HasSyncedNotifier();
 });

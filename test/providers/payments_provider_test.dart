@@ -67,13 +67,14 @@ void main() {
       final payment = TestFixtures.createTestPayment(amount: BigInt.from(2000));
 
       final completer = Completer<Payment>();
-      final subscription = container.listen(sdkEventsProvider, (_, next) {
-        if (next.hasValue && next.value is SdkEvent_PaymentSucceeded) {
-          final event = next.value as SdkEvent_PaymentSucceeded;
-          if (!completer.isCompleted) {
-            completer.complete(event.payment);
+      final subscription = container.listen(sdkEventsStreamProvider, (previous, next) {
+        (next as AsyncValue?)?.whenData((event) {
+          if (event is SdkEvent_PaymentSucceeded) {
+            if (!completer.isCompleted) {
+              completer.complete(event.payment);
+            }
           }
-        }
+        });
       }, fireImmediately: true);
 
       await Future.delayed(Duration(milliseconds: 50));

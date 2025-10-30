@@ -1,7 +1,9 @@
 /// Utility functions for formatting values
 library;
 
-/// Format sats with thousand separators
+/// Formats a BigInt satoshi amount with thousand separators
+///
+/// Example: 1234567 -> "1,234,567"
 String formatSats(BigInt sats) {
   final str = sats.toString();
   final buffer = StringBuffer();
@@ -27,4 +29,33 @@ String formatSatsToBtc(BigInt sats) {
 /// Parse sats string with commas removed
 BigInt? parseSats(String input) {
   return BigInt.tryParse(input.replaceAll(',', ''));
+}
+
+/// Formats a Unix timestamp into a human-readable relative time string
+///
+/// Returns:
+/// - "Today" if the date is today
+/// - "Yesterday" if the date was yesterday
+/// - "N days ago" if within the last week
+/// - "Mon DD" for older dates
+String formatTimestamp(BigInt timestamp) {
+  final date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
+  final now = DateTime.now();
+  final diff = now.difference(date);
+
+  if (diff.inDays == 0) {
+    return 'Today';
+  } else if (diff.inDays == 1) {
+    return 'Yesterday';
+  } else if (diff.inDays < 7) {
+    return '${diff.inDays} days ago';
+  } else {
+    return _formatShortDate(date);
+  }
+}
+
+/// Formats a date as "Mon DD" (e.g., "Jan 15")
+String _formatShortDate(DateTime date) {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return '${months[date.month - 1]} ${date.day}';
 }

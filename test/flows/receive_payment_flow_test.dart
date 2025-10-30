@@ -78,11 +78,13 @@ void main() {
 
       // Wait for balance update
       final completer = Completer<GetInfoResponse>();
-      container.listen(nodeInfoProvider, (_, next) {
-        if (next.hasValue && next.value!.balanceSats == BigInt.from(105000)) {
-          completer.complete(next.value!);
-        }
-      });
+      container.listen(nodeInfoProvider, (previous, next) {
+        (next as AsyncValue?)?.whenData((info) {
+          if (info.balanceSats == initialBalance + BigInt.from(5000)) {
+            completer.complete(info);
+          }
+        });
+      }, fireImmediately: true);
 
       final updated = await completer.future.timeout(Duration(seconds: 2));
       expect(updated.balanceSats, initialBalance + BigInt.from(5000));

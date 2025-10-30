@@ -9,7 +9,6 @@ final log = AppLogger.getLogger('BitcoinAddressProvider');
 /// Uses receivePayment with BitcoinAddress method (no amount)
 /// The SDK returns the cached static deposit address or generates a new one
 final bitcoinAddressProvider = FutureProvider.autoDispose<BitcoinAddressData?>((ref) async {
-  log.d('bitcoinAddressProvider initializing');
   final sdk = await ref.watch(sdkProvider.future);
 
   try {
@@ -65,7 +64,6 @@ final generateBitcoinAddressProvider = FutureProvider.autoDispose.family<Bitcoin
   ref,
   _,
 ) async {
-  log.d('generateBitcoinAddressProvider initializing');
   final sdk = await ref.watch(sdkProvider.future);
 
   try {
@@ -118,7 +116,6 @@ final bitcoinAddressWithAmountProvider = FutureProvider.autoDispose.family<Bitco
   ref,
   amountSats,
 ) async {
-  log.d('bitcoinAddressWithAmountProvider initializing');
   log.d('Creating BIP21 URI with amount: $amountSats sats');
 
   // First get the base address
