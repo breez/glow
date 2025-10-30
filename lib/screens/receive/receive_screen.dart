@@ -7,6 +7,7 @@ import 'package:glow/widgets/receive/amount_input_sheet.dart';
 
 enum ReceiveMethod {
   lightning('Lightning', Icons.flash_on),
+  bitcoin('Bitcoin', Icons.currency_bitcoin);
 
   const ReceiveMethod(this.label, this.icon);
   final String label;
@@ -55,6 +56,7 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> with LoggerMixin 
         duration: const Duration(milliseconds: 200),
         child: switch (_selectedMethod) {
           ReceiveMethod.lightning => LightningReceiveView(),
+          ReceiveMethod.bitcoin => BitcoinReceiveView(),
         },
       ),
     );
