@@ -407,6 +407,9 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
   static const double _minFixed = 100.0;
   static const double _maxFixed = 1000.0;
 
+  // Conversion factor: assuming ~100 vBytes for a typical transaction
+  static const double _conversionFactor = 100.0;
+
   @override
   void initState() {
     super.initState();
@@ -417,20 +420,31 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
     );
   }
 
+  // Convert rate to fixed fee
+  double _rateToFixed(double rate) {
+    return (rate * _conversionFactor).floorToDouble().clamp(_minFixed, _maxFixed);
+  }
+
+  // Convert fixed fee to rate
+  double _fixedToRate(double fixedFee) {
+    return (fixedFee / _conversionFactor).floorToDouble().clamp(_minRate, _maxRate);
+  }
+
   Fee get _currentFee {
+    final rate = BigInt.from(_sliderValue.round());
     if (_useFixedFee) {
-      return Fee.fixed(amount: BigInt.from(_sliderValue.round()));
+      return Fee.fixed(amount: rate);
     } else {
-      return Fee.rate(satPerVbyte: BigInt.from(_sliderValue.round()));
+      return Fee.rate(satPerVbyte: rate);
     }
   }
 
   String get _feeDescription {
+    final rate = _sliderValue.round();
     if (_useFixedFee) {
-      return '${_sliderValue.round()} sats fixed';
+      return '$rate sats fixed';
     } else {
-      final rate = _sliderValue.round();
-      final estimatedFee = 99 * rate;
+      final estimatedFee = (_conversionFactor * rate).round();
       return '$rate sat/vByte (~$estimatedFee sats)';
     }
   }
@@ -544,8 +558,10 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                           isSelected: !_useFixedFee,
                           onTap: () {
                             setState(() {
+                              // Convert current fixed fee to rate
+                              final newRate = _fixedToRate(_sliderValue);
                               _useFixedFee = false;
-                              _sliderValue = 5.0; // Default to 5 sat/vByte
+                              _sliderValue = newRate;
                             });
                           },
                         ),
@@ -556,8 +572,10 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                           isSelected: _useFixedFee,
                           onTap: () {
                             setState(() {
+                              // Convert current rate to fixed fee
+                              final newFixed = _rateToFixed(_sliderValue);
                               _useFixedFee = true;
-                              _sliderValue = 500.0; // Default to 500 sats
+                              _sliderValue = newFixed;
                             });
                           },
                         ),
@@ -589,13 +607,13 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            _useFixedFee ? '${_minFixed.round()} sats' : '${_minRate.round()} sat/vB',
+                            _useFixedFee ? '${_minFixed.round()} sats' : '${_minRate.floor()} sat/vB',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                           Text(
-                            _useFixedFee ? '${_maxFixed.round()} sats' : '${_maxRate.round()} sat/vB',
+                            _useFixedFee ? '${_maxFixed.round()} sats' : '${_maxRate.floor()} sat/vB',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
