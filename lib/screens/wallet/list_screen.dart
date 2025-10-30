@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/models/wallet_metadata.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/wallet/wallet_setup_screen.dart';
+import 'package:glow/screens/wallet/setup_screen.dart';
 import 'package:glow/services/wallet_storage_service.dart';
-import 'package:glow/screens/wallet/wallet_verify_screen.dart';
-import 'package:glow/screens/wallet/wallet_create_screen.dart';
-import 'package:glow/screens/wallet/wallet_import_screen.dart';
+import 'package:glow/screens/wallet/verify_screen.dart';
+import 'package:glow/screens/wallet/create_screen.dart';
+import 'package:glow/screens/wallet/import_screen.dart';
+import 'package:glow/widgets/wallet/empty_state.dart';
 
 class WalletListScreen extends ConsumerStatefulWidget {
   const WalletListScreen({super.key});
@@ -306,38 +307,23 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(48),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.account_balance_wallet_outlined, size: 80, color: Colors.grey),
-            SizedBox(height: 24),
-            Text('No Wallets', style: Theme.of(context).textTheme.headlineSmall),
-            SizedBox(height: 8),
-            Text(
-              'Create a new wallet or import an existing one',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-            SizedBox(height: 32),
-            FilledButton.icon(
-              onPressed: () =>
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => WalletCreateScreen())),
-              icon: Icon(Icons.add),
-              label: Text('Create Wallet'),
-            ),
-            SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: () =>
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => WalletImportScreen())),
-              icon: Icon(Icons.download),
-              label: Text('Import Wallet'),
-            ),
-          ],
+    return EmptyState(
+      icon: Icons.account_balance_wallet_outlined,
+      title: 'No Wallets',
+      subtitle: 'Create a new wallet or import an existing one',
+      actions: [
+        FilledButton.icon(
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => WalletCreateScreen())),
+          icon: Icon(Icons.add),
+          label: Text('Create Wallet'),
         ),
-      ),
+        SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => WalletImportScreen())),
+          icon: Icon(Icons.download),
+          label: Text('Import Wallet'),
+        ),
+      ],
     );
   }
 

@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/services/mnemonic_service.dart';
 import 'package:glow/providers/wallet_provider.dart';
+import 'package:glow/widgets/wallet/network_selector.dart';
+import 'package:glow/widgets/wallet/wallet_name_field.dart';
+import 'package:glow/widgets/wallet/warning_card.dart';
 
 class WalletImportScreen extends ConsumerStatefulWidget {
   const WalletImportScreen({super.key});
@@ -89,20 +92,7 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
         child: ListView(
           padding: EdgeInsets.all(24),
           children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Wallet Name',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.wallet),
-              ),
-              textCapitalization: TextCapitalization.words,
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Enter a name';
-                if (v.trim().length < 2) return 'At least 2 characters';
-                return null;
-              },
-            ),
+            WalletNameField(controller: _nameController),
             SizedBox(height: 24),
             TextFormField(
               controller: _mnemonicController,
@@ -121,56 +111,15 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
               validator: (v) => v == null || v.trim().isEmpty ? 'Enter recovery phrase' : null,
             ),
             SizedBox(height: 24),
-            Text('Network', style: Theme.of(context).textTheme.titleMedium),
-            SizedBox(height: 8),
-            RadioGroup<Network>(
-              groupValue: _selectedNetwork,
-              onChanged: (v) => setState(() => _selectedNetwork = v!),
-              child: Card(
-                child: Column(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () => setState(() => _selectedNetwork = Network.mainnet),
-                      child: Row(
-                        children: [
-                          Radio<Network>(value: Network.mainnet),
-                          Expanded(child: const Text('Mainnet')),
-                        ],
-                      ),
-                    ),
-                    Divider(height: 1),
-                    GestureDetector(
-                      onTap: () => setState(() => _selectedNetwork = Network.regtest),
-                      child: Row(
-                        children: [
-                          Radio<Network>(value: Network.regtest),
-                          Expanded(child: const Text('Regtest')),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            NetworkSelector(
+              selectedNetwork: _selectedNetwork,
+              onChanged: (v) => setState(() => _selectedNetwork = v),
             ),
             SizedBox(height: 32),
-            Card(
-              color: Colors.orange.withValues(alpha: .1),
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Icon(Icons.security, color: Colors.orange),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Never share your recovery phrase. '
-                        'Anyone with this phrase can access your funds.',
-                        style: TextStyle(fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            WarningCard(
+              message:
+                  'Never share your recovery phrase. '
+                  'Anyone with this phrase can access your funds.',
             ),
             SizedBox(height: 32),
             FilledButton(

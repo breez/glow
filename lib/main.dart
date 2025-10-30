@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/wallet/wallet_screen.dart';
-import 'package:glow/screens/wallet/wallet_setup_screen.dart';
+import 'package:glow/screens/home_screen.dart';
+import 'package:glow/screens/wallet/setup_screen.dart';
 
 import 'logging/app_logger.dart';
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/models/wallet_metadata.dart';
 import 'package:glow/providers/wallet_provider.dart';
+import 'package:glow/widgets/wallet/recovery_phrase_grid.dart';
+import 'package:glow/widgets/wallet/security_tips_card.dart';
+import 'package:glow/widgets/wallet/warning_card.dart';
 
 class WalletVerifyScreen extends ConsumerStatefulWidget {
   final WalletMetadata wallet;
@@ -17,8 +19,6 @@ class WalletVerifyScreen extends ConsumerStatefulWidget {
 
 class _WalletVerifyScreenState extends ConsumerState<WalletVerifyScreen> with LoggerMixin {
   bool _isConfirming = false;
-
-  List<String> get _words => widget.mnemonic.split(' ');
 
   Future<void> _confirm() async {
     setState(() => _isConfirming = true);
@@ -50,101 +50,16 @@ class _WalletVerifyScreenState extends ConsumerState<WalletVerifyScreen> with Lo
       body: ListView(
         padding: EdgeInsets.all(24),
         children: [
-          Card(
-            color: Colors.orange.withValues(alpha: .1),
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 32),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Write This Down!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 4),
-                        Text(
-                          'This recovery phrase is the ONLY way to recover your funds if you lose your phone.',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          WarningCard(
+            title: 'Write This Down!',
+            message:
+                'Please confirm that you have written down your recovery phrase. '
+                'This is essential for recovering your wallet if you lose access to your device.',
           ),
           SizedBox(height: 24),
-          Card(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text('Recovery Phrase', style: Theme.of(context).textTheme.titleMedium),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.copy, size: 20),
-                        onPressed: () {
-                          Clipboard.setData(ClipboardData(text: widget.mnemonic));
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text('Copied to clipboard')));
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 4,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
-                    itemCount: 12,
-                    itemBuilder: (_, i) => Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: .1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Text('${i + 1}.', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                          SizedBox(width: 8),
-                          Text(_words[i], style: TextStyle(fontSize: 14, fontFamily: 'monospace')),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          RecoveryPhraseGrid(mnemonic: widget.mnemonic, showCopyButton: true),
           SizedBox(height: 24),
-          Card(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Security Tips', style: Theme.of(context).textTheme.titleMedium),
-                  SizedBox(height: 12),
-                  _tip(Icons.edit_note, 'Write on paper (no screenshots)'),
-                  _tip(Icons.security, 'Store in a secure location'),
-                  _tip(Icons.do_not_disturb, 'Never share with anyone'),
-                  _tip(Icons.verified_user, 'Keep multiple copies'),
-                ],
-              ),
-            ),
-          ),
+          SecurityTipsCard(),
           SizedBox(height: 32),
           FilledButton(
             onPressed: _isConfirming ? null : _confirm,
@@ -154,19 +69,6 @@ class _WalletVerifyScreenState extends ConsumerState<WalletVerifyScreen> with Lo
           ),
           SizedBox(height: 16),
           OutlinedButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
-        ],
-      ),
-    );
-  }
-
-  Widget _tip(IconData icon, String text) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Colors.blue),
-          SizedBox(width: 12),
-          Expanded(child: Text(text, style: TextStyle(fontSize: 14))),
         ],
       ),
     );

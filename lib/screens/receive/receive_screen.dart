@@ -36,6 +36,7 @@ class _ReceiveScreenState extends ConsumerState<ReceiveScreen> with LoggerMixin 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: _ReceiveMethodDropdown(
           selectedMethod: _selectedMethod,
           onChanged: (method) {

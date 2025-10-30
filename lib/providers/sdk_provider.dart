@@ -58,18 +58,18 @@ final lightningAddressManuallyDeletedProvider =
 /// Connected SDK instance - auto-reconnects on wallet/network changes
 final sdkProvider = FutureProvider<BreezSdk>((ref) async {
   log.d('sdkProvider initializing');
-  final activeWallet = await ref.watch(activeWalletProvider.future);
-  log.d('Active wallet: ${activeWallet?.id}');
+  final walletId = ref.watch(activeWalletIdProvider);
+  log.d('Active wallet id: $walletId');
   final network = ref.watch(networkProvider);
   log.d('Network: $network');
 
-  if (activeWallet == null) {
+  if (walletId == null) {
     log.e('No active wallet selected');
     throw Exception('No active wallet selected');
   }
 
   final storage = ref.read(walletStorageServiceProvider);
-  final mnemonic = await storage.loadMnemonic(activeWallet.id);
+  final mnemonic = await storage.loadMnemonic(walletId);
   log.d('Mnemonic loaded: ${mnemonic != null}');
 
   if (mnemonic == null) {
@@ -78,8 +78,8 @@ final sdkProvider = FutureProvider<BreezSdk>((ref) async {
   }
 
   final service = ref.read(breezSdkServiceProvider);
-  log.d('Connecting BreezSdk for walletId: ${activeWallet.id}');
-  final sdk = await service.connect(walletId: activeWallet.id, mnemonic: mnemonic, network: network);
+  log.d('Connecting BreezSdk for walletId: $walletId');
+  final sdk = await service.connect(walletId: walletId, mnemonic: mnemonic, network: network);
   log.d('BreezSdk connected');
   return sdk;
 });
@@ -100,7 +100,7 @@ final nodeInfoProvider = FutureProvider<GetInfoResponse>((ref) async {
   final sdk = await ref.watch(sdkProvider.future);
   final service = ref.read(breezSdkServiceProvider);
 
-  ref.listen(sdkEventsProvider, (_, __) {
+  ref.listen(sdkEventsProvider, (_, _) {
     log.d('SDK event detected, invalidating nodeInfoProvider');
     ref.invalidateSelf();
   });

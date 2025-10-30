@@ -143,16 +143,16 @@ final walletListProvider = AsyncNotifierProvider<WalletListNotifier, List<Wallet
 // ============================================================================
 
 class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
-  late final WalletStorageService _storage;
+  WalletStorageService? _storage;
   String? _activeWalletId;
 
   @override
   Future<WalletMetadata?> build() async {
     log.d('ActiveWalletNotifier initializing');
-    _storage = ref.read(walletStorageServiceProvider);
+    _storage ??= ref.read(walletStorageServiceProvider);
     log.i('Loading active wallet');
 
-    _activeWalletId ??= await _storage.getActiveWalletId();
+    _activeWalletId ??= await _storage!.getActiveWalletId();
     log.d('Active wallet id: $_activeWalletId');
 
     if (_activeWalletId == null) {
@@ -160,17 +160,31 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
       return null;
     }
 
-    final wallets = await ref.watch(walletListProvider.future);
+    final wallets = await ref.read(walletListProvider.future);
     log.d('Wallets loaded for active wallet lookup: ${wallets.length}');
     final wallet = wallets.where((w) => w.id == _activeWalletId).firstOrNull;
 
     if (wallet != null) {
       log.i('Active wallet: ${wallet.id} (${wallet.name})');
+
+      // Listen for wallet list changes to update metadata without rebuilding
+      ref.listen(walletListProvider, (previous, next) {
+        next.whenData((updatedWallets) {
+          if (_activeWalletId != null) {
+            final updatedWallet = updatedWallets.where((w) => w.id == _activeWalletId).firstOrNull;
+            if (updatedWallet != null && updatedWallet != state.value) {
+              log.d('Active wallet metadata updated');
+              state = AsyncValue.data(updatedWallet);
+            }
+          }
+        });
+      });
+
       return wallet;
     }
 
     log.w('Active wallet not found in list: $_activeWalletId');
-    await _storage.clearActiveWallet();
+    await _storage!.clearActiveWallet();
     _activeWalletId = null;
     return null;
   }
@@ -183,7 +197,7 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
       final wallet = wallets.where((w) => w.id == walletId).firstOrNull;
       if (wallet == null) throw Exception('Wallet not found: $walletId');
 
-      await _storage.setActiveWalletId(walletId);
+      await _storage!.setActiveWalletId(walletId);
       _activeWalletId = walletId;
       state = AsyncValue.data(wallet);
 
@@ -199,7 +213,7 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
   Future<void> clearActiveWallet() async {
     try {
       log.i('Clearing active wallet');
-      await _storage.clearActiveWallet();
+      await _storage!.clearActiveWallet();
       _activeWalletId = null;
       state = const AsyncValue.data(null);
       log.i('Active wallet cleared');
@@ -217,6 +231,12 @@ final activeWalletProvider = AsyncNotifierProvider<ActiveWalletNotifier, WalletM
 // ============================================================================
 // Derived Providers
 // ============================================================================
+
+/// Provides only the active wallet ID - prevents SDK reconnection on metadata changes
+final activeWalletIdProvider = Provider<String?>((ref) {
+  final wallet = ref.watch(activeWalletProvider).value;
+  return wallet?.id;
+});
 
 final hasWalletsProvider = Provider<AsyncValue<bool>>((ref) {
   log.d('hasWalletsProvider called');

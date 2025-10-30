@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/providers/wallet_provider.dart';
+import 'package:glow/widgets/wallet/network_selector.dart';
+import 'package:glow/widgets/wallet/wallet_name_field.dart';
+import 'package:glow/widgets/wallet/warning_card.dart';
 
 class WalletCreateScreen extends ConsumerStatefulWidget {
   const WalletCreateScreen({super.key});
@@ -68,71 +71,17 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
         child: ListView(
           padding: EdgeInsets.all(24),
           children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Wallet Name',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.wallet),
-              ),
-              textCapitalization: TextCapitalization.words,
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Enter a name';
-                if (v.trim().length < 2) return 'At least 2 characters';
-                return null;
-              },
-            ),
+            WalletNameField(controller: _nameController),
             SizedBox(height: 24),
-            Text('Network', style: Theme.of(context).textTheme.titleMedium),
-            SizedBox(height: 8),
-            RadioGroup<Network>(
-              groupValue: _selectedNetwork,
-              onChanged: (v) => setState(() => _selectedNetwork = v!),
-              child: Card(
-                child: Column(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () => setState(() => _selectedNetwork = Network.mainnet),
-                      child: Row(
-                        children: [
-                          Radio<Network>(value: Network.mainnet),
-                          Expanded(child: const Text('Mainnet')),
-                        ],
-                      ),
-                    ),
-                    Divider(height: 1),
-                    GestureDetector(
-                      onTap: () => setState(() => _selectedNetwork = Network.regtest),
-                      child: Row(
-                        children: [
-                          Radio<Network>(value: Network.regtest),
-                          Expanded(child: const Text('Regtest')),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            NetworkSelector(
+              selectedNetwork: _selectedNetwork,
+              onChanged: (v) => setState(() => _selectedNetwork = v),
             ),
             SizedBox(height: 32),
-            Card(
-              color: Colors.orange.withValues(alpha: .1),
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Icon(Icons.warning_amber_rounded, color: Colors.orange),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'You will see a 12-word recovery phrase. Write it down securely. '
-                        'Anyone with this phrase can access your funds.',
-                        style: TextStyle(fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            WarningCard(
+              message:
+                  'You will see a 12-word recovery phrase after creating your wallet. Write it down securely. '
+                  'Anyone with this phrase can access your funds.',
             ),
             SizedBox(height: 32),
             FilledButton(
