@@ -20,10 +20,11 @@ dependencies:
   archive: ^4.0.7
   share_plus: ^12.0.1
 
-  ## Unused
   bip39: ^1.0.6
   flutter_secure_storage: ^10.0.0-beta.4
   crypto: ^3.0.6  # For wallet ID generation
+
+  shared_preferences: ^2.5.3
   
 dependency_overrides:
   breez_sdk_spark_flutter:

@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/screens/home_screen.dart';
 import 'package:glow/screens/wallet/setup_screen.dart';
+import 'package:glow/services/config_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'logging/app_logger.dart';
 
@@ -12,7 +14,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await BreezSdkSparkLib.init();
   await AppLogger.initialize();
-  runApp(const ProviderScope(child: MainApp()));
+  final prefs = await SharedPreferences.getInstance();
+  runApp(
+    ProviderScope(
+      overrides: [configServiceProvider.overrideWithValue(ConfigService(prefs))],
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends ConsumerWidget {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/services/config_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/screens/wallet/list_screen.dart';
@@ -15,6 +16,7 @@ class DebugScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final network = ref.watch(networkProvider);
+    final maxDepositClaimFee = ref.watch(maxDepositClaimFeeProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Debug')),
@@ -37,8 +39,6 @@ class DebugScreen extends ConsumerWidget {
                     ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 16),
-
-                  // Wallet count
                   Consumer(
                     builder: (context, ref, _) {
                       final walletCount = ref.watch(walletCountProvider);
@@ -49,8 +49,6 @@ class DebugScreen extends ConsumerWidget {
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Manage wallets button
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
@@ -149,6 +147,71 @@ class DebugScreen extends ConsumerWidget {
 
           const SizedBox(height: 16),
 
+          // Max Deposit Claim Fee Card
+          Card(
+            child: InkWell(
+              onTap: () => _showMaxFeeBottomSheet(context, ref, maxDepositClaimFee),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Deposit Claim Fee', style: Theme.of(context).textTheme.titleLarge),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Maximum fee when claiming deposits',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Icon(Icons.speed, size: 16, color: Theme.of(context).colorScheme.onPrimary),
+                          const SizedBox(width: 8),
+                          Text(
+                            maxDepositClaimFee.when(
+                              rate: (satPerVbyte) => '$satPerVbyte sat/vByte',
+                              fixed: (amount) => '$amount sats',
+                            ),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Logs Card
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -164,8 +227,6 @@ class DebugScreen extends ConsumerWidget {
                     ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 16),
-
-                  // Share current session
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.share),
@@ -174,8 +235,6 @@ class DebugScreen extends ConsumerWidget {
                     onTap: () => _shareCurrentSession(context),
                   ),
                   const Divider(),
-
-                  // Share all logs
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.folder_zip),
@@ -190,7 +249,6 @@ class DebugScreen extends ConsumerWidget {
 
           const SizedBox(height: 16),
 
-          // Log info
           FutureBuilder<int>(
             future: _getLogCount(),
             builder: (context, snapshot) {
@@ -211,9 +269,56 @@ class DebugScreen extends ConsumerWidget {
     );
   }
 
+  void _showMaxFeeBottomSheet(BuildContext context, WidgetRef ref, Fee currentFee) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => _MaxFeeBottomSheet(
+        currentFee: currentFee,
+        onSave: (fee) async {
+          try {
+            final configService = ref.read(configServiceProvider);
+            await configService.setMaxDepositClaimFee(fee);
+
+            // Invalidate SDK to reconnect with new fee
+            ref.invalidate(sdkProvider);
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Fee updated. Reconnecting...'), duration: Duration(seconds: 2)),
+              );
+            }
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to update: $e'),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            }
+          }
+        },
+        onReset: () async {
+          final configService = ref.read(configServiceProvider);
+          await configService.resetMaxDepositClaimFee();
+          ref.invalidate(sdkProvider);
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Reset to default. Reconnecting...'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
   Future<void> _shareCurrentSession(BuildContext context) async {
     try {
-      // Show loading
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preparing logs...')));
       }
@@ -227,7 +332,6 @@ class DebugScreen extends ConsumerWidget {
         return;
       }
 
-      // Share the zip file
       await SharePlus.instance.share(
         ShareParams(
           subject: 'Glow - Current Session Logs',
@@ -244,7 +348,6 @@ class DebugScreen extends ConsumerWidget {
 
   Future<void> _shareAllLogs(BuildContext context) async {
     try {
-      // Show loading
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preparing logs...')));
       }
@@ -258,7 +361,6 @@ class DebugScreen extends ConsumerWidget {
         return;
       }
 
-      // Share the zip file
       await SharePlus.instance.share(
         ShareParams(
           subject: 'Glow - All Session Logs',
@@ -284,5 +386,323 @@ class DebugScreen extends ConsumerWidget {
     } catch (e) {
       return 0;
     }
+  }
+}
+
+class _MaxFeeBottomSheet extends StatefulWidget {
+  final Fee currentFee;
+  final Function(Fee) onSave;
+  final VoidCallback onReset;
+
+  const _MaxFeeBottomSheet({required this.currentFee, required this.onSave, required this.onReset});
+
+  @override
+  State<_MaxFeeBottomSheet> createState() => _MaxFeeBottomSheetState();
+}
+
+class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
+  late bool _useFixedFee;
+  late double _sliderValue;
+
+  // Predefined rate options (1-10 sat/vByte)
+  static const double _minRate = 1.0;
+  static const double _maxRate = 10.0;
+
+  // Predefined fixed fee options (100-1000 sats)
+  static const double _minFixed = 100.0;
+  static const double _maxFixed = 1000.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _useFixedFee = widget.currentFee.when(rate: (_) => false, fixed: (_) => true);
+    _sliderValue = widget.currentFee.when(
+      rate: (rate) => rate.toDouble(),
+      fixed: (amount) => amount.toDouble(),
+    );
+  }
+
+  Fee get _currentFee {
+    if (_useFixedFee) {
+      return Fee.fixed(amount: BigInt.from(_sliderValue.round()));
+    } else {
+      return Fee.rate(satPerVbyte: BigInt.from(_sliderValue.round()));
+    }
+  }
+
+  String get _feeDescription {
+    if (_useFixedFee) {
+      return '${_sliderValue.round()} sats fixed';
+    } else {
+      final rate = _sliderValue.round();
+      final estimatedFee = 99 * rate;
+      return '$rate sat/vByte (~$estimatedFee sats)';
+    }
+  }
+
+  String get _speedLabel {
+    if (_useFixedFee) {
+      if (_sliderValue < 300) return 'Economy';
+      if (_sliderValue < 500) return 'Standard';
+      if (_sliderValue < 800) return 'Fast';
+      return 'Priority';
+    } else {
+      if (_sliderValue < 2) return 'Economy';
+      if (_sliderValue < 4) return 'Standard';
+      if (_sliderValue < 7) return 'Fast';
+      return 'Priority';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 12, bottom: 8),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                Text(
+                  'Deposit Claim Fee',
+                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Set the maximum fee for claiming Bitcoin deposits',
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Current fee display
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _speedLabel,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              _feeDescription,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Fee type toggle
+                Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _ToggleButton(
+                          label: 'Rate',
+                          isSelected: !_useFixedFee,
+                          onTap: () {
+                            setState(() {
+                              _useFixedFee = false;
+                              _sliderValue = 5.0; // Default to 5 sat/vByte
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: _ToggleButton(
+                          label: 'Fixed',
+                          isSelected: _useFixedFee,
+                          onTap: () {
+                            setState(() {
+                              _useFixedFee = true;
+                              _sliderValue = 500.0; // Default to 500 sats
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Slider
+                Column(
+                  children: [
+                    Slider(
+                      value: _sliderValue,
+                      min: _useFixedFee ? _minFixed : _minRate,
+                      max: _useFixedFee ? _maxFixed : _maxRate,
+                      divisions: _useFixedFee ? 18 : 9,
+                      label: _feeDescription,
+                      onChanged: (value) {
+                        setState(() {
+                          _sliderValue = value;
+                        });
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _useFixedFee ? '${_minFixed.round()} sats' : '${_minRate.round()} sat/vB',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          Text(
+                            _useFixedFee ? '${_maxFixed.round()} sats' : '${_maxRate.round()} sat/vB',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // Info box
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, size: 20, color: theme.colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Higher fees ensure deposits are claimed during network congestion',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          widget.onReset();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Reset'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: FilledButton(
+                        onPressed: () {
+                          widget.onSave(_currentFee);
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Save'),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Bottom padding for safe area
+                SizedBox(height: MediaQuery.of(context).padding.bottom),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ToggleButton extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _ToggleButton({required this.label, required this.isSelected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(6),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
   }
 }
