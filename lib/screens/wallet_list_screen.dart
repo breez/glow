@@ -5,7 +5,7 @@ import 'package:glow/models/wallet_metadata.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/screens/wallet_setup_screen.dart';
 import 'package:glow/services/wallet_storage_service.dart';
-import 'package:glow/screens/wallet_backup_screen.dart';
+import 'package:glow/screens/wallet_verify_screen.dart';
 import 'package:glow/screens/wallet_create_screen.dart';
 import 'package:glow/screens/wallet_import_screen.dart';
 
@@ -66,7 +66,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
     }
   }
 
-  Future<void> _showBackup(WalletMetadata wallet) async {
+  Future<void> _showVerification(WalletMetadata wallet) async {
     final mnemonic = await ref.read(walletStorageServiceProvider).loadMnemonic(wallet.id);
 
     if (mnemonic == null) {
@@ -78,7 +78,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => WalletBackupScreen(wallet: wallet, mnemonic: mnemonic, isNewWallet: false),
+          builder: (_) => WalletVerifyScreen(wallet: wallet, mnemonic: mnemonic),
         ),
       );
     }
@@ -293,7 +293,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
                       case 'rename':
                         _startEditing(wallet);
                       case 'view':
-                        _showBackup(wallet);
+                        _showVerification(wallet);
                       case 'remove':
                         _removeWallet(wallet);
                     }

@@ -7,6 +7,8 @@ import 'package:glow/screens/debug_screen.dart';
 import 'package:glow/screens/payment_detail_screen.dart';
 import 'package:glow/screens/receive_screen.dart';
 import 'package:glow/screens/wallet_list_screen.dart';
+import 'package:glow/screens/wallet_verify_screen.dart';
+import 'package:glow/services/wallet_storage_service.dart';
 
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
@@ -53,6 +55,28 @@ class WalletScreen extends ConsumerWidget {
         ),
         backgroundColor: Colors.transparent,
         actions: [
+          // Show warning icon for unverified wallets
+          activeWallet.when(
+            data: (wallet) => wallet != null && !wallet.isVerified
+                ? IconButton(
+                    onPressed: () async {
+                      final mnemonic = await ref.read(walletStorageServiceProvider).loadMnemonic(wallet.id);
+                      if (mnemonic != null && context.mounted) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WalletVerifyScreen(wallet: wallet, mnemonic: mnemonic),
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                    tooltip: 'Verify recovery phrase',
+                  )
+                : SizedBox.shrink(),
+            loading: () => SizedBox.shrink(),
+            error: (_, _) => SizedBox.shrink(),
+          ),
           IconButton(
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugScreen()));

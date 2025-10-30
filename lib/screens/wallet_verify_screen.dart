@@ -5,23 +5,17 @@ import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/models/wallet_metadata.dart';
 import 'package:glow/providers/wallet_provider.dart';
 
-class WalletBackupScreen extends ConsumerStatefulWidget {
+class WalletVerifyScreen extends ConsumerStatefulWidget {
   final WalletMetadata wallet;
   final String mnemonic;
-  final bool isNewWallet;
 
-  const WalletBackupScreen({
-    super.key,
-    required this.wallet,
-    required this.mnemonic,
-    required this.isNewWallet,
-  });
+  const WalletVerifyScreen({super.key, required this.wallet, required this.mnemonic});
 
   @override
-  ConsumerState<WalletBackupScreen> createState() => _WalletBackupScreenState();
+  ConsumerState<WalletVerifyScreen> createState() => _WalletVerifyScreenState();
 }
 
-class _WalletBackupScreenState extends ConsumerState<WalletBackupScreen> with LoggerMixin {
+class _WalletVerifyScreenState extends ConsumerState<WalletVerifyScreen> with LoggerMixin {
   bool _isConfirming = false;
 
   List<String> get _words => widget.mnemonic.split(' ');
@@ -30,19 +24,16 @@ class _WalletBackupScreenState extends ConsumerState<WalletBackupScreen> with Lo
     setState(() => _isConfirming = true);
 
     try {
-      await ref.read(activeWalletProvider.notifier).setActiveWallet(widget.wallet.id);
+      await ref.read(walletListProvider.notifier).markWalletAsVerified(widget.wallet.id);
+
       if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-        Future.delayed(Duration(milliseconds: 300), () {
-          if (mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Wallet backed up!'), backgroundColor: Colors.green));
-          }
-        });
+        Navigator.pop(context);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Recovery phrase verified!'), backgroundColor: Colors.green));
       }
     } catch (e) {
-      log.e('Failed to confirm backup', error: e);
+      log.e('Failed to verify wallet', error: e);
       setState(() => _isConfirming = false);
       if (mounted) {
         ScaffoldMessenger.of(
@@ -55,7 +46,7 @@ class _WalletBackupScreenState extends ConsumerState<WalletBackupScreen> with Lo
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Backup Wallet'), automaticallyImplyLeading: !widget.isNewWallet),
+      appBar: AppBar(title: Text('Verify Recovery Phrase')),
       body: ListView(
         padding: EdgeInsets.all(24),
         children: [
@@ -161,10 +152,8 @@ class _WalletBackupScreenState extends ConsumerState<WalletBackupScreen> with Lo
                 ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
                 : Text('I Have Written It Down'),
           ),
-          if (!widget.isNewWallet) ...[
-            SizedBox(height: 16),
-            OutlinedButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
-          ],
+          SizedBox(height: 16),
+          OutlinedButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
         ],
       ),
     );
