@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:glow/screens/receive/receive_screen.dart';
+import 'package:glow/app_routes.dart';
 
 class HomeBottomBar extends StatelessWidget {
   const HomeBottomBar({super.key});
@@ -12,19 +12,18 @@ class HomeBottomBar extends StatelessWidget {
           Expanded(
             child: _ActionButton(
               label: 'SEND',
-              onPressed: null, // TODO: Implement send functionality
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.sendScreen),
             ),
           ),
           Expanded(
-            child: _ActionButton(label: 'RECEIVE', onPressed: () => _navigateToReceive(context)),
+            child: _ActionButton(
+              label: 'RECEIVE',
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.receiveScreen),
+            ),
           ),
         ],
       ),
     );
-  }
-
-  void _navigateToReceive(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const ReceiveScreen()));
   }
 }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/app_routes.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/developers_screen.dart';
 import 'package:glow/theme/colors.dart';
 import 'package:glow/widgets/wallet/breez_sdk_footer.dart';
 
@@ -44,7 +44,7 @@ class HomeDrawer extends StatelessWidget {
                           icon: Icons.lock_outline,
                           onTap: () {
                             Navigator.pop(context);
-                            // TODO: Navigate to security settings
+                            Navigator.pushNamed(context, AppRoutes.appSettings);
                           },
                         ),
                       ),
@@ -55,11 +55,7 @@ class HomeDrawer extends StatelessWidget {
                           icon: Icons.code,
                           onTap: () {
                             Navigator.pop(context);
-                            // TODO: Navigate to developers view
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const DevelopersScreen()),
-                            );
+                            Navigator.pushNamed(context, AppRoutes.developersScreen);
                           },
                         ),
                       ),

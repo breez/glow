@@ -2,14 +2,15 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/app_routes.dart';
 import 'package:glow/providers/sdk_provider.dart';
 import 'package:glow/widgets/home/balance_display.dart';
 import 'package:glow/widgets/home/home_app_bar.dart';
 import 'package:glow/widgets/home/home_bottom_bar.dart';
 import 'package:glow/widgets/home/home_drawer.dart';
+import 'package:glow/widgets/home/qr_scan_button.dart';
 import 'package:glow/widgets/home/transaction_list.dart';
 import 'package:glow/widgets/unclaimed_deposits_warning.dart';
-import 'package:glow/screens/unclaimed_deposits_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -30,7 +31,7 @@ class HomeScreen extends ConsumerWidget {
         bottomNavigationBar: const HomeBottomBar(),
         body: Column(
           children: [
-            UnclaimedDepositsWarning(onTap: () => _navigateToUnclaimedDeposits(context)),
+            UnclaimedDepositsWarning(onTap: () => Navigator.pushNamed(context, AppRoutes.unclaimedDeposits)),
             const BalanceDisplay(),
             const Expanded(child: TransactionList()),
           ],
@@ -38,11 +39,9 @@ class HomeScreen extends ConsumerWidget {
         drawerDragStartBehavior: DragStartBehavior.down,
         drawerEdgeDragWidth: MediaQuery.of(context).size.width,
         drawer: const HomeDrawer(),
+        floatingActionButton: const QrScanButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
-  }
-
-  void _navigateToUnclaimedDeposits(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const UnclaimedDepositsScreen()));
   }
 }

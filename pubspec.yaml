@@ -29,6 +29,9 @@ dependencies:
 
   flutter_svg: ^2.2.1 ## To be replaced with a more performant alternative, such as icon_bundler etc.
 
+  image_picker: ^1.2.0
+  mobile_scanner: ^7.1.3
+  
 dependency_overrides:
   breez_sdk_spark_flutter:
     path: ../spark-sdk/packages/flutter

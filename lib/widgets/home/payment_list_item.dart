@@ -1,6 +1,6 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
-import 'package:glow/screens/payment_details_screen.dart';
+import 'package:glow/app_routes.dart';
 import 'package:glow/utils/formatters.dart';
 import 'package:glow/utils/payment_helpers.dart';
 
@@ -14,17 +14,13 @@ class PaymentListItem extends StatelessWidget {
     final isReceive = payment.paymentType == PaymentType.receive;
 
     return ListTile(
-      onTap: () => _navigateToDetails(context),
+      onTap: () => Navigator.pushNamed(context, AppRoutes.paymentDetails, arguments: payment),
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       leading: _PaymentIcon(isReceive: isReceive),
       title: _PaymentTitle(payment: payment),
       subtitle: _PaymentSubtitle(payment: payment),
       trailing: _PaymentAmount(payment: payment, isReceive: isReceive),
     );
-  }
-
-  void _navigateToDetails(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentDetailsScreen(payment: payment)));
   }
 }
 

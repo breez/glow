@@ -1,6 +1,7 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/app_routes.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/services/mnemonic_service.dart';
 import 'package:glow/providers/wallet_provider.dart';
@@ -63,7 +64,7 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
       await ref.read(activeWalletProvider.notifier).setActiveWallet(wallet.id);
 
       if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homeScreen, (_) => false);
         Future.delayed(Duration(milliseconds: 300), () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(

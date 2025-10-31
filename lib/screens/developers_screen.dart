@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/app_routes.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/sdk_provider.dart';
 import 'package:glow/services/config_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/wallet/list_screen.dart';
 
 class DevelopersScreen extends ConsumerWidget {
   const DevelopersScreen({super.key});
@@ -53,10 +53,7 @@ class DevelopersScreen extends ConsumerWidget {
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const WalletListScreen()),
-                        );
+                        Navigator.pushNamed(context, AppRoutes.walletList);
                       },
                       icon: const Icon(Icons.account_balance_wallet),
                       label: const Text('Manage Wallets'),
@@ -96,7 +93,7 @@ class DevelopersScreen extends ConsumerWidget {
                                 },
                           style: OutlinedButton.styleFrom(
                             backgroundColor: network == Network.mainnet
-                                ? Theme.of(context).colorScheme.primary
+                                ? Theme.of(context).primaryColorLight
                                 : null,
                             foregroundColor: network == Network.mainnet
                                 ? Theme.of(context).colorScheme.onPrimary
@@ -182,7 +179,7 @@ class DevelopersScreen extends ConsumerWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).primaryColorLight,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -506,7 +503,7 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
+                    color: theme.primaryColorLight,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -530,7 +527,7 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                             child: Text(
                               _feeDescription,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onPrimary.withValues(alpha: 0.5),
+                                color: theme.colorScheme.onPrimary.withValues(alpha: 0.75),
                                 fontWeight: FontWeight.w500,
                                 fontFamily: 'monospace',
                               ),
@@ -547,7 +544,7 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                 // Fee type toggle
                 Container(
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    color: theme.primaryColorLight.withValues(alpha: 0.75),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -590,6 +587,8 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                 Column(
                   children: [
                     Slider(
+                      activeColor: Theme.of(context).primaryColorLight.withValues(alpha: 0.75),
+                      thumbColor: Theme.of(context).primaryColorLight,
                       value: _sliderValue,
                       min: _useFixedFee ? _minFixed : _minRate,
                       max: _useFixedFee ? _maxFixed : _maxRate,
@@ -630,7 +629,7 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.75),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -667,6 +666,7 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                     Expanded(
                       flex: 2,
                       child: FilledButton(
+                        style: FilledButton.styleFrom(backgroundColor: Theme.of(context).primaryColorLight),
                         onPressed: () {
                           widget.onSave(_currentFee);
                           Navigator.pop(context);
@@ -705,7 +705,7 @@ class _ToggleButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+          color: isSelected ? theme.primaryColorLight : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(

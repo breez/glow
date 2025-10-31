@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/app_routes.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/models/wallet_metadata.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/wallet/setup_screen.dart';
 import 'package:glow/services/wallet_storage_service.dart';
-import 'package:glow/screens/wallet/verify_screen.dart';
-import 'package:glow/screens/wallet/create_screen.dart';
-import 'package:glow/screens/wallet/import_screen.dart';
 import 'package:glow/widgets/wallet/empty_state.dart';
 
 class WalletListScreen extends ConsumerStatefulWidget {
@@ -76,11 +73,10 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
     }
 
     if (mounted) {
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (_) => WalletVerifyScreen(wallet: wallet, mnemonic: mnemonic),
-        ),
+        AppRoutes.walletVerify,
+        arguments: {'wallet': wallet, 'mnemonic': mnemonic},
       );
     }
   }
@@ -89,7 +85,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
     try {
       await ref.read(activeWalletProvider.notifier).switchWallet(wallet.id);
       if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homeScreen, (_) => false);
         Future.delayed(Duration(milliseconds: 300), () {
           if (mounted) _showSnackBar('Switched to ${wallet.name}', Colors.green);
         });
@@ -138,7 +134,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
 
       // Reroute if no wallets remain
       if (wallets.isEmpty && mounted) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => WalletSetupScreen()));
+        Navigator.pushReplacementNamed(context, AppRoutes.walletSetup);
       }
     } catch (e) {
       log.e('Failed to remove wallet', error: e);
@@ -180,7 +176,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
               title: Text('Create New Wallet'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => WalletCreateScreen()));
+                Navigator.pushNamed(context, AppRoutes.walletCreate);
               },
             ),
             ListTile(
@@ -188,7 +184,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
               title: Text('Import Wallet'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => WalletImportScreen()));
+                Navigator.pushNamed(context, AppRoutes.walletImport);
               },
             ),
           ],
@@ -313,13 +309,13 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
       subtitle: 'Create a new wallet or import an existing one',
       actions: [
         FilledButton.icon(
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => WalletCreateScreen())),
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.walletCreate),
           icon: Icon(Icons.add),
           label: Text('Create Wallet'),
         ),
         SizedBox(height: 12),
         OutlinedButton.icon(
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => WalletImportScreen())),
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.walletImport),
           icon: Icon(Icons.download),
           label: Text('Import Wallet'),
         ),

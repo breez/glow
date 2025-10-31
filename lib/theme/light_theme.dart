@@ -44,7 +44,7 @@ ThemeData buildLightTheme() {
     bottomAppBarTheme: const BottomAppBarThemeData(height: 60, elevation: 0, color: BreezColors.primaryLight),
 
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: BreezColors.primary,
+      backgroundColor: BreezColors.primaryLight,
       foregroundColor: Colors.white,
       sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
     ),

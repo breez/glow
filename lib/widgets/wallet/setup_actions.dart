@@ -4,10 +4,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/app_routes.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/theme_provider.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/wallet/import_screen.dart';
 
 final log = AppLogger.getLogger('SetupActions');
 final AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
@@ -65,7 +65,7 @@ class _RegisterButtonState extends ConsumerState<_RegisterButton> {
       if (mounted) {
         ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
         // Navigate to home screen, removing all previous routes
-        Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homeScreen, (_) => false);
 
         // Show success message after navigation
         Future.delayed(const Duration(milliseconds: 300), () {
@@ -153,7 +153,7 @@ class _RestoreButton extends StatelessWidget {
           disabledBackgroundColor: themeData.disabledColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => WalletImportScreen())),
+        onPressed: () => Navigator.pushNamed(context, AppRoutes.walletImport),
         child: Semantics(
           button: true,
           label: 'Restore using mnemonics',
