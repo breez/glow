@@ -279,10 +279,6 @@ class _PaymentScreenPlaceholder extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                  backgroundColor: Theme.of(context).primaryColorLight,
-                ),
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.arrow_back),
                 label: const Text('Go Back'),

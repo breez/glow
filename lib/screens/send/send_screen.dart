@@ -136,10 +136,6 @@ class _SendPageState extends ConsumerState<SendScreen> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FilledButton(
-          style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(48),
-            backgroundColor: Theme.of(context).primaryColorLight,
-          ),
           onPressed: hasText && !isProcessing ? _onApprovePressed : null,
           child: SizedBox(
             height: 48,

@@ -62,7 +62,6 @@ class _WalletVerifyScreenState extends ConsumerState<WalletVerifyScreen> with Lo
           SecurityTipsCard(),
           SizedBox(height: 32),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).primaryColorLight),
             onPressed: _isConfirming ? null : _confirm,
             child: _isConfirming
                 ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))

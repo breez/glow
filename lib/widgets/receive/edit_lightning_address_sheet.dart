@@ -208,7 +208,7 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
               style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
               child: _isProcessing
                   ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Yes, Delete'),
+                  : Text('Yes, Delete', style: TextStyle(color: Theme.of(context).colorScheme.onError)),
             ),
             const SizedBox(height: 8),
             OutlinedButton(

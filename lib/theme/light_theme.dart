@@ -43,6 +43,15 @@ ThemeData buildLightTheme() {
 
     bottomAppBarTheme: const BottomAppBarThemeData(height: 60, elevation: 0, color: BreezColors.primaryLight),
 
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: BreezColors.primaryLight,
+        minimumSize: const Size.fromHeight(48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    ),
+
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: BreezColors.primaryLight,
       foregroundColor: Colors.white,

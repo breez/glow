@@ -666,7 +666,6 @@ class _MaxFeeBottomSheetState extends State<_MaxFeeBottomSheet> {
                     Expanded(
                       flex: 2,
                       child: FilledButton(
-                        style: FilledButton.styleFrom(backgroundColor: Theme.of(context).primaryColorLight),
                         onPressed: () {
                           widget.onSave(_currentFee);
                           Navigator.pop(context);
