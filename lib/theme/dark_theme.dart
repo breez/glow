@@ -41,7 +41,7 @@ ThemeData buildDarkTheme() {
       ),
     ),
 
-    bottomAppBarTheme: const BottomAppBarThemeData(height: 60, elevation: 0, color: BreezColors.primary),
+    bottomAppBarTheme: const BottomAppBarThemeData(height: 60, elevation: 0, color: BreezColors.primaryLight),
 
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: BreezColors.primary,

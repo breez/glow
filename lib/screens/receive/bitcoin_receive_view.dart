@@ -122,7 +122,7 @@ class _NetworkBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.warning_amber, size: 16, color: color),
+          Icon(Icons.warning_amber_rounded, size: 16, color: color),
           const SizedBox(width: 6),
           Text(
             networkName,

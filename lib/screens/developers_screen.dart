@@ -10,8 +10,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/screens/wallet/list_screen.dart';
 
-class DebugScreen extends ConsumerWidget {
-  const DebugScreen({super.key});
+class DevelopersScreen extends ConsumerWidget {
+  const DevelopersScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

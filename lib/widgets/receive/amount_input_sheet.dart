@@ -299,7 +299,7 @@ class _BitcoinAddressWithAmountContent extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.warning_amber, size: 20, color: Theme.of(context).colorScheme.error),
+                  Icon(Icons.warning_amber_rounded, size: 20, color: Theme.of(context).colorScheme.error),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
