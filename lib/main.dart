@@ -2,12 +2,13 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/providers/theme_provider.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/screens/home_screen.dart';
 import 'package:glow/screens/wallet/setup_screen.dart';
 import 'package:glow/services/config_service.dart';
+import 'package:glow/theme/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'logging/app_logger.dart';
 
 void main() async {
@@ -28,47 +29,25 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(
-      title: 'Glow',
-      // Use named routes for proper navigation
-      initialRoute: '/',
-      routes: {'/': (context) => const _AppRouter()},
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFF0085fb),
-          surface: const Color(0xFFf9f9f9),
-          surfaceContainerLow: const Color(0xFFf9f9f9),
-          brightness: Brightness.light,
-          dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
-        ),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          systemOverlayStyle: SystemUiOverlayStyle.dark,
-        ),
-        bottomAppBarTheme: const BottomAppBarThemeData(height: 60, elevation: 0, color: Color(0xFF0085fb)),
+    final themeMode = ref.watch(themeModeProvider);
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: themeMode == ThemeMode.dark
+            ? BreezColors.darkBackground
+            : BreezColors.primary,
+        systemStatusBarContrastEnforced: false,
       ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF00091c),
-          surface: Color.fromRGBO(10, 20, 40, 1),
-          surfaceContainerLow: Color.fromRGBO(10, 20, 40, 1.33),
-          brightness: Brightness.dark,
-          dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
-        ),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF00091c),
-          centerTitle: false,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-        ),
-        scaffoldBackgroundColor: const Color(0xFF00091c),
-        bottomAppBarTheme: const BottomAppBarThemeData(height: 60, elevation: 0, color: Color(0xFF0085fb)),
+      child: MaterialApp(
+        title: 'Glow',
+        initialRoute: '/',
+        routes: {'/': (context) => const _AppRouter()},
+        theme: buildLightTheme(),
+        darkTheme: buildDarkTheme(),
+        themeMode: themeMode,
       ),
-      themeMode: ThemeMode.dark,
     );
   }
 }
