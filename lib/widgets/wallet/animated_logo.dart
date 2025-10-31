@@ -66,7 +66,6 @@ class _AnimatedLogoState extends State<AnimatedLogo> with SingleTickerProviderSt
                     ),
                   ),
                   AutoSizeText(
-                    // TODO(erdemyerebasmaz): Add message to Breez-Translations
                     'TBD: Tagline Text',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white, fontSize: 21.0, height: 1.1),

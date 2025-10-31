@@ -1,6 +1,7 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/app_routes.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/widgets/wallet/network_selector.dart';
@@ -40,7 +41,7 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
 
       if (mounted) {
         // Go directly to home screen
-        Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homeScreen, (_) => false);
 
         // Show success message after navigation
         Future.delayed(Duration(milliseconds: 300), () {

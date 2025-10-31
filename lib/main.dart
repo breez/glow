@@ -2,9 +2,10 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/app_routes.dart';
 import 'package:glow/providers/theme_provider.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/home_screen.dart';
+import 'package:glow/screens/home/home_screen.dart';
 import 'package:glow/screens/wallet/setup_screen.dart';
 import 'package:glow/services/config_service.dart';
 import 'package:glow/theme/theme.dart';
@@ -42,8 +43,9 @@ class MainApp extends ConsumerWidget {
       ),
       child: MaterialApp(
         title: 'Glow',
-        initialRoute: '/',
-        routes: {'/': (context) => const _AppRouter()},
+        initialRoute: AppRoutes.homeScreen,
+        routes: {AppRoutes.homeScreen: (context) => const _AppRouter()},
+        onGenerateRoute: AppRoutes.generateRoute,
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
         themeMode: themeMode,
