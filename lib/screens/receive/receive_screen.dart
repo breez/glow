@@ -6,12 +6,11 @@ import 'package:glow/screens/receive/bitcoin_receive_view.dart';
 import 'package:glow/widgets/receive/amount_input_sheet.dart';
 
 enum ReceiveMethod {
-  lightning('Lightning', Icons.flash_on),
-  bitcoin('Bitcoin', Icons.currency_bitcoin);
+  lightning('Lightning'),
+  bitcoin('BTC Address');
 
-  const ReceiveMethod(this.label, this.icon);
+  const ReceiveMethod(this.label);
   final String label;
-  final IconData icon;
 }
 
 class ReceiveScreen extends ConsumerStatefulWidget {
@@ -81,13 +80,7 @@ class _ReceiveMethodDropdown extends StatelessWidget {
       style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onSurface),
       dropdownColor: Theme.of(context).colorScheme.surface,
       items: ReceiveMethod.values.map((method) {
-        return DropdownMenuItem(
-          value: method,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [Icon(method.icon, size: 20), const SizedBox(width: 8), Text(method.label)],
-          ),
-        );
+        return DropdownMenuItem(value: method, child: Text(method.label));
       }).toList(),
     );
   }
