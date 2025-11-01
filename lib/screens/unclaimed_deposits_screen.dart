@@ -1,8 +1,8 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/utils/clipboard.dart';
 
 class UnclaimedDepositsScreen extends ConsumerWidget {
   const UnclaimedDepositsScreen({super.key});
@@ -153,7 +153,7 @@ class _DepositCardState extends ConsumerState<_DepositCard> {
                   context,
                   'Transaction',
                   _formatTxid(widget.deposit.txid),
-                  onTap: () => _copyToClipboard(context, widget.deposit.txid),
+                  onTap: () => copyToClipboard(context, widget.deposit.txid),
                 ),
                 const SizedBox(height: 8),
                 _buildDetailRow(context, 'Output', '${widget.deposit.vout}'),
@@ -276,13 +276,6 @@ class _DepositCardState extends ConsumerState<_DepositCard> {
       missingUtxo: (tx, vout) => 'Transaction output not found on chain',
       generic: (message) => message,
     );
-  }
-
-  void _copyToClipboard(BuildContext context, String text) {
-    Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Copied to clipboard'), duration: Duration(seconds: 2)));
   }
 
   Future<void> _retryClaim() async {
