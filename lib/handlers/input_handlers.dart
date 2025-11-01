@@ -55,35 +55,35 @@ class InputHandler {
     inputType.when(
       bitcoinAddress: (details) {
         _log.i('Navigating to Bitcoin Address screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendBitcoinAddress, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendBitcoinAddress, arguments: details);
       },
       bolt11Invoice: (details) {
         _log.i('Navigating to BOLT11 screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendBolt11, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendBolt11, arguments: details);
       },
       bolt12Invoice: (details) {
         _log.i('Navigating to BOLT12 Invoice screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendBolt12Invoice, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendBolt12Invoice, arguments: details);
       },
       bolt12Offer: (details) {
         _log.i('Navigating to BOLT12 Offer screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendBolt12Offer, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendBolt12Offer, arguments: details);
       },
       lightningAddress: (details) {
         _log.i('Navigating to Lightning Address screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendLightningAddress, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendLightningAddress, arguments: details);
       },
       lnurlPay: (details) {
         _log.i('Navigating to LNURL-Pay screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendLnurlPay, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendLnurlPay, arguments: details);
       },
       silentPaymentAddress: (details) {
         _log.i('Navigating to Silent Payment screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendSilentPayment, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendSilentPayment, arguments: details);
       },
       lnurlAuth: (details) {
         _log.i('Navigating to LNURL-Auth screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.lnurlAuth, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.lnurlAuth, arguments: details);
       },
       url: (_) {
         _log.w('URL input type not supported for navigation');
@@ -93,19 +93,19 @@ class InputHandler {
       },
       bip21: (details) {
         _log.i('Navigating to BIP21 screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendBip21, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendBip21, arguments: details);
       },
       bolt12InvoiceRequest: (details) {
         _log.i('Navigating to BOLT12 Invoice Request screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendBolt12InvoiceRequest, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendBolt12InvoiceRequest, arguments: details);
       },
       lnurlWithdraw: (details) {
         _log.i('Navigating to LNURL-Withdraw screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.receiveLnurlWithdraw, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.receiveLnurlWithdraw, arguments: details);
       },
       sparkAddress: (details) {
         _log.i('Navigating to Spark Address screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendSparkAddress, arguments: details);
+        Navigator.pushNamed(context, AppRoutes.sendSparkAddress, arguments: details);
       },
     );
   }
