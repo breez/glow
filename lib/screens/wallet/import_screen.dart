@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/app_routes.dart';
 import 'package:glow/logging/logger_mixin.dart';
+import 'package:glow/providers/theme_provider.dart';
 import 'package:glow/services/mnemonic_service.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/widgets/wallet/network_selector.dart';
@@ -23,6 +24,14 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
   Network _selectedNetwork = Network.mainnet;
   bool _isImporting = false;
   String? _mnemonicError;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
+    });
+  }
 
   @override
   void dispose() {
