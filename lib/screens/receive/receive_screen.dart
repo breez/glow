@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/logging/logger_mixin.dart';
-import 'package:glow/screens/receive/lightning_receive_view.dart';
-import 'package:glow/screens/receive/bitcoin_receive_view.dart';
+import 'package:glow/features/receive/lightning_receive_view.dart';
+import 'package:glow/features/receive/bitcoin_receive_view.dart';
 import 'package:glow/widgets/receive/amount_input_sheet.dart';
 
 enum ReceiveMethod {

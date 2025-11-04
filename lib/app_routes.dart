@@ -2,7 +2,7 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:glow/screens/developers_screen.dart';
 import 'package:glow/screens/home/qr_scan_view.dart';
-import 'package:glow/screens/payment_details_screen.dart';
+import 'package:glow/features/payment_details/payment_details_screen.dart';
 import 'package:glow/screens/receive/receive_screen.dart';
 import 'package:glow/screens/send/send_screen.dart';
 import 'package:glow/screens/unclaimed_deposits_screen.dart';
@@ -10,7 +10,7 @@ import 'package:glow/screens/wallet/create_screen.dart';
 import 'package:glow/screens/wallet/import_screen.dart';
 import 'package:glow/screens/wallet/list_screen.dart';
 import 'package:glow/screens/wallet/setup_screen.dart';
-import 'package:glow/screens/wallet/verify_screen.dart';
+import 'package:glow/screens//wallet/verify_screen.dart';
 
 // Import your payment screens here when they're created
 // import 'package:glow/screens/send/bitcoin_address_screen.dart';
