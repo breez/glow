@@ -128,12 +128,6 @@ final nodeInfoProvider = AsyncNotifierProvider<NodeInfoNotifier, GetInfoResponse
 class PaymentsNotifier extends AsyncNotifier<List<Payment>> {
   @override
   Future<List<Payment>> build() async {
-    final hasSynced = ref.watch(hasSyncedProvider);
-    if (!hasSynced) {
-      // Return empty list while waiting for sync instead of incomplete future
-      return Completer<List<Payment>>().future;
-    }
-
     final sdk = await ref.watch(sdkProvider.future);
     final service = ref.read(breezSdkServiceProvider);
     final payments = await service.listPayments(sdk, ListPaymentsRequest());
@@ -168,11 +162,6 @@ final paymentsProvider = AsyncNotifierProvider<PaymentsNotifier, List<Payment>>(
 
 /// Balance - derived from node info, waits for payments to be loaded
 final balanceProvider = Provider<AsyncValue<BigInt>>((ref) {
-  final hasSynced = ref.watch(hasSyncedProvider);
-  if (!hasSynced) {
-    return const AsyncValue.loading();
-  }
-
   // Ensure payments are loaded before showing balance
   // This prevents showing balance before transaction history is ready
   final payments = ref.watch(paymentsProvider);
@@ -337,16 +326,24 @@ class HasSyncedNotifier extends Notifier<bool> {
 
   Future<void> _initialize() async {
     log.d('HasSyncedNotifier: Waiting for SDK to connect...');
-
-    // Wait for SDK to be ready first
     await ref.read(sdkProvider.future);
     log.d('HasSyncedNotifier: SDK connected, now waiting for first sync...');
 
-    // Now listen for the first sync event
     ref.listen(sdkEventsStreamProvider, (previous, next) {
-      (next as AsyncValue?)?.whenData((event) {
+      (next as AsyncValue?)?.whenData((event) async {
         if (event is SdkEvent_Synced) {
-          log.d('First sync completed after SDK connection');
+          final wallet = ref.read(activeWalletProvider).value;
+          if (wallet == null) return;
+
+          final storage = ref.read(walletStorageServiceProvider);
+          final alreadyMarked = await storage.hasCompletedFirstSync(wallet.id);
+
+          if (!alreadyMarked) {
+            await storage.markFirstSyncDone(wallet.id);
+            log.d('First sync completed and marked for wallet: ${wallet.id}');
+          } else {
+            log.d('First sync completed after SDK connection for wallet: ${wallet.id}');
+          }
           state = true;
         }
       });
@@ -356,4 +353,21 @@ class HasSyncedNotifier extends Notifier<bool> {
 
 final hasSyncedProvider = NotifierProvider<HasSyncedNotifier, bool>(() {
   return HasSyncedNotifier();
+});
+
+/// Whether to wait for initial sync before showing balance/payments
+final shouldWaitForInitialSyncProvider = Provider<bool>((ref) {
+  final wallet = ref.watch(activeWalletProvider).value;
+  if (wallet == null) return false;
+
+  final storage = ref.read(walletStorageServiceProvider);
+  final future = storage.hasCompletedFirstSync(wallet.id);
+
+  // Trigger async check but return false immediately
+  future.then((synced) {
+    if (synced) return;
+    ref.invalidateSelf(); // refresh once result available
+  });
+
+  return false;
 });

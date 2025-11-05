@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/app_routes.dart';
 import 'package:glow/providers/theme_provider.dart';
 import 'package:glow/providers/wallet_provider.dart';
-import 'package:glow/screens/home/home_screen.dart';
+import 'package:glow/features/home/home_screen.dart';
 import 'package:glow/screens/wallet/setup_screen.dart';
 import 'package:glow/services/config_service.dart';
 import 'package:glow/theme/theme.dart';

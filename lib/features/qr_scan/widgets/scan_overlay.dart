@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Overlay widget showing scan area frame
 class ScanOverlay extends StatelessWidget {
   const ScanOverlay({super.key});
 

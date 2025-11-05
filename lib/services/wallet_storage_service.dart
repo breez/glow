@@ -109,6 +109,34 @@ class WalletStorageService with LoggerMixin {
   }
 
   // ============================================================================
+  // First Sync Tracking
+  // ============================================================================
+
+  static const _firstSyncPrefix = 'wallet_first_sync_done_';
+
+  /// Mark that the wallet has completed its first sync.
+  Future<void> markFirstSyncDone(String walletId) async {
+    try {
+      await _storage.write(key: '$_firstSyncPrefix$walletId', value: 'true');
+      log.d('Marked first sync done for wallet: $walletId');
+    } catch (e, stack) {
+      log.e('Failed to mark first sync done for wallet: $walletId', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
+  /// Check whether the wallet has already completed its first sync.
+  Future<bool> hasCompletedFirstSync(String walletId) async {
+    try {
+      final value = await _storage.read(key: '$_firstSyncPrefix$walletId');
+      return value == 'true';
+    } catch (e, stack) {
+      log.e('Failed to read first sync state for wallet: $walletId', error: e, stackTrace: stack);
+      return false;
+    }
+  }
+
+  // ============================================================================
   // Active Wallet Management
   // ============================================================================
 

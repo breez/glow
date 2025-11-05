@@ -4,7 +4,6 @@ import 'package:glow/app_routes.dart';
 import 'package:glow/providers/sdk_provider.dart';
 import 'package:glow/providers/wallet_provider.dart';
 import 'package:glow/services/wallet_storage_service.dart';
-import 'package:glow/widgets/unclaimed_deposits_icon.dart';
 
 class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key});
@@ -21,7 +20,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
       backgroundColor: Colors.transparent,
       actions: [
         _SyncIndicator(hasSynced: hasSynced),
-        _UnclaimedDepositsButton(),
+        _UnclaimedDepositsWarning(),
         _VerificationWarning(activeWallet: activeWallet, ref: ref),
       ],
     );
@@ -53,10 +52,31 @@ class _SyncIndicator extends StatelessWidget {
   }
 }
 
-class _UnclaimedDepositsButton extends StatelessWidget {
+class _UnclaimedDepositsWarning extends ConsumerWidget {
+  const _UnclaimedDepositsWarning();
+
   @override
-  Widget build(BuildContext context) {
-    return UnclaimedDepositsIcon(onTap: () => Navigator.pushNamed(context, AppRoutes.unclaimedDeposits));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasUnclaimedAsync = ref.watch(hasUnclaimedDepositsProvider);
+    final countAsync = ref.watch(unclaimedDepositsCountProvider);
+
+    return hasUnclaimedAsync.when(
+      data: (hasUnclaimed) {
+        if (!hasUnclaimed) return const SizedBox.shrink();
+
+        return countAsync.when(
+          data: (count) => IconButton(
+            icon: Badge(label: Text(count.toString()), child: const Icon(Icons.warning_amber_rounded)),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.unclaimedDeposits),
+            tooltip: 'Pending deposits',
+          ),
+          loading: () => const SizedBox.shrink(),
+          error: (_, _) => const SizedBox.shrink(),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+    );
   }
 }
 
