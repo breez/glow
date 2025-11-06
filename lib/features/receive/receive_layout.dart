@@ -1,0 +1,28 @@
+import 'package:flutter/material.dart';
+import 'package:glow/features/receive/models/receive_method.dart';
+import 'package:glow/features/receive/models/receive_state.dart';
+import 'package:glow/features/receive/widgets/receive_app_bar.dart';
+import 'package:glow/features/receive/widgets/receive_view_switcher.dart';
+
+class ReceiveLayout extends StatelessWidget {
+  final ReceiveState state;
+  final ValueChanged<ReceiveMethod> onChangeMethod;
+  final VoidCallback? onRequest;
+
+  const ReceiveLayout({super.key, required this.state, required this.onChangeMethod, this.onRequest});
+
+  @override
+  Widget build(BuildContext context) {
+    final showAppBarControls = !state.isLoading && !state.hasError;
+
+    return Scaffold(
+      appBar: ReceiveAppBar(
+        showAppBarControls: showAppBarControls,
+        state: state,
+        onChangeMethod: onChangeMethod,
+        onRequest: onRequest,
+      ),
+      body: ReceiveViewSwitcher(state: state),
+    );
+  }
+}
