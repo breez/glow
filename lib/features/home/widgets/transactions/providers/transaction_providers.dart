@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
 import 'package:glow/features/home/providers/home_providers.dart';
 import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
-import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/core/providers/sdk_provider.dart';
 
 /// Provider for TransactionFormatter service
 final transactionFormatterProvider = Provider<TransactionFormatter>((ref) {

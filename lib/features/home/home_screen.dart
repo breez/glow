@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/home/home_layout.dart';
-import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/core/providers/sdk_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});

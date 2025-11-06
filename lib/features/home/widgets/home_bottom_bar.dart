@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:glow/app_routes.dart';
+import 'package:glow/routing/app_routes.dart';
 
 class HomeBottomBar extends StatelessWidget {
   const HomeBottomBar({super.key});

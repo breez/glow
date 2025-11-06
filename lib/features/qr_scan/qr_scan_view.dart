@@ -1,10 +1,8 @@
-// lib/features/qr_scan/qr_scan_view.dart
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:glow/features/qr_scan/qr_scan_layout.dart';
 import 'package:glow/features/qr_scan/services/qr_code_parser.dart';
-import 'package:glow/logging/app_logger.dart';
+import 'package:glow/core/logging/app_logger.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 

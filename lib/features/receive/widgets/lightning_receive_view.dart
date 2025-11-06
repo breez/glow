@@ -1,14 +1,14 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/providers/sdk_provider.dart';
-import 'package:glow/widgets/receive/error_view.dart';
-import 'package:glow/widgets/receive/info_card.dart';
-import 'package:glow/widgets/receive/lightning_address_card.dart';
-import 'package:glow/widgets/receive/no_lightning_address_view.dart';
-import 'package:glow/widgets/receive/qr_code_card.dart';
-import 'package:glow/widgets/receive/edit_lightning_address_sheet.dart';
-import 'package:glow/widgets/receive/register_lightning_address_sheet.dart';
+import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:glow/features/receive/widgets/error_view.dart';
+import 'package:glow/features/receive/widgets/info_card.dart';
+import 'package:glow/features/receive/widgets/lightning_address_card.dart';
+import 'package:glow/features/receive/widgets/no_lightning_address_view.dart';
+import 'package:glow/features/receive/widgets/qr_code_card.dart';
+import 'package:glow/features/receive/widgets/edit_lightning_address_sheet.dart';
+import 'package:glow/features/receive/widgets/register_lightning_address_sheet.dart';
 
 /// Lightning receive view - displays Lightning Address with QR code
 class LightningReceiveView extends ConsumerWidget {

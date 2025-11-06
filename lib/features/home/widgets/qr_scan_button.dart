@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/app_routes.dart';
-import 'package:glow/handlers/input_handlers.dart';
-import 'package:glow/logging/app_logger.dart';
+import 'package:glow/routing/app_routes.dart';
+import 'package:glow/routing/input_handlers.dart';
+import 'package:glow/core/logging/app_logger.dart';
 
 final log = AppLogger.getLogger('QrScanButton');
 

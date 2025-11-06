@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/home/widgets/balance/models/balance_state.dart';
 import 'package:glow/features/home/widgets/balance/services/balance_formatter.dart';
 import 'package:glow/features/home/providers/home_providers.dart';
-import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/core/providers/sdk_provider.dart';
 
 /// Provider for BalanceFormatter service
 final balanceFormatterProvider = Provider<BalanceFormatter>((ref) {

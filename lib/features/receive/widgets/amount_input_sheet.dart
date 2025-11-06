@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/receive/models/receive_method.dart';
-import 'package:glow/providers/bitcoin_address_provider.dart';
-import 'package:glow/providers/sdk_provider.dart';
-import 'package:glow/utils/formatters.dart';
-import 'package:glow/widgets/receive/qr_code_card.dart';
-import 'package:glow/widgets/receive/copyable_card.dart';
-import 'package:glow/widgets/receive/error_view.dart';
+import 'package:glow/core/providers/bitcoin_address_provider.dart';
+import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:glow/core/utils/formatters.dart';
+import 'package:glow/features/receive/widgets/qr_code_card.dart';
+import 'package:glow/features/receive/widgets/copyable_card.dart';
+import 'package:glow/features/receive/widgets/error_view.dart';
 
 /// Bottom sheet for inputting amount and generating invoice/address
 class AmountInputSheet extends ConsumerStatefulWidget {
