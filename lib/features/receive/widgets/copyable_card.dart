@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:glow/core/utils/clipboard.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/core/services/clipboard_service.dart';
 
 /// Generic card widget for displaying copyable content (e.g., invoices, addresses)
-class CopyableCard extends StatelessWidget {
+class CopyableCard extends ConsumerWidget {
   final String title;
   final String content;
 
   const CopyableCard({super.key, required this.title, required this.content});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final clipboardService = ref.read(clipboardServiceProvider);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -33,7 +35,7 @@ class CopyableCard extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.copy, size: 20),
-                onPressed: () => copyToClipboard(context, content),
+                onPressed: () => clipboardService.copyToClipboard(context, content),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 tooltip: 'Copy',

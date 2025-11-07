@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:glow/core/utils/clipboard.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/core/services/clipboard_service.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 
 /// Reusable QR code card widget
-class QRCodeCard extends StatelessWidget {
+class QRCodeCard extends ConsumerWidget {
   final String data;
 
   const QRCodeCard({super.key, required this.data});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final clipboardService = ref.read(clipboardServiceProvider);
     return GestureDetector(
-      onTap: () => copyToClipboard(context, data),
+      onTap: () => clipboardService.copyToClipboard(context, data),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),

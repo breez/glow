@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:glow/core/utils/clipboard.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/core/services/clipboard_service.dart';
 
 /// Card widget for displaying Lightning Address with edit and copy actions
-class LightningAddressCard extends StatelessWidget {
+class LightningAddressCard extends ConsumerWidget {
   final String address;
   final VoidCallback onEdit;
 
   const LightningAddressCard({super.key, required this.address, required this.onEdit});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final clipboardService = ref.read(clipboardServiceProvider);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(12)),
@@ -38,7 +40,7 @@ class LightningAddressCard extends StatelessWidget {
               const SizedBox(width: 8),
               IconButton(
                 icon: const Icon(Icons.copy, size: 20),
-                onPressed: () => copyToClipboard(context, address),
+                onPressed: () => clipboardService.copyToClipboard(context, address),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 tooltip: 'Copy',

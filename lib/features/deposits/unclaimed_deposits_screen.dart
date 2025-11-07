@@ -2,7 +2,7 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/providers/sdk_provider.dart';
-import 'package:glow/core/utils/clipboard.dart';
+import 'package:glow/core/services/clipboard_service.dart';
 import 'package:glow/features/deposits/providers/deposit_claimer.dart';
 import 'package:glow/features/deposits/unclaimed_deposits_layout.dart';
 import 'package:glow/core/logging/app_logger.dart';
@@ -21,6 +21,7 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final depositsAsync = ref.watch(unclaimedDepositsProvider);
+    final clipboardService = ref.read(clipboardServiceProvider);
     final claimer = ref.read(depositClaimerProvider);
 
     // Map DepositInfo to DepositCardData for UI
@@ -56,7 +57,7 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
         formattedErrorMessage: cardData.formattedErrorMessage,
         onRetryClaim: () => _handleRetryClaim(context, ref, deposit),
         onShowRefundInfo: () => _showRefundInfo(context, deposit),
-        onCopyTxid: () => copyToClipboard(context, deposit.txid),
+        onCopyTxid: () => clipboardService.copyToClipboard(context, deposit.txid),
       );
     }
 
@@ -64,7 +65,7 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
       depositsAsync: cardDataAsync,
       onRetryClaim: (cardData) => _handleRetryClaim(context, ref, cardData.deposit),
       onShowRefundInfo: (cardData) => _showRefundInfo(context, cardData.deposit),
-      onCopyTxid: (cardData) => copyToClipboard(context, cardData.deposit.txid),
+      onCopyTxid: (cardData) => clipboardService.copyToClipboard(context, cardData.deposit.txid),
       depositCardBuilder: buildDepositCard,
     );
   }
