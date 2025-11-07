@@ -46,7 +46,6 @@ class _DepositCardState extends State<DepositCard> {
         ),
       ),
       child: InkWell(
-        key: Key('deposit_card_tap_${widget.deposit.txid}'),
         onTap: () => setState(() => _isExpanded = !_isExpanded),
         borderRadius: BorderRadius.circular(12),
         child: Padding(

@@ -48,12 +48,14 @@ void main() {
     // Helper to create DepositCard widget from DepositInfo
     Widget makeDepositCard(
       DepositInfo deposit, {
+      Key? cardKey,
       VoidCallback? onRetryClaim,
       VoidCallback? onShowRefundInfo,
       VoidCallback? onCopyTxid,
     }) {
       final cardData = cardDataFromDeposit(deposit);
       return DepositCard(
+        key: cardKey,
         deposit: cardData.deposit,
         hasError: cardData.hasError,
         hasRefund: cardData.hasRefund,
@@ -182,18 +184,23 @@ void main() {
       testWidgets('collapses when tapped again', (tester) async {
         final deposit = createMockDeposit(amountSats: BigInt.from(10000));
         final cardKey = Key('deposit_card_${deposit.txid}');
-        final inkWellKey = Key('deposit_card_tap_${deposit.txid}');
         await tester.pumpWidget(
           makeTestable(
-            makeDepositCard(deposit, onRetryClaim: () {}, onShowRefundInfo: () {}, onCopyTxid: () {}),
+            makeDepositCard(
+              deposit,
+              cardKey: cardKey,
+              onRetryClaim: () {},
+              onShowRefundInfo: () {},
+              onCopyTxid: () {},
+            ),
           ),
         );
         // Expand
-        await tester.tap(find.byKey(inkWellKey));
+        await tester.tap(find.byKey(cardKey));
         await tester.pumpAndSettle();
         expect(find.text('Transaction'), findsOneWidget);
         // Collapse
-        await tester.tap(find.byKey(inkWellKey));
+        await tester.tap(find.byKey(cardKey));
         await tester.pumpAndSettle();
         expect(find.text('Transaction'), findsNothing);
       });
