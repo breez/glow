@@ -4,7 +4,6 @@ import 'package:glow/features/qr_scan/widgets/scan_overlay.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// Pure presentation widget for QR scan view
-/// Following Visual Layout Widget principle
 class QRScanLayout extends StatelessWidget {
   const QRScanLayout({
     super.key,

@@ -4,7 +4,6 @@ import 'package:glow/features/home/widgets/balance/widgets/balance_display_shimm
 import 'models/balance_state.dart';
 
 /// Pure presentation widget for balance display
-/// Following Visual Layout Widget principle - only converts state to widgets
 class BalanceDisplayLayout extends StatelessWidget {
   const BalanceDisplayLayout({super.key, required this.state, this.onBalanceTap, this.onFiatBalanceTap});
 

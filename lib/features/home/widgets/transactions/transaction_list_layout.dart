@@ -4,7 +4,6 @@ import 'models/transaction_list_state.dart';
 import 'widgets/transaction_list_widgets.dart';
 
 /// Pure presentation widget for transaction list
-/// Following Visual Layout Widget principle - only converts state to widgets
 class TransactionListLayout extends StatelessWidget {
   const TransactionListLayout({super.key, required this.state, this.onTransactionTap, this.onRetry});
 
