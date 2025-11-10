@@ -186,10 +186,10 @@ class _InvoiceContent extends StatelessWidget {
           QRCodeCard(data: response.paymentRequest),
           const SizedBox(height: 32),
           CopyableCard(title: 'Lightning Invoice', content: response.paymentRequest),
-          if (response.feeSats > BigInt.zero) ...[
+          if (response.fee > BigInt.zero) ...[
             const SizedBox(height: 16),
             Text(
-              'Fee: ${formatSats(response.feeSats)} sats',
+              'Fee: ${formatSats(response.fee)} sats',
               style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ],

@@ -21,8 +21,8 @@ class DepositClaimer {
   String formatError(DepositClaimError error) {
     return error.when(
       depositClaimFeeExceeded: (tx, vout, maxFee, actualFee) {
-        final maxFeeStr = formatMaxFee(maxFee);
-        return 'Fee exceeds limit: $actualFee sats needed (your max: $maxFeeStr). '
+        final maxFeeStr = (maxFee != null) ? ' (your max: ${formatMaxFee(maxFee)}). ' : '';
+        return 'Fee exceeds limit: $actualFee sats needed$maxFeeStr'
             'Tap "Retry Claim" after increasing your maximum deposit claim fee rate(sat/vByte).';
       },
       missingUtxo: (tx, vout) => 'Transaction output not found on chain',

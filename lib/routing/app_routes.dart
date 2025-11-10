@@ -48,7 +48,8 @@ class AppRoutes {
   static const String sendSilentPayment = '/send/silent_payment';
   static const String sendBip21 = '/send/bip21';
   static const String sendBolt12InvoiceRequest = '/send/bolt12_invoice_request';
-  static const String sendSparkAddress = '/send/spark_address';
+  static const String sendSparkAddress = '/send/spark/address';
+  static const String sendSparkInvoice = '/send/spark/invoice';
 
   // Deposit claim routes
   static const String unclaimedDeposits = '/deposit/list';
@@ -204,6 +205,16 @@ class AppRoutes {
           builder: (_) => _PlaceholderScreen(
             title: 'Spark Address Payment',
             content: _SparkAddressWidget(details: args),
+          ),
+          settings: settings,
+        );
+
+      case sendSparkInvoice:
+        final args = settings.arguments as SparkInvoiceDetails;
+        return MaterialPageRoute(
+          builder: (_) => _PlaceholderScreen(
+            title: 'Spark Invoice Payment',
+            content: _SparkInvoiceWidget(details: args),
           ),
           settings: settings,
         );
@@ -518,32 +529,41 @@ class _SparkAddressWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _InfoField(label: 'Spark Address', value: details.address, monospace: true),
-        _InfoField(label: 'Identity Key', value: details.decodedAddress.identityPublicKey, monospace: true),
-        _InfoField(label: 'Network', value: details.decodedAddress.network.name),
-        if (details.decodedAddress.sparkInvoiceFields != null) ...[
-          const Divider(height: 24),
-          const Text('Invoice Fields', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 8),
-          _InfoField(label: 'ID', value: details.decodedAddress.sparkInvoiceFields!.id),
-          _InfoField(label: 'Version', value: '${details.decodedAddress.sparkInvoiceFields!.version}'),
-          if (details.decodedAddress.sparkInvoiceFields!.memo != null)
-            _InfoField(label: 'Memo', value: details.decodedAddress.sparkInvoiceFields!.memo!),
-          if (details.decodedAddress.sparkInvoiceFields!.senderPublicKey != null)
-            _InfoField(
-              label: 'Sender Key',
-              value: details.decodedAddress.sparkInvoiceFields!.senderPublicKey!,
-              monospace: true,
-            ),
-          if (details.decodedAddress.sparkInvoiceFields!.paymentType != null)
-            _InfoField(
-              label: 'Payment Type',
-              value: _getSparkPaymentType(details.decodedAddress.sparkInvoiceFields!.paymentType!),
-            ),
-        ],
+        _InfoField(label: 'Identity Key', value: details.identityPublicKey, monospace: true),
+        _InfoField(label: 'Network', value: details.network.name),
         if (details.source.bip21Uri != null)
           _InfoField(label: 'BIP21 URI', value: details.source.bip21Uri!, monospace: true),
         if (details.source.bip353Address != null)
           _InfoField(label: 'BIP353 Address', value: details.source.bip353Address!),
+      ],
+    );
+  }
+}
+
+class _SparkInvoiceWidget extends StatelessWidget {
+  final SparkInvoiceDetails details;
+
+  const _SparkInvoiceWidget({required this.details});
+
+  @override
+  Widget build(BuildContext context) {
+    final expiry = details.expiryTime != null
+        ? DateTime.fromMillisecondsSinceEpoch(details.expiryTime!.toInt() * 1000)
+        : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _InfoField(label: 'Invoice', value: details.invoice, monospace: true),
+        _InfoField(label: 'Identity Key', value: details.identityPublicKey, monospace: true),
+        _InfoField(label: 'Network', value: details.network.name),
+        if (details.amount != null) _InfoField(label: 'Amount', value: _formatAmount(details.amount)),
+        if (details.description != null) _InfoField(label: 'Description', value: details.description!),
+        if (details.tokenIdentifier != null)
+          _InfoField(label: 'Token ID', value: details.tokenIdentifier!, monospace: true),
+        if (details.senderPublicKey != null)
+          _InfoField(label: 'Sender Key', value: details.senderPublicKey!, monospace: true),
+        if (expiry != null) _InfoField(label: 'Expires', value: expiry.toLocal().toString()),
       ],
     );
   }
@@ -727,15 +747,7 @@ String _getInputTypeName(InputType inputType) {
     bolt12InvoiceRequest: (_) => 'BOLT12 Invoice Request',
     lnurlWithdraw: (_) => 'LNURL Withdraw',
     sparkAddress: (_) => 'Spark Address',
-  );
-}
-
-/// Get human-readable name for Spark payment type
-String _getSparkPaymentType(SparkAddressPaymentType paymentType) {
-  return paymentType.when(
-    tokensPayment: (details) =>
-        'Tokens${details.tokenIdentifier != null ? ' (${details.tokenIdentifier})' : ''}',
-    satsPayment: (details) => 'Sats${details.amount != null ? ' (${details.amount} sats)' : ''}',
+    sparkInvoice: (_) => 'Spark Invoice',
   );
 }
 

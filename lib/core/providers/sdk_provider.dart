@@ -217,18 +217,12 @@ final sdkEventListenerProvider = Provider<void>((ref) {
       event.when(
         synced: () async {
           log.i('Wallet synced');
-          await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
-          await ref.read(paymentsProvider.notifier).refreshIfChanged();
         },
-        claimDepositsSucceeded: (claimedDeposits) async {
-          log.i('Deposits claimed successfully: ${claimedDeposits.length}');
-          await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
-          await ref.read(paymentsProvider.notifier).refreshIfChanged();
-        },
-        claimDepositsFailed: (unclaimedDeposits) {
-          log.e('Failed to claim ${unclaimedDeposits.length} deposits');
-          for (final deposit in unclaimedDeposits) {
-            log.e('Failed deposit: ${deposit.txid}:${deposit.vout}, error: ${deposit.claimError}');
+        dataSynced: (bool didPullNewRecords) async {
+          log.i('Data synced');
+          if (didPullNewRecords) {
+            await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
+            await ref.read(paymentsProvider.notifier).refreshIfChanged();
           }
         },
         paymentSucceeded: (payment) async {
@@ -239,6 +233,12 @@ final sdkEventListenerProvider = Provider<void>((ref) {
         paymentFailed: (payment) async {
           log.e('Payment failed: ${payment.id}');
           await ref.read(paymentsProvider.notifier).refreshIfChanged();
+        },
+        unclaimedDeposits: (List<DepositInfo> unclaimedDeposits) {
+          log.i('Unclaimed Deposits: ${unclaimedDeposits.length}');
+        },
+        claimedDeposits: (List<DepositInfo> claimedDeposits) {
+          log.i('Claimed Deposits: ${claimedDeposits.length}');
         },
       );
     });

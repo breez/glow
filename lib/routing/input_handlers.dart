@@ -107,6 +107,10 @@ class InputHandler {
         _log.i('Navigating to Spark Address screen');
         Navigator.pushNamed(context, AppRoutes.sendSparkAddress, arguments: details);
       },
+      sparkInvoice: (details) {
+        _log.i('Navigating to Spark Invoice screen');
+        Navigator.pushNamed(context, AppRoutes.sendSparkInvoice, arguments: details);
+      },
     );
   }
 }
