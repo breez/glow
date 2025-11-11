@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/core/providers/wallet_provider.dart';
 import 'package:glow/core/services/config_service.dart';
 
+// TODO: This will be used for theme management in the future
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
   ThemeMode build() {
@@ -22,4 +24,10 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
   }
 }
 
-final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+final themeModeProvider = Provider<ThemeMode>((ref) {
+  final hasWalletsAsync = ref.watch(hasWalletsProvider);
+  if (hasWalletsAsync.value == true) {
+    return ThemeMode.dark;
+  }
+  return ThemeMode.light;
+});

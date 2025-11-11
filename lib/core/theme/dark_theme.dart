@@ -59,6 +59,7 @@ const _darkAppBarTheme = AppBarTheme(
   iconTheme: IconThemeData(color: Colors.white),
   systemOverlayStyle: SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
+    statusBarBrightness: Brightness.dark,
     statusBarIconBrightness: Brightness.light,
     systemNavigationBarColor: BreezColors.darkBackground,
     systemStatusBarContrastEnforced: false,

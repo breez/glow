@@ -48,16 +48,10 @@ class MainApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final ThemeData themeData = themeMode == ThemeMode.dark ? buildDarkTheme() : buildLightTheme();
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        systemNavigationBarColor: themeMode == ThemeMode.dark
-            ? BreezColors.darkBackground
-            : BreezColors.primary,
-        systemStatusBarContrastEnforced: false,
-      ),
+      value: themeData.appBarTheme.systemOverlayStyle!,
       child: MaterialApp(
         title: 'Glow',
         initialRoute: AppRoutes.homeScreen,

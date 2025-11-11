@@ -26,14 +26,6 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
   String? _mnemonicError;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
-    });
-  }
-
-  @override
   void dispose() {
     _nameController.dispose();
     _mnemonicController.dispose();

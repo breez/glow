@@ -68,6 +68,7 @@ class ConfigService {
     log.i('Reset max deposit claim fee to default');
   }
 
+  // TODO: This will be used for theme management in the future
   /// Get the current theme mode
   /// Returns the persisted value or system default if not set
   ThemeMode getThemeMode() {

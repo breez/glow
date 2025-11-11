@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/logging/app_logger.dart';
-import 'package:glow/core/providers/theme_provider.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
 
 final log = AppLogger.getLogger('SetupActions');
@@ -63,7 +62,6 @@ class _RegisterButtonState extends ConsumerState<_RegisterButton> {
       await ref.read(activeWalletProvider.notifier).setActiveWallet(wallet.id);
 
       if (mounted) {
-        ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
         // Navigate to home screen, removing all previous routes
         Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homeScreen, (_) => false);
 
@@ -115,14 +113,14 @@ class _RegisterButtonState extends ConsumerState<_RegisterButton> {
             ? SizedBox(
                 height: 20,
                 width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: themeData.colorScheme.onSecondary),
+                child: CircularProgressIndicator(strokeWidth: 2, color: themeData.primaryColor),
               )
             : Semantics(
                 button: true,
                 label: 'LET\'S GLOW!',
                 child: AutoSizeText(
                   'LET\'S GLOW!',
-                  style: themeData.textTheme.labelLarge?.copyWith(color: themeData.colorScheme.onSecondary),
+                  style: themeData.textTheme.labelLarge?.copyWith(color: themeData.primaryColor),
                   stepGranularity: 0.1,
                   group: widget.autoSizeGroup,
                   maxLines: 1,

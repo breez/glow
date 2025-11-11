@@ -31,6 +31,11 @@ ThemeData buildLightTheme() {
     datePickerTheme: _lightDatePickerTheme,
 
     // Text / icons
+    textTheme: ThemeData.dark().textTheme,
+    inputDecorationTheme: ThemeData.dark().inputDecorationTheme,
+
+    primaryTextTheme: ThemeData.dark().primaryTextTheme,
+
     primaryIconTheme: const IconThemeData(color: BreezColors.grey500),
     textSelectionTheme: TextSelectionThemeData(
       selectionColor: BreezColors.primaryLight.withValues(alpha: .25),
@@ -43,13 +48,14 @@ const _lightAppBarTheme = AppBarTheme(
   centerTitle: false,
   elevation: 0,
   scrolledUnderElevation: 0,
-  backgroundColor: BreezColors.primaryLight,
+  backgroundColor: BreezColors.primary,
   foregroundColor: Colors.white,
   iconTheme: IconThemeData(color: Colors.white),
   systemOverlayStyle: SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
+    statusBarBrightness: Brightness.dark,
     statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: BreezColors.primaryLight,
+    systemNavigationBarColor: BreezColors.primary,
     systemStatusBarContrastEnforced: false,
   ),
 );
