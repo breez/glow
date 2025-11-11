@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:glow/core/config/app_config.dart';
+import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/providers/theme_provider.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
@@ -10,6 +12,8 @@ import 'package:glow/features/home/home_screen.dart';
 import 'package:glow/features/wallet/setup_screen.dart';
 import 'package:glow/core/services/config_service.dart';
 import 'package:glow/core/theme/theme.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/logging/app_logger.dart';
 
@@ -31,6 +35,12 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  
+  // Initialize i18n & l10n
+  Intl.defaultLocale = AppConfig.defaultLocale;
+  await initializeDateFormatting(AppConfig.defaultLocale, null);
+  TransactionFormatter.setupLocales();
+
   await BreezSdkSparkLib.init();
   await AppLogger.initialize();
   final prefs = await SharedPreferences.getInstance();

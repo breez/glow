@@ -1,11 +1,28 @@
-import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
+import 'dart:io' show Platform;
+import 'dart:ui';
 
-/// Service for formatting transaction/payment-related values
+import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
+import 'package:glow/core/config/app_config.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
+/// Bitcoin balance units
+enum BalanceUnit { sats, btc }
+
+/// Service for formatting transaction/payment-related values and dates
 /// Following Inversion of Control principle
 class TransactionFormatter {
   const TransactionFormatter();
 
-  /// Formats sats with thousand separators
+  static final DateFormat _monthDateFormat = DateFormat.Md(Platform.localeName);
+  static final DateFormat _yearMonthDayFormat = DateFormat.yMd(Platform.localeName);
+  static final DateFormat _yearMonthDayHourMinuteFormat = DateFormat.yMd(Platform.localeName).add_jm();
+  static final DateFormat _hourMinuteDayFormat = DateFormat.jm(Platform.localeName);
+
+  // Bitcoin conversion constants
+  static const int _satoshisPerBitcoin = 100000000;
+
+  /// Formats sats with thousand separators (spaces)
   String formatSats(BigInt sats) {
     final str = sats.toString();
     final buffer = StringBuffer();
@@ -15,11 +32,46 @@ class TransactionFormatter {
       buffer.write(str[i]);
       final position = length - i - 1;
       if (position > 0 && position % 3 == 0) {
-        buffer.write(',');
+        buffer.write(' ');
       }
     }
 
     return buffer.toString();
+  }
+
+  /// Formats sats to BTC with proper decimal places (8 decimals)
+  String formatBtc(BigInt sats) {
+    final btc = sats.toDouble() / _satoshisPerBitcoin;
+    return btc.toStringAsFixed(8);
+  }
+
+  /// Formats balance with currency unit
+  String formatBalance(BigInt sats, {BalanceUnit unit = BalanceUnit.sats}) {
+    return switch (unit) {
+      BalanceUnit.sats => '${formatSats(sats)} sats',
+      BalanceUnit.btc => '${formatBtc(sats)} BTC',
+    };
+  }
+
+  /// Converts sats to fiat using exchange rate
+  String formatFiat(BigInt sats, double exchangeRate, String currencySymbol) {
+    final btc = sats.toDouble() / _satoshisPerBitcoin;
+    final fiatValue = btc * exchangeRate;
+    return '$currencySymbol${fiatValue.toStringAsFixed(2)}';
+  }
+
+  /// Parses a string amount to satoshis
+  /// Handles both BTC and SAT formats
+  BigInt parseSats(String amount, {BalanceUnit unit = BalanceUnit.sats}) {
+    if (amount.isEmpty) return BigInt.zero;
+
+    final cleaned = amount.replaceAll(RegExp(r'[^\d.]'), '');
+    final parsed = double.tryParse(cleaned) ?? 0;
+
+    return switch (unit) {
+      BalanceUnit.sats => BigInt.from(parsed.toInt()),
+      BalanceUnit.btc => BigInt.from((parsed * _satoshisPerBitcoin).toInt()),
+    };
   }
 
   /// Formats payment status for display
@@ -52,27 +104,34 @@ class TransactionFormatter {
   }
 
   /// Formats timestamp to relative time (e.g., "2 hours ago")
+  /// Uses relative format for dates within 4 days, otherwise shows full date
   String formatRelativeTime(BigInt timestamp) {
-    final date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
-    final now = DateTime.now();
-    final difference = now.difference(date);
+    final date = _toDateTime(timestamp);
+    final fourDaysAgo = DateTime.now().subtract(const Duration(days: 4));
 
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+    if (fourDaysAgo.isBefore(date)) {
+      return timeago.format(date, locale: _getSystemLocale().languageCode);
     } else {
-      return '${date.day}/${date.month}/${date.year}';
+      return formatYearMonthDay(date);
     }
   }
 
-  /// Formats full timestamp
+  /// Formats full timestamp as year/month/day
+  String formatYearMonthDay(DateTime date) => _yearMonthDayFormat.format(date);
+
+  /// Formats full timestamp as month/day
+  String formatMonthDate(DateTime date) => _monthDateFormat.format(date);
+
+  /// Formats full timestamp as year, month, day, hour, and minute
+  String formatYearMonthDayHourMinute(DateTime date) =>
+      _yearMonthDayHourMinuteFormat.format(date).replaceAll(' ', ' ');
+
+  /// Formats time as hour and minute
+  String formatHourMinute(DateTime date) => _hourMinuteDayFormat.format(date);
+
+  /// Formats full datetime for display
   String formatDateTime(BigInt timestamp) {
-    final date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
+    final date = _toDateTime(timestamp);
     return '${date.day}/${date.month}/${date.year} at ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
 
@@ -96,5 +155,52 @@ class TransactionFormatter {
       PaymentType.send => '-$formattedAmount',
       PaymentType.receive => '+$formattedAmount',
     };
+  }
+
+  /// Converts BigInt timestamp (seconds) to DateTime
+  /// Assumes timestamp is in seconds since epoch
+  DateTime _toDateTime(BigInt timestamp) {
+    return DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
+  }
+
+  /// Gets the system locale for date/time formatting
+  Locale _getSystemLocale() {
+    try {
+      final parts = Platform.localeName.split('_');
+      return Locale(parts[0], parts.length > 1 ? parts[1] : null);
+    } catch (e) {
+      var defaultLocaleParts = AppConfig.defaultLocale.split('_');
+      var defaultLocaleCode = defaultLocaleParts[0];
+      var countryCode = defaultLocaleParts.length > 1 ? defaultLocaleParts[1] : null;
+      return Locale(defaultLocaleCode, countryCode);
+    }
+  }
+
+  /// Sets up locale messages for the timeago package
+  /// Call this during app initialization
+  static void setupLocales() {
+    timeago.setLocaleMessages('en', timeago.EnMessages());
+    timeago.setLocaleMessages('bg', timeago.EnMessages());
+    timeago.setLocaleMessages('cs', timeago.CsMessages());
+    timeago.setLocaleMessages('de', timeago.DeMessages());
+    timeago.setLocaleMessages('el', timeago.GrMessages());
+    timeago.setLocaleMessages('es', timeago.EsMessages());
+    timeago.setLocaleMessages('fi', timeago.FiMessages());
+    timeago.setLocaleMessages('fr', timeago.FrMessages());
+    timeago.setLocaleMessages('it', timeago.ItMessages());
+    timeago.setLocaleMessages('pt', timeago.PtBrMessages());
+    timeago.setLocaleMessages('sk', timeago.EnMessages());
+    timeago.setLocaleMessages('sv', timeago.SvMessages());
+  }
+}
+
+extension LocaleExt on Locale {
+  String get languageCode => _languageCode;
+
+  String get _languageCode {
+    if (countryCode != null) {
+      return '${languageCode}_${countryCode!}'.toLowerCase();
+    }
+    return languageCode.toLowerCase();
   }
 }

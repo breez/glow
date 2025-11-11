@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glow/features/home/models/home_state_factory.dart';
 import 'package:glow/features/home/widgets/balance/balance_display_layout.dart';
 import 'package:glow/features/home/widgets/balance/models/balance_state.dart';
-import 'package:glow/features/home/widgets/balance/services/balance_formatter.dart';
 import 'package:glow/features/home/widgets/balance/widgets/balance_display_shimmer.dart';
 import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
 import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
@@ -13,7 +12,7 @@ import 'package:glow/features/home/widgets/transactions/widgets/transaction_list
 
 void main() {
   group('BalanceFormatter Unit Tests', () {
-    const formatter = BalanceFormatter();
+    const formatter = TransactionFormatter();
 
     test('formats sats with thousand separators', () {
       expect(formatter.formatSats(BigInt.from(1000)), '1,000');
@@ -28,9 +27,9 @@ void main() {
     });
 
     test('formats balance with unit', () {
-      expect(formatter.formatBalanceWithUnit(BigInt.from(1000), unit: BalanceUnit.sats), '1,000 sats');
+      expect(formatter.formatBalance(BigInt.from(1000), unit: BalanceUnit.sats), '1,000 sats');
       expect(
-        formatter.formatBalanceWithUnit(BigInt.from(100000000), unit: BalanceUnit.btc),
+        formatter.formatBalance(BigInt.from(100000000), unit: BalanceUnit.btc),
         '1.00000000 BTC',
       );
     });
@@ -89,7 +88,6 @@ void main() {
 
   group('HomeStateFactory Unit Tests', () {
     const factory = HomeStateFactory(
-      balanceFormatter: BalanceFormatter(),
       transactionFormatter: TransactionFormatter(),
     );
 

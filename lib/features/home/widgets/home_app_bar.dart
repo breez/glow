@@ -24,7 +24,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
           'assets/svg/hamburger.svg',
           height: 24.0,
           width: 24.0,
-          colorFilter: ColorFilter.mode(themeData.appBarTheme.actionsIconTheme!.color!, BlendMode.srcATop),
+          colorFilter: ColorFilter.mode(themeData.appBarTheme.iconTheme!.color!, BlendMode.srcATop),
         ),
         onPressed: () => Scaffold.of(context).openDrawer(),
       ),

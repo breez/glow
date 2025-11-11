@@ -1,14 +1,12 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:glow/features/home/widgets/balance/models/balance_state.dart';
-import 'package:glow/features/home/widgets/balance/services/balance_formatter.dart';
 import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
 import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
 
 /// Factory for creating home-related states
 class HomeStateFactory {
-  const HomeStateFactory({required this.balanceFormatter, required this.transactionFormatter});
+  const HomeStateFactory({required this.transactionFormatter});
 
-  final BalanceFormatter balanceFormatter;
   final TransactionFormatter transactionFormatter;
 
   /// Creates BalanceState from raw balance value
@@ -23,9 +21,9 @@ class HomeStateFactory {
       return BalanceState.loading();
     }
 
-    final formattedBalance = balanceFormatter.formatSats(balance);
+    final formattedBalance = transactionFormatter.formatSats(balance);
     final formattedFiat = (exchangeRate != null && currencySymbol != null)
-        ? balanceFormatter.formatFiat(balance, exchangeRate, currencySymbol)
+        ? transactionFormatter.formatFiat(balance, exchangeRate, currencySymbol)
         : null;
 
     return BalanceState.loaded(
