@@ -13,55 +13,39 @@ class TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final amountColor = transaction.isReceive ? Colors.green : colorScheme.onSurface;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Container(
+          color: Theme.of(context).drawerTheme.backgroundColor,
+          child: ListTile(
+            onTap: onTap,
+            leading: _buildAvatarContainer(context),
+            title: Transform.translate(offset: const Offset(-8, 0), child: _buildTitle()),
+            subtitle: Transform.translate(offset: const Offset(-8, 0), child: _buildSubtitle(context)),
+            trailing: _buildAmount(context),
+          ),
+        ),
+      ),
+    );
+  }
 
-    return ListTile(
-      onTap: onTap,
-      leading: _buildIcon(context),
-      title: Row(
-        children: [
-          Expanded(
-            child: Text(
-              transaction.description.isEmpty ? transaction.formattedMethod : transaction.description,
-              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            transaction.formattedAmountWithSign,
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: amountColor),
+  Widget _buildAvatarContainer(BuildContext context) {
+    return Container(
+      height: 72.0,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .1),
+            offset: const Offset(0.5, 0.5),
+            blurRadius: 5.0,
           ),
         ],
       ),
-      subtitle: Row(
-        children: [
-          Text(
-            transaction.formattedTime,
-            style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
-          ),
-          if (transaction.payment.status != PaymentStatus.completed) ...[
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: _getStatusColor(transaction.payment.status).withValues(alpha: .2),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                transaction.formattedStatus,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: _getStatusColor(transaction.payment.status),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
+      child: CircleAvatar(radius: 16, backgroundColor: Colors.white, child: _buildIcon(context)),
     );
   }
 
@@ -77,7 +61,7 @@ class TransactionListItem extends StatelessWidget {
     IconData icon;
     switch (transaction.payment.method) {
       case PaymentMethod.lightning:
-        icon = transaction.isReceive ? Icons.bolt : Icons.bolt;
+        icon = Icons.bolt;
         break;
       case PaymentMethod.deposit:
         icon = Icons.arrow_downward;
@@ -92,16 +76,96 @@ class TransactionListItem extends StatelessWidget {
         icon = transaction.isReceive ? Icons.arrow_downward : Icons.arrow_upward;
     }
 
-    return CircleAvatar(
-      backgroundColor: color.withValues(alpha: .1),
-      child: Icon(icon, color: color, size: 20),
+    return Icon(icon, size: 16, color: color);
+  }
+
+  Widget _buildTitle() {
+    return Text(
+      transaction.description.isEmpty ? transaction.formattedMethod : transaction.description,
+      style: const TextStyle(fontSize: 12.25, fontWeight: FontWeight.w400, height: 1.2, letterSpacing: 0.25),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildSubtitle(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final subtitleColor = colorScheme.onSurface;
+    final statusColor = _getStatusColor(transaction.payment.status);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          transaction.formattedTime,
+          style: TextStyle(
+            color: subtitleColor.withValues(alpha: .7),
+            fontSize: 10.5,
+            fontWeight: FontWeight.w400,
+            height: 1.16,
+            letterSpacing: 0.39,
+          ),
+        ),
+        if (transaction.payment.status != PaymentStatus.completed) ...[
+          const SizedBox(width: 8),
+          Text(
+            transaction.formattedStatus,
+            style: TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w400,
+              height: 1.16,
+              letterSpacing: 0.39,
+              color: statusColor,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildAmount(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final amountColor = colorScheme.onSurface;
+
+    final hasFees = transaction.payment.fees > BigInt.zero;
+    final isPending = transaction.payment.status == PaymentStatus.pending;
+
+    return SizedBox(
+      height: 44,
+      child: Column(
+        mainAxisAlignment: (hasFees && !isPending) ? MainAxisAlignment.spaceAround : MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            transaction.formattedAmountWithSign,
+            style: TextStyle(
+              color: amountColor,
+              fontSize: 13.5,
+              fontWeight: FontWeight.w500,
+              height: 1.28,
+              letterSpacing: 0.5,
+            ),
+          ),
+          if (hasFees && !isPending)
+            Text(
+              '${transaction.isReceive ? '' : '-'}${transaction.payment.fees} sats',
+              style: TextStyle(
+                color: amountColor.withValues(alpha: .7),
+                fontSize: 10.5,
+                fontWeight: FontWeight.w400,
+                height: 1.16,
+                letterSpacing: 0.39,
+              ),
+            ),
+        ],
+      ),
     );
   }
 
   Color _getStatusColor(PaymentStatus status) {
     return switch (status) {
       PaymentStatus.completed => Colors.green,
-      PaymentStatus.pending => Colors.orange,
+      PaymentStatus.pending => const Color(0xff4D88EC),
       PaymentStatus.failed => Colors.red,
     };
   }
