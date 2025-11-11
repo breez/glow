@@ -30,6 +30,7 @@ class BreezSdkService with LoggerMixin {
       lnurlDomain: BreezConfig.lnurlDomain,
       preferSparkOverLightning: true,
       useDefaultExternalInputParsers: false,
+      privateEnabledDefault: false
     );
 
     try {
