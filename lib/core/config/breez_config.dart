@@ -4,6 +4,6 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart' show Fee;
 class BreezConfig {
   static const apiKey = String.fromEnvironment('BREEZ_API_KEY');
   static const defaultSyncIntervalSecs = 60;
-  static const lnurlDomain = "breez.tips";
+  static const lnurlDomain = "breez.cash";
   static Fee get defaultMaxDepositClaimFee => Fee.rate(satPerVbyte: BigInt.from(1));
 }
