@@ -5,7 +5,6 @@ import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/logging/logger_mixin.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
 import 'package:glow/features/wallet/widgets/network_selector.dart';
-import 'package:glow/features/wallet/widgets/wallet_name_field.dart';
 import 'package:glow/features/wallet/widgets/warning_card.dart';
 
 class WalletCreateScreen extends ConsumerStatefulWidget {
@@ -72,8 +71,6 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
         child: ListView(
           padding: EdgeInsets.all(24),
           children: [
-            WalletNameField(controller: _nameController),
-            SizedBox(height: 24),
             NetworkSelector(
               selectedNetwork: _selectedNetwork,
               onChanged: (v) => setState(() => _selectedNetwork = v),

@@ -7,7 +7,6 @@ import 'package:glow/core/providers/theme_provider.dart';
 import 'package:glow/core/services/mnemonic_service.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
 import 'package:glow/features/wallet/widgets/network_selector.dart';
-import 'package:glow/features/wallet/widgets/wallet_name_field.dart';
 import 'package:glow/features/wallet/widgets/warning_card.dart';
 
 class WalletImportScreen extends ConsumerStatefulWidget {
@@ -94,8 +93,6 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
         child: ListView(
           padding: EdgeInsets.all(24),
           children: [
-            WalletNameField(controller: _nameController),
-            SizedBox(height: 24),
             TextFormField(
               controller: _mnemonicController,
               decoration: InputDecoration(
