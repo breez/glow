@@ -15,9 +15,14 @@ class WalletStorageService with LoggerMixin {
   static const _activeWalletKey = 'active_wallet_id';
   static const _mnemonicPrefix = 'wallet_mnemonic_';
 
+  /// Secure Storage Options
+  static const _accountName = 'Glow';
+  static const _keychainAccessibility = KeychainAccessibility.first_unlock;
+
   final _storage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    aOptions: AndroidOptions(sharedPreferencesName: 'glow_prefs', preferencesKeyPrefix: 'glow_'),
+    iOptions: IOSOptions(accountName: _accountName, accessibility: _keychainAccessibility),
+    mOptions: MacOsOptions(accountName: _accountName, accessibility: _keychainAccessibility),
   );
 
   // ============================================================================
