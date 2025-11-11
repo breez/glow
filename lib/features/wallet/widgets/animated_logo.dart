@@ -103,7 +103,7 @@ class _AnimatedLogoState extends State<AnimatedLogo> with SingleTickerProviderSt
                       ),
                       // The image itself
                       Image.asset(
-                        'assets/icons/glow_transparent.png',
+                        'assets/icon/glow_transparent.png',
                         fit: BoxFit.contain,
                         filterQuality: FilterQuality.high,
                         height: 128.0,

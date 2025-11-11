@@ -57,7 +57,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/svg/
-    - assets/icons/
+    - assets/icon/
   fonts:
     - family: IBMPlexSans
       fonts:
