@@ -13,7 +13,6 @@ class WarningCard extends StatelessWidget {
     final warningColor = color ?? Colors.orange;
 
     return Card(
-      color: warningColor.withValues(alpha: .1),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Row(

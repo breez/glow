@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/logging/logger_mixin.dart';
-import 'package:glow/core/providers/theme_provider.dart';
 import 'package:glow/core/services/mnemonic_service.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
-import 'package:glow/features/wallet/widgets/network_selector.dart';
 import 'package:glow/features/wallet/widgets/warning_card.dart';
 
 class WalletImportScreen extends ConsumerStatefulWidget {
@@ -20,7 +18,7 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
   final _nameController = TextEditingController(text: 'Imported Wallet');
   final _mnemonicController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  Network _selectedNetwork = Network.mainnet;
+  final Network _selectedNetwork = Network.mainnet;
   bool _isImporting = false;
   String? _mnemonicError;
 
@@ -86,6 +84,8 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
 
   @override
   Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: Text('Import Wallet')),
       body: Form(
@@ -97,9 +97,17 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
               controller: _mnemonicController,
               decoration: InputDecoration(
                 labelText: '12-Word Recovery Phrase',
+                labelStyle: TextStyle(color: themeData.colorScheme.surface),
                 hintText: 'word1 word2 word3 ...',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.key),
+                hintStyle: TextStyle(color: themeData.colorScheme.surface.withOpacity(0.6)),
+                border: OutlineInputBorder(borderSide: BorderSide(color: themeData.colorScheme.surface)),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: themeData.colorScheme.surface),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: themeData.colorScheme.surface),
+                ),
+                prefixIcon: Icon(Icons.key, color: Colors.white),
                 errorText: _mnemonicError,
                 errorMaxLines: 2,
               ),
@@ -108,11 +116,6 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
               autocorrect: false,
               onChanged: (_) => _validateMnemonic(),
               validator: (v) => v == null || v.trim().isEmpty ? 'Enter recovery phrase' : null,
-            ),
-            SizedBox(height: 24),
-            NetworkSelector(
-              selectedNetwork: _selectedNetwork,
-              onChanged: (v) => setState(() => _selectedNetwork = v),
             ),
             SizedBox(height: 32),
             WarningCard(
