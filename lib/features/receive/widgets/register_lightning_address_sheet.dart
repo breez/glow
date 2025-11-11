@@ -72,7 +72,7 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
         }
         return;
       }
-
+      log.i('Registering Lightning Address for username: $cleaned');
       await widget.sdk.registerLightningAddress(request: RegisterLightningAddressRequest(username: cleaned));
 
       if (mounted) {
@@ -82,6 +82,7 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
         );
       }
     } catch (e) {
+      log.e('Error registering Lightning Address. ', error: e);
       if (mounted) {
         setState(() {
           _isProcessing = false;

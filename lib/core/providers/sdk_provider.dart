@@ -67,15 +67,12 @@ final sdkProvider = FutureProvider<BreezSdk>((ref) async {
   }
 
   final service = ref.read(breezSdkServiceProvider);
-  log.d('Connecting BreezSdk for walletId: $walletId');
-  final sdk = await service.connect(
+  return await service.connect(
     walletId: walletId,
     mnemonic: mnemonic,
     network: network,
     maxDepositClaimFee: maxDepositClaimFee,
   );
-  log.d('BreezSdk connected');
-  return sdk;
 });
 
 /// Node info - only updates when data actually changes
