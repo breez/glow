@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/providers/sdk_provider.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
@@ -15,8 +16,18 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final activeWallet = ref.watch(activeWalletProvider);
     final hasSynced = ref.watch(hasSyncedProvider);
+    final themeData = Theme.of(context);
 
     return AppBar(
+      leading: IconButton(
+        icon: SvgPicture.asset(
+          'assets/svg/hamburger.svg',
+          height: 24.0,
+          width: 24.0,
+          colorFilter: ColorFilter.mode(themeData.appBarTheme.actionsIconTheme!.color!, BlendMode.srcATop),
+        ),
+        onPressed: () => Scaffold.of(context).openDrawer(),
+      ),
       backgroundColor: Colors.transparent,
       actions: [
         _SyncIndicator(hasSynced: hasSynced),
