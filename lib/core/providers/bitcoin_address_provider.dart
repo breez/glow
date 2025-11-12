@@ -1,34 +1,37 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:glow/core/logging/app_logger.dart';
 import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:logger/logger.dart';
 
-final log = AppLogger.getLogger('BitcoinAddressProvider');
+final Logger log = AppLogger.getLogger('BitcoinAddressProvider');
 
 /// Provider for getting the current Bitcoin address
 /// Uses receivePayment with BitcoinAddress method (no amount)
 /// The SDK returns the cached static deposit address or generates a new one
-final bitcoinAddressProvider = FutureProvider.autoDispose<BitcoinAddressData?>((ref) async {
-  final sdk = await ref.watch(sdkProvider.future);
+final FutureProvider<BitcoinAddressData?>
+bitcoinAddressProvider = FutureProvider.autoDispose<BitcoinAddressData?>((Ref ref) async {
+  final BreezSdk sdk = await ref.watch(sdkProvider.future);
 
   try {
     log.d('Fetching Bitcoin address from SDK');
 
     // Call receivePayment with BitcoinAddress method
     // SDK will return cached address or generate new one
-    final response = await sdk.receivePayment(
+    final ReceivePaymentResponse response = await sdk.receivePayment(
       request: const ReceivePaymentRequest(paymentMethod: ReceivePaymentMethod.bitcoinAddress()),
     );
 
     // The paymentRequest is just the Bitcoin address string
-    final address = response.paymentRequest;
+    final String address = response.paymentRequest;
     log.d('Received Bitcoin address: $address');
 
     // Parse the address to get network details
-    final input = await sdk.parse(input: address);
+    final InputType input = await sdk.parse(input: address);
 
     return input.maybeWhen(
-      bitcoinAddress: (details) {
+      bitcoinAddress: (BitcoinAddressDetails details) {
         log.d(
           'Successfully parsed Bitcoin address: ${details.address}, network: ${details.network}, source: ${details.source}',
         );
@@ -41,7 +44,7 @@ final bitcoinAddressProvider = FutureProvider.autoDispose<BitcoinAddressData?>((
         return BitcoinAddressData(
           address: address,
           network: _detectNetworkFromAddress(address),
-          source: PaymentRequestSource(),
+          source: const PaymentRequestSource(),
         );
       },
     );
@@ -60,28 +63,29 @@ final bitcoinAddressProvider = FutureProvider.autoDispose<BitcoinAddressData?>((
 /// 1. Check storage cache
 /// 2. Check existing addresses (list_static_deposit_addresses)
 /// 3. Only generates new if no addresses exist
-final generateBitcoinAddressProvider = FutureProvider.autoDispose.family<BitcoinAddressData?, void>((
-  ref,
+final FutureProviderFamily<BitcoinAddressData?, void>
+generateBitcoinAddressProvider = FutureProvider.autoDispose.family<BitcoinAddressData?, void>((
+  Ref ref,
   _,
 ) async {
-  final sdk = await ref.watch(sdkProvider.future);
+  final BreezSdk sdk = await ref.watch(sdkProvider.future);
 
   try {
     log.d('Generating new Bitcoin address');
 
     // Call receivePayment again
     // Per SDK code, this will return cached address if it exists
-    final response = await sdk.receivePayment(
+    final ReceivePaymentResponse response = await sdk.receivePayment(
       request: const ReceivePaymentRequest(paymentMethod: ReceivePaymentMethod.bitcoinAddress()),
     );
 
-    final address = response.paymentRequest;
+    final String address = response.paymentRequest;
     log.d('Generated Bitcoin address: $address');
 
-    final input = await sdk.parse(input: address);
+    final InputType input = await sdk.parse(input: address);
 
-    final addressData = input.maybeWhen(
-      bitcoinAddress: (details) {
+    final BitcoinAddressData addressData = input.maybeWhen(
+      bitcoinAddress: (BitcoinAddressDetails details) {
         log.d(
           'Parsed generated address: ${details.address}, network: ${details.network}, source: ${details.source}',
         );
@@ -93,7 +97,7 @@ final generateBitcoinAddressProvider = FutureProvider.autoDispose.family<Bitcoin
         return BitcoinAddressData(
           address: address,
           network: _detectNetworkFromAddress(address),
-          source: PaymentRequestSource(),
+          source: const PaymentRequestSource(),
         );
       },
     );
@@ -112,43 +116,44 @@ final generateBitcoinAddressProvider = FutureProvider.autoDispose.family<Bitcoin
 /// Provider for Bitcoin address with amount (BIP21 URI)
 /// Currently, the SDK has TODO for supporting amount in BitcoinAddress method
 /// So we get the base address and create the BIP21 URI manually
-final bitcoinAddressWithAmountProvider = FutureProvider.autoDispose.family<BitcoinBip21Data?, BigInt>((
-  ref,
-  amountSats,
-) async {
-  log.d('Creating BIP21 URI with amount: $amountSats sats');
+final FutureProviderFamily<BitcoinBip21Data?, BigInt> bitcoinAddressWithAmountProvider = FutureProvider
+    .autoDispose
+    .family<BitcoinBip21Data?, BigInt>((Ref ref, BigInt amountSats) async {
+      log.d('Creating BIP21 URI with amount: $amountSats sats');
 
-  // First get the base address
-  final addressData = await ref.watch(bitcoinAddressProvider.future);
+      // First get the base address
+      final BitcoinAddressData? addressData = await ref.watch(bitcoinAddressProvider.future);
 
-  if (addressData == null) {
-    log.w('No Bitcoin address available for BIP21 URI creation');
-    return null;
-  }
+      if (addressData == null) {
+        log.w('No Bitcoin address available for BIP21 URI creation');
+        return null;
+      }
 
-  // Create BIP21 URI with amount
-  final bip21Uri = _createBip21Uri(
-    address: addressData.address,
-    amountSats: amountSats,
-    label: 'Payment',
-    message: null,
-  );
+      // Create BIP21 URI with amount
+      final String bip21Uri = _createBip21Uri(
+        address: addressData.address,
+        amountSats: amountSats,
+        label: 'Payment',
+      );
 
-  log.d('Created BIP21 URI: $bip21Uri');
+      log.d('Created BIP21 URI: $bip21Uri');
 
-  return BitcoinBip21Data(
-    address: addressData.address,
-    network: addressData.network,
-    amountSats: amountSats,
-    bip21Uri: bip21Uri,
-  );
-});
+      return BitcoinBip21Data(
+        address: addressData.address,
+        network: addressData.network,
+        amountSats: amountSats,
+        bip21Uri: bip21Uri,
+      );
+    });
 
 /// Provider for creating BIP21 URI from parameters
 /// This is a synchronous provider since we're just building a string
-final bip21UriProvider = Provider.family<String, Bip21UriParams>((ref, params) {
+final ProviderFamily<String, Bip21UriParams> bip21UriProvider = Provider.family<String, Bip21UriParams>((
+  Ref ref,
+  Bip21UriParams params,
+) {
   log.d('bip21UriProvider called with params: $params');
-  final uri = _createBip21Uri(
+  final String uri = _createBip21Uri(
     address: params.address,
     amountSats: params.amountSats,
     label: params.label,
@@ -161,12 +166,12 @@ final bip21UriProvider = Provider.family<String, Bip21UriParams>((ref, params) {
 /// Helper: Create BIP21 URI
 /// Format: bitcoin:ADDRESS?amount=0.00000000&label=LABEL&message=MESSAGE
 String _createBip21Uri({required String address, BigInt? amountSats, String? label, String? message}) {
-  final buffer = StringBuffer('bitcoin:$address');
-  final queryParams = <String>[];
+  final StringBuffer buffer = StringBuffer('bitcoin:$address');
+  final List<String> queryParams = <String>[];
 
   if (amountSats != null && amountSats > BigInt.zero) {
     // Convert sats to BTC (8 decimal places)
-    final btc = amountSats.toDouble() / 100000000;
+    final double btc = amountSats.toDouble() / 100000000;
     queryParams.add('amount=${btc.toStringAsFixed(8)}');
   }
 

@@ -44,7 +44,7 @@ ThemeData buildLightTheme() {
   );
 }
 
-const _lightAppBarTheme = AppBarTheme(
+const AppBarTheme _lightAppBarTheme = AppBarTheme(
   centerTitle: false,
   elevation: 0,
   scrolledUnderElevation: 0,
@@ -60,23 +60,21 @@ const _lightAppBarTheme = AppBarTheme(
   ),
 );
 
-const _lightColorScheme = ColorScheme.light(
+const ColorScheme _lightColorScheme = ColorScheme.light(
   primary: BreezColors.primary,
-  onPrimary: Colors.white,
   secondary: Colors.white,
   onSecondary: BreezColors.primary,
-  surface: Colors.white,
   onSurface: BreezColors.grey900,
   error: BreezColors.warning,
   onError: BreezColors.grey900,
 );
 
-const _lightBottomAppBarTheme = BottomAppBarThemeData(
+const BottomAppBarThemeData _lightBottomAppBarTheme = BottomAppBarThemeData(
   height: 60,
   elevation: 0,
   color: BreezColors.primaryLight,
 );
-var filledButtonTheme = FilledButtonThemeData(
+FilledButtonThemeData filledButtonTheme = FilledButtonThemeData(
   style: FilledButton.styleFrom(
     backgroundColor: Colors.white,
     foregroundColor: BreezColors.primaryLight,
@@ -84,12 +82,12 @@ var filledButtonTheme = FilledButtonThemeData(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
   ),
 );
-const _lightFabTheme = FloatingActionButtonThemeData(
+const FloatingActionButtonThemeData _lightFabTheme = FloatingActionButtonThemeData(
   backgroundColor: BreezColors.primaryLight,
   foregroundColor: Colors.white,
   sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
 );
-const _lightDialogTheme = DialogThemeData(
+const DialogThemeData _lightDialogTheme = DialogThemeData(
   backgroundColor: Colors.white,
   titleTextStyle: TextStyle(
     color: BreezColors.grey600,
@@ -101,38 +99,44 @@ const _lightDialogTheme = DialogThemeData(
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
 );
 
-const _lightCardTheme = CardThemeData(
+const CardThemeData _lightCardTheme = CardThemeData(
   color: BreezColors.primaryLight,
   elevation: 0,
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
 );
 
-const _lightChipTheme = ChipThemeData(backgroundColor: BreezColors.primaryLight);
+const ChipThemeData _lightChipTheme = ChipThemeData(backgroundColor: BreezColors.primaryLight);
 
-const _lightDrawerTheme = DrawerThemeData(
+const DrawerThemeData _lightDrawerTheme = DrawerThemeData(
   backgroundColor: BreezColors.lightSurface,
   scrimColor: Colors.white54,
 );
 
-final _lightDatePickerTheme = DatePickerThemeData(
+final DatePickerThemeData _lightDatePickerTheme = DatePickerThemeData(
   backgroundColor: Colors.white,
   headerBackgroundColor: BreezColors.lightBackground,
   headerForegroundColor: Colors.white,
   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-  dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+  dayBackgroundColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
     if (states.contains(WidgetState.selected)) {
       return BreezColors.lightBackground;
     }
     return Colors.transparent;
   }),
-  dayForegroundColor: WidgetStateProperty.resolveWith((states) {
-    if (states.contains(WidgetState.selected)) return Colors.white;
-    if (states.contains(WidgetState.disabled)) return Colors.black38;
+  dayForegroundColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+    if (states.contains(WidgetState.selected)) {
+      return Colors.white;
+    }
+    if (states.contains(WidgetState.disabled)) {
+      return Colors.black38;
+    }
     return Colors.black;
   }),
   todayBorder: const BorderSide(color: BreezColors.lightBackground),
-  todayForegroundColor: WidgetStateProperty.resolveWith((states) {
-    if (states.contains(WidgetState.selected)) return Colors.white;
+  todayForegroundColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+    if (states.contains(WidgetState.selected)) {
+      return Colors.white;
+    }
     return BreezColors.lightBackground;
   }),
 );

@@ -8,12 +8,12 @@ class SendActionsRow extends StatelessWidget {
   final VoidCallback onScan;
   final AutoSizeGroup textGroup;
 
-  const SendActionsRow({super.key, required this.onPaste, required this.onScan, required this.textGroup});
+  const SendActionsRow({required this.onPaste, required this.onScan, required this.textGroup, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
+      children: <Widget>[
         Expanded(
           child: PaymentInfoPasteButton(onPressed: onPaste, textGroup: textGroup),
         ),

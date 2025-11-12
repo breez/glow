@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/core/models/wallet_metadata.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
 import 'package:glow/core/theme/colors.dart';
@@ -11,18 +12,18 @@ class HomeDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
+    final ThemeData themeData = Theme.of(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
         systemNavigationBarColor: themeData.drawerTheme.backgroundColor,
       ),
       child: Drawer(
         child: Column(
-          children: [
+          children: <Widget>[
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
-                children: [
+                children: <Widget>[
                   _DrawerHeader(),
                   const SizedBox(height: 16),
                   _DrawerItem(
@@ -36,7 +37,7 @@ class HomeDrawer extends StatelessWidget {
                   const Divider(indent: 16, endIndent: 16),
                   _DrawerSection(
                     title: 'Preferences',
-                    children: [
+                    children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(left: 16.0),
                         child: _DrawerItem(
@@ -77,10 +78,10 @@ class _DrawerHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    final activeWallet = ref.watch(activeWalletProvider);
+    final AsyncValue<WalletMetadata?> activeWallet = ref.watch(activeWalletProvider);
 
     return Container(
       height: statusBarHeight + _kBreezDrawerHeaderHeight,
@@ -88,7 +89,7 @@ class _DrawerHeader extends ConsumerWidget {
       color: BreezColors.darkBackground,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const SizedBox(height: 12),
           CircleAvatar(
             radius: 24,
@@ -98,7 +99,7 @@ class _DrawerHeader extends ConsumerWidget {
           const SizedBox(height: 12),
           // Display wallet name from provider
           activeWallet.when(
-            data: (wallet) => wallet != null && !wallet.isVerified
+            data: (WalletMetadata? wallet) => wallet != null && !wallet.isVerified
                 ? Text(wallet.name, style: theme.textTheme.titleMedium?.copyWith(color: BreezColors.grey600))
                 : const SizedBox.shrink(),
             loading: () => const SizedBox.shrink(),
@@ -120,7 +121,7 @@ class _DrawerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.only(right: 16),
@@ -164,7 +165,7 @@ class _DrawerSectionState extends State<_DrawerSection> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Theme(
       data: theme.copyWith(dividerColor: Colors.transparent),
@@ -194,7 +195,7 @@ class _DrawerFooter extends StatelessWidget {
     return Container(
       height: 60 + MediaQuery.of(context).padding.bottom,
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-      child: BreezSdkFooter(),
+      child: const BreezSdkFooter(),
     );
   }
 }

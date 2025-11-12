@@ -5,13 +5,13 @@ library;
 ///
 /// Example: 1234567 -> "1,234,567"
 String formatSats(BigInt sats) {
-  final str = sats.toString();
-  final buffer = StringBuffer();
-  final length = str.length;
+  final String str = sats.toString();
+  final StringBuffer buffer = StringBuffer();
+  final int length = str.length;
 
   for (int i = 0; i < length; i++) {
     buffer.write(str[i]);
-    final position = length - i - 1;
+    final int position = length - i - 1;
     if (position > 0 && position % 3 == 0) {
       buffer.write(',');
     }
@@ -22,7 +22,7 @@ String formatSats(BigInt sats) {
 
 /// Format sats to BTC (8 decimal places)
 String formatSatsToBtc(BigInt sats) {
-  final btc = sats.toDouble() / 100000000;
+  final double btc = sats.toDouble() / 100000000;
   return btc.toStringAsFixed(8);
 }
 
@@ -39,9 +39,9 @@ BigInt? parseSats(String input) {
 /// - "N days ago" if within the last week
 /// - "Mon DD" for older dates
 String formatTimestamp(BigInt timestamp) {
-  final date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
-  final now = DateTime.now();
-  final diff = now.difference(date);
+  final DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
+  final DateTime now = DateTime.now();
+  final Duration diff = now.difference(date);
 
   if (diff.inDays == 0) {
     return 'Today';
@@ -56,6 +56,19 @@ String formatTimestamp(BigInt timestamp) {
 
 /// Formats a date as "Mon DD" (e.g., "Jan 15")
 String _formatShortDate(DateTime date) {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const List<String> months = <String>[
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   return '${months[date.month - 1]} ${date.day}';
 }

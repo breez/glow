@@ -2,12 +2,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/logging/app_logger.dart';
+import 'package:logger/logger.dart';
 
-final log = AppLogger.getLogger('ClipboardService');
+final Logger log = AppLogger.getLogger('ClipboardService');
 
 /// Provider for clipboard service
-final clipboardServiceProvider = Provider<ClipboardService>((ref) {
-  return ClipboardService();
+final Provider<ClipboardService> clipboardServiceProvider = Provider<ClipboardService>((Ref ref) {
+  return const ClipboardService();
 });
 
 class ClipboardService {
@@ -16,8 +17,8 @@ class ClipboardService {
   Future<String?> getClipboardText() async {
     log.i('Attempting to fetch clipboard data');
     try {
-      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
-      final text = clipboardData?.text;
+      final ClipboardData? clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+      final String? text = clipboardData?.text;
       if (text == null || text.isEmpty) {
         log.w('Clipboard is empty');
       } else {

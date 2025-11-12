@@ -11,9 +11,9 @@ void main() {
   group('DepositCard', () {
     // Helper function to create mock DepositInfo
     DepositInfo createMockDeposit({
+      required BigInt amountSats,
       String? txid,
       int? vout,
-      required BigInt amountSats,
       DepositClaimError? claimError,
       String? refundTx,
       String? refundTxId,
@@ -29,11 +29,11 @@ void main() {
     }
 
     DepositCardData cardDataFromDeposit(DepositInfo deposit) {
-      final claimer = DepositClaimer();
-      final hasError = claimer.hasError(deposit);
-      final hasRefund = claimer.hasRefund(deposit);
-      final formattedTxid = claimer.formatTxid(deposit.txid);
-      final formattedErrorMessage = hasError && deposit.claimError != null
+      final DepositClaimer claimer = const DepositClaimer();
+      final bool hasError = claimer.hasError(deposit);
+      final bool hasRefund = claimer.hasRefund(deposit);
+      final String formattedTxid = claimer.formatTxid(deposit.txid);
+      final String? formattedErrorMessage = hasError && deposit.claimError != null
           ? claimer.formatError(deposit.claimError!)
           : null;
       return DepositCardData(
@@ -53,7 +53,7 @@ void main() {
       VoidCallback? onShowRefundInfo,
       VoidCallback? onCopyTxid,
     }) {
-      final cardData = cardDataFromDeposit(deposit);
+      final DepositCardData cardData = cardDataFromDeposit(deposit);
       return DepositCard(
         key: cardKey,
         deposit: cardData.deposit,
@@ -75,32 +75,32 @@ void main() {
     }
 
     group('initial state (collapsed)', () {
-      final testCases = [
-        {
+      final List<Map<String, Object>> testCases = <Map<String, Object>>[
+        <String, Object>{
           'desc': 'shows deposit amount',
           'deposit': createMockDeposit(amountSats: BigInt.from(10000)),
           'expect': (WidgetTester tester) async {
             expect(find.text('10000 sats'), findsOneWidget);
           },
         },
-        {
+        <String, Object>{
           'desc': 'shows "Waiting to claim" status when no error',
           'deposit': createMockDeposit(amountSats: BigInt.from(10000)),
           'expect': (WidgetTester tester) async {
             expect(find.text('Waiting to claim'), findsOneWidget);
           },
         },
-        {
+        <String, Object>{
           'desc': 'shows "Failed to claim" status when error exists',
           'deposit': createMockDeposit(
             amountSats: BigInt.from(10000),
-            claimError: DepositClaimError.generic(message: 'Test error'),
+            claimError: const DepositClaimError.generic(message: 'Test error'),
           ),
           'expect': (WidgetTester tester) async {
             expect(find.text('Failed to claim'), findsOneWidget);
           },
         },
-        {
+        <String, Object>{
           'desc': 'shows expand icon when collapsed',
           'deposit': createMockDeposit(amountSats: BigInt.from(10000)),
           'expect': (WidgetTester tester) async {
@@ -108,14 +108,14 @@ void main() {
             expect(find.byIcon(Icons.expand_less), findsNothing);
           },
         },
-        {
+        <String, Object>{
           'desc': 'shows wallet icon',
           'deposit': createMockDeposit(amountSats: BigInt.from(10000)),
           'expect': (WidgetTester tester) async {
             expect(find.byIcon(Icons.account_balance_wallet_outlined), findsOneWidget);
           },
         },
-        {
+        <String, Object>{
           'desc': 'does not show transaction details when collapsed',
           'deposit': createMockDeposit(amountSats: BigInt.from(10000), txid: 'test_transaction_id'),
           'expect': (WidgetTester tester) async {
@@ -125,9 +125,9 @@ void main() {
           },
         },
       ];
-      for (final tc in testCases) {
-        testWidgets(tc['desc'] as String, (tester) async {
-          final deposit = tc['deposit'] as DepositInfo;
+      for (final Map<String, Object> tc in testCases) {
+        testWidgets(tc['desc'] as String, (WidgetTester tester) async {
+          final DepositInfo deposit = tc['deposit'] as DepositInfo;
           await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
           await (tc['expect'] as Function)(tester);
         });
@@ -135,16 +135,16 @@ void main() {
     });
 
     group('expanded state', () {
-      testWidgets('expands when tapped', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
+      testWidgets('expands when tapped', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
         await tester.tap(find.byType(InkWell));
         await tester.pumpAndSettle();
         expect(find.text('Transaction'), findsOneWidget);
       });
 
-      testWidgets('shows transaction ID when expanded', (tester) async {
-        final deposit = createMockDeposit(
+      testWidgets('shows transaction ID when expanded', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(
           amountSats: BigInt.from(10000),
           txid: '1234567890abcdefghijklmnopqrstuvwxyz',
         );
@@ -155,8 +155,8 @@ void main() {
         expect(find.textContaining('stuvwxyz'), findsOneWidget);
       });
 
-      testWidgets('shows output index when expanded', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000), vout: 5);
+      testWidgets('shows output index when expanded', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000), vout: 5);
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
         await tester.tap(find.byType(InkWell));
         await tester.pumpAndSettle();
@@ -164,8 +164,8 @@ void main() {
         expect(find.text('5'), findsOneWidget);
       });
 
-      testWidgets('shows retry claim button when expanded', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
+      testWidgets('shows retry claim button when expanded', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
         await tester.tap(find.byType(InkWell));
         await tester.pumpAndSettle();
@@ -173,17 +173,17 @@ void main() {
         expect(find.byIcon(Icons.refresh), findsOneWidget);
       });
 
-      testWidgets('shows divider when expanded', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
+      testWidgets('shows divider when expanded', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
         await tester.tap(find.byType(InkWell));
         await tester.pumpAndSettle();
         expect(find.byType(Divider), findsOneWidget);
       });
 
-      testWidgets('collapses when tapped again', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
-        final cardKey = Key('deposit_card_${deposit.txid}');
+      testWidgets('collapses when tapped again', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
+        final Key cardKey = Key('deposit_card_${deposit.txid}');
         await tester.pumpWidget(
           makeTestable(
             makeDepositCard(
@@ -206,10 +206,10 @@ void main() {
       });
     });
     group('error state', () {
-      testWidgets('shows error banner when error exists', (tester) async {
-        final deposit = createMockDeposit(
+      testWidgets('shows error banner when error exists', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(
           amountSats: BigInt.from(10000),
-          claimError: DepositClaimError.generic(message: 'Test error'),
+          claimError: const DepositClaimError.generic(message: 'Test error'),
         );
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
         // Expand to see error
@@ -218,21 +218,21 @@ void main() {
         expect(find.byType(DepositErrorBanner), findsOneWidget);
       });
 
-      testWidgets('shows error border color when error exists', (tester) async {
-        final deposit = createMockDeposit(
+      testWidgets('shows error border color when error exists', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(
           amountSats: BigInt.from(10000),
-          claimError: DepositClaimError.generic(message: 'Test error'),
+          claimError: const DepositClaimError.generic(message: 'Test error'),
         );
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
 
-        final card = tester.widget<Card>(find.byType(Card));
-        final shape = card.shape as RoundedRectangleBorder;
+        final Card card = tester.widget<Card>(find.byType(Card));
+        final RoundedRectangleBorder shape = card.shape as RoundedRectangleBorder;
         // Error border should have some alpha (not fully transparent)
         expect(shape.side.color.alpha, greaterThan(0));
       });
 
-      testWidgets('does not show error banner when no error', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
+      testWidgets('does not show error banner when no error', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
 
         await tester.tap(find.byType(InkWell));
@@ -243,8 +243,8 @@ void main() {
     });
 
     group('refund transaction', () {
-      testWidgets('shows refund button when refund exists', (tester) async {
-        final deposit = createMockDeposit(
+      testWidgets('shows refund button when refund exists', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(
           amountSats: BigInt.from(10000),
           refundTx: 'refund_transaction_data',
         );
@@ -257,8 +257,8 @@ void main() {
         expect(find.byIcon(Icons.info_outline), findsOneWidget);
       });
 
-      testWidgets('does not show refund button when no refund', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
+      testWidgets('does not show refund button when no refund', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
 
         await tester.tap(find.byType(InkWell));
@@ -267,9 +267,9 @@ void main() {
         expect(find.text('View Refund'), findsNothing);
       });
 
-      testWidgets('calls onShowRefundInfo when refund button tapped', (tester) async {
+      testWidgets('calls onShowRefundInfo when refund button tapped', (WidgetTester tester) async {
         bool callbackCalled = false;
-        final deposit = createMockDeposit(
+        final DepositInfo deposit = createMockDeposit(
           amountSats: BigInt.from(10000),
           refundTx: 'refund_transaction_data',
         );
@@ -295,9 +295,9 @@ void main() {
     });
 
     group('callbacks', () {
-      testWidgets('calls onRetryClaim when retry button tapped', (tester) async {
+      testWidgets('calls onRetryClaim when retry button tapped', (WidgetTester tester) async {
         bool callbackCalled = false;
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
         await tester.pumpWidget(
           makeTestable(
             makeDepositCard(
@@ -320,26 +320,26 @@ void main() {
     });
 
     group('visual styling', () {
-      testWidgets('uses Card widget', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
+      testWidgets('uses Card widget', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
 
         expect(find.byType(Card), findsOneWidget);
       });
 
-      testWidgets('uses InkWell for tap feedback', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
+      testWidgets('uses InkWell for tap feedback', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
 
         expect(find.byType(InkWell), findsOneWidget);
       });
 
-      testWidgets('has proper padding', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(10000));
+      testWidgets('has proper padding', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(10000));
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
 
         // Find the Padding widget that wraps the content
-        final padding = tester.widget<Padding>(
+        final Padding padding = tester.widget<Padding>(
           find.descendant(of: find.byType(InkWell), matching: find.byType(Padding)).first,
         );
 
@@ -348,8 +348,8 @@ void main() {
     });
 
     group('edge cases', () {
-      testWidgets('handles very long transaction IDs', (tester) async {
-        final deposit = createMockDeposit(
+      testWidgets('handles very long transaction IDs', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(
           amountSats: BigInt.from(10000),
           txid: 'a' * 100, // Very long txid
         );
@@ -363,16 +363,16 @@ void main() {
         expect(find.textContaining('aaaaaaaa'), findsOneWidget);
       });
 
-      testWidgets('handles very large amounts', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.from(99999999));
+      testWidgets('handles very large amounts', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.from(99999999));
 
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
 
         expect(find.text('99999999 sats'), findsOneWidget);
       });
 
-      testWidgets('handles zero amount', (tester) async {
-        final deposit = createMockDeposit(amountSats: BigInt.zero);
+      testWidgets('handles zero amount', (WidgetTester tester) async {
+        final DepositInfo deposit = createMockDeposit(amountSats: BigInt.zero);
 
         await tester.pumpWidget(makeTestable(makeDepositCard(deposit)));
 

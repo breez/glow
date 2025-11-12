@@ -9,11 +9,11 @@ class ReceiveLayout extends StatelessWidget {
   final ValueChanged<ReceiveMethod> onChangeMethod;
   final VoidCallback? onRequest;
 
-  const ReceiveLayout({super.key, required this.state, required this.onChangeMethod, this.onRequest});
+  const ReceiveLayout({required this.state, required this.onChangeMethod, super.key, this.onRequest});
 
   @override
   Widget build(BuildContext context) {
-    final showAppBarControls = !state.isLoading && !state.hasError;
+    final bool showAppBarControls = !state.isLoading && !state.hasError;
 
     return Scaffold(
       appBar: ReceiveAppBar(

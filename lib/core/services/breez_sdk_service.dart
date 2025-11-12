@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' show Random;
 
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
@@ -19,10 +20,10 @@ class BreezSdkService with LoggerMixin {
   }) async {
     log.i('Connecting SDK for wallet: $walletId on ${network.name}');
 
-    final appDir = await getApplicationDocumentsDirectory();
-    final storageDir = '${appDir.path}/wallets/$walletId';
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    final String storageDir = '${appDir.path}/wallets/$walletId';
 
-    final config = Config(
+    final Config config = Config(
       apiKey: BreezConfig.apiKey,
       network: network,
       syncIntervalSecs: BreezConfig.defaultSyncIntervalSecs,
@@ -30,11 +31,11 @@ class BreezSdkService with LoggerMixin {
       lnurlDomain: BreezConfig.lnurlDomain,
       preferSparkOverLightning: true,
       useDefaultExternalInputParsers: false,
-      privateEnabledDefault: false
+      privateEnabledDefault: false,
     );
 
     try {
-      final sdk = await breez_sdk_spark.connect(
+      final BreezSdk sdk = await breez_sdk_spark.connect(
         request: ConnectRequest(
           config: config,
           seed: Seed.mnemonic(mnemonic: mnemonic),
@@ -53,12 +54,12 @@ class BreezSdkService with LoggerMixin {
 
   /// Get node info (balance, tokens)
   Future<GetInfoResponse> getNodeInfo(BreezSdk sdk) async {
-    return sdk.getInfo(request: GetInfoRequest());
+    return sdk.getInfo(request: const GetInfoRequest());
   }
 
   /// List payments with filters
   Future<List<Payment>> listPayments(BreezSdk sdk, ListPaymentsRequest request) async {
-    final response = await sdk.listPayments(request: request);
+    final ListPaymentsResponse response = await sdk.listPayments(request: request);
     return response.payments;
   }
 
@@ -69,7 +70,7 @@ class BreezSdkService with LoggerMixin {
 
   /// Get lightning address, with automatic registration if none exists
   Future<LightningAddressInfo?> getLightningAddress(BreezSdk sdk, {bool autoRegister = false}) async {
-    final existing = await sdk.getLightningAddress();
+    final LightningAddressInfo? existing = await sdk.getLightningAddress();
 
     if (existing != null || !autoRegister) {
       return existing;
@@ -79,7 +80,7 @@ class BreezSdkService with LoggerMixin {
     log.i('No Lightning Address found, attempting auto-registration');
 
     try {
-      final registered = await _autoRegisterLightningAddress(sdk);
+      final bool registered = await _autoRegisterLightningAddress(sdk);
       if (registered) {
         return await sdk.getLightningAddress();
       }
@@ -103,14 +104,14 @@ class BreezSdkService with LoggerMixin {
     }
 
     // Try with 4-digit suffix (up to 10 attempts)
-    final random = Random();
+    final Random random = Random();
     int attempts = 0;
-    const maxAttempts = 10;
+    const int maxAttempts = 10;
 
     while (attempts < maxAttempts) {
       attempts++;
       // Generate 4-digit number (1000-9999)
-      final suffix = random.nextInt(9000) + 1000;
+      final int suffix = random.nextInt(9000) + 1000;
       username = '$baseName$suffix';
 
       log.i('Checking availability for: $username (attempt $attempts)');
@@ -165,7 +166,7 @@ class BreezSdkService with LoggerMixin {
   Future<ClaimDepositResponse> claimDeposit(BreezSdk sdk, ClaimDepositRequest request) async {
     try {
       log.i('Manually claiming deposit: ${request.txid}:${request.vout}');
-      final response = await sdk.claimDeposit(request: request);
+      final ClaimDepositResponse response = await sdk.claimDeposit(request: request);
       log.i('Deposit claimed successfully');
       return response;
     } catch (e, stack) {
@@ -177,7 +178,9 @@ class BreezSdkService with LoggerMixin {
   /// List unclaimed deposits
   Future<List<DepositInfo>> listUnclaimedDeposits(BreezSdk sdk) async {
     try {
-      final response = await sdk.listUnclaimedDeposits(request: const ListUnclaimedDepositsRequest());
+      final ListUnclaimedDepositsResponse response = await sdk.listUnclaimedDeposits(
+        request: const ListUnclaimedDepositsRequest(),
+      );
       if (response.deposits.isNotEmpty) {
         log.i('Found ${response.deposits.length} unclaimed deposits');
       }
@@ -189,4 +192,6 @@ class BreezSdkService with LoggerMixin {
   }
 }
 
-final breezSdkServiceProvider = Provider((ref) => BreezSdkService());
+final Provider<BreezSdkService> breezSdkServiceProvider = Provider<BreezSdkService>(
+  (Ref ref) => BreezSdkService(),
+);

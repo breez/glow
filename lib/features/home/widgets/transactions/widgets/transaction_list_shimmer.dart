@@ -13,7 +13,10 @@ class TransactionListShimmer extends StatelessWidget {
       baseColor: themeData.colorScheme.onSecondary,
       highlightColor: themeData.colorScheme.surface.withValues(alpha: .5),
 
-      child: ListView.builder(itemCount: 8, itemBuilder: (context, index) => const _TransactionItemShimmer()),
+      child: ListView.builder(
+        itemCount: 8,
+        itemBuilder: (BuildContext context, int index) => const _TransactionItemShimmer(),
+      ),
     );
   }
 }
@@ -55,7 +58,11 @@ class _TransactionItemShimmer extends StatelessWidget {
                 ),
                 title: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: Text('', style: TransactionItemTextStyles.title, overflow: TextOverflow.ellipsis),
+                  child: const Text(
+                    '',
+                    style: TransactionItemTextStyles.title,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 subtitle: Transform.translate(
                   offset: const Offset(-8, 0),
@@ -70,7 +77,7 @@ class _TransactionItemShimmer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      Text('', style: TransactionItemTextStyles.amount),
+                      const Text('', style: TransactionItemTextStyles.amount),
                       Text('', style: TransactionItemTextStyles.fee),
                     ],
                   ),

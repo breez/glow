@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
-import 'models/transaction_list_state.dart';
-import 'widgets/transaction_list_widgets.dart';
+import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
+import 'package:glow/features/home/widgets/transactions/widgets/transaction_list_widgets.dart';
 
 /// Pure presentation widget for transaction list
 class TransactionListLayout extends StatelessWidget {
-  const TransactionListLayout({super.key, required this.state, this.onTransactionTap, this.onRetry});
+  const TransactionListLayout({required this.state, super.key, this.onTransactionTap, this.onRetry});
 
   final TransactionListState state;
   final Function(Payment payment)? onTransactionTap;
@@ -31,8 +31,8 @@ class TransactionListLayout extends StatelessWidget {
   Widget _buildTransactionList(BuildContext context) {
     return ListView.builder(
       itemCount: state.transactions.length,
-      itemBuilder: (context, index) {
-        final transaction = state.transactions[index];
+      itemBuilder: (BuildContext context, int index) {
+        final TransactionItemState transaction = state.transactions[index];
         return TransactionListItem(
           transaction: transaction,
           onTap: onTransactionTap != null ? () => onTransactionTap!(transaction.payment) : null,

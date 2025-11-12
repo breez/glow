@@ -4,9 +4,10 @@ import 'package:glow/features/qr_scan/qr_scan_layout.dart';
 import 'package:glow/features/qr_scan/services/qr_code_parser.dart';
 import 'package:glow/core/logging/app_logger.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-final log = AppLogger.getLogger('QRScanView');
+final Logger log = AppLogger.getLogger('QRScanView');
 
 /// QR Scan View - handles setup and business logic coordination
 /// - QRScanView: setup, lifecycle, and business logic coordination
@@ -50,7 +51,7 @@ class _QRScanViewState extends State<QRScanView> {
     }
 
     // Use parser service to extract code
-    final code = _parser.extractCode(capture);
+    final String? code = _parser.extractCode(capture);
 
     if (_parser.isValidCode(code)) {
       log.i('QR code detected: $code');
@@ -99,7 +100,9 @@ class _QRScanViewState extends State<QRScanView> {
 
   /// Pops navigation with result
   void _popWithResult(String? code) {
-    if (_hasPopped || !mounted) return;
+    if (_hasPopped || !mounted) {
+      return;
+    }
 
     _hasPopped = true;
     Navigator.of(context).pop(code);
@@ -107,7 +110,9 @@ class _QRScanViewState extends State<QRScanView> {
 
   /// Shows snackbar message
   void _showSnackBar(String message) {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }

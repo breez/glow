@@ -1,8 +1,9 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/logging/app_logger.dart';
+import 'package:logger/logger.dart';
 
-final log = AppLogger.getLogger('NetworkProvider');
+final Logger log = AppLogger.getLogger('NetworkProvider');
 
 /// Network selection state
 class NetworkNotifier extends Notifier<Network> {
@@ -19,4 +20,6 @@ class NetworkNotifier extends Notifier<Network> {
   }
 }
 
-final networkProvider = NotifierProvider<NetworkNotifier, Network>(NetworkNotifier.new);
+final NotifierProvider<NetworkNotifier, Network> networkProvider = NotifierProvider<NetworkNotifier, Network>(
+  NetworkNotifier.new,
+);

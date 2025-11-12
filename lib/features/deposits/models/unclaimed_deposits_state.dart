@@ -15,25 +15,25 @@ sealed class UnclaimedDepositsState {
 
   /// Check if has deposits (loaded and non-empty)
   bool get hasDeposits {
-    final state = this;
+    final UnclaimedDepositsState state = this;
     return state is UnclaimedDepositsLoaded && state.deposits.isNotEmpty;
   }
 
   /// Check if empty (loaded but no deposits)
   bool get isEmpty {
-    final state = this;
+    final UnclaimedDepositsState state = this;
     return state is UnclaimedDepositsLoaded && state.deposits.isEmpty;
   }
 
   /// Get deposits if loaded, otherwise empty list
   List<DepositCardData> get depositsOrEmpty {
-    final state = this;
-    return state is UnclaimedDepositsLoaded ? state.deposits : [];
+    final UnclaimedDepositsState state = this;
+    return state is UnclaimedDepositsLoaded ? state.deposits : <DepositCardData>[];
   }
 
   /// Get error message if in error state, otherwise null
   String? get errorMessage {
-    final state = this;
+    final UnclaimedDepositsState state = this;
     return state is UnclaimedDepositsError ? state.message : null;
   }
 }
@@ -57,7 +57,9 @@ class UnclaimedDepositsLoaded extends UnclaimedDepositsState {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
     return other is UnclaimedDepositsLoaded && _listEquals(other.deposits, deposits);
   }
 
@@ -65,10 +67,16 @@ class UnclaimedDepositsLoaded extends UnclaimedDepositsState {
   int get hashCode => deposits.hashCode;
 
   bool _listEquals<T>(List<T>? a, List<T>? b) {
-    if (a == null) return b == null;
-    if (b == null || a.length != b.length) return false;
+    if (a == null) {
+      return b == null;
+    }
+    if (b == null || a.length != b.length) {
+      return false;
+    }
     for (int i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) return false;
+      if (a[i] != b[i]) {
+        return false;
+      }
     }
     return true;
   }
@@ -83,7 +91,9 @@ class UnclaimedDepositsError extends UnclaimedDepositsState {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
     return other is UnclaimedDepositsError && other.message == message && other.error == error;
   }
 
@@ -109,7 +119,9 @@ class DepositCardData {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
     return other is DepositCardData &&
         other.deposit == deposit &&
         other.hasError == hasError &&

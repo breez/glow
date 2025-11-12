@@ -5,7 +5,7 @@ class InfoCard extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const InfoCard({super.key, required this.icon, required this.text});
+  const InfoCard({required this.icon, required this.text, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class InfoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 12),
           Expanded(

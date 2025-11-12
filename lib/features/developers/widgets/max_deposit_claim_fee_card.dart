@@ -5,7 +5,7 @@ class MaxDepositClaimFeeCard extends StatelessWidget {
   final Fee currentFee;
   final VoidCallback onTapMaxFeeCard;
 
-  const MaxDepositClaimFeeCard({super.key, required this.currentFee, required this.onTapMaxFeeCard});
+  const MaxDepositClaimFeeCard({required this.currentFee, required this.onTapMaxFeeCard, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +17,13 @@ class MaxDepositClaimFeeCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Row(
-                children: [
+                children: <Widget>[
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text('Deposit Claim Fee', style: Theme.of(context).textTheme.titleLarge),
                         const SizedBox(height: 4),
                         Text(
@@ -47,14 +47,13 @@ class MaxDepositClaimFeeCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
+                  children: <Widget>[
                     Icon(Icons.speed, size: 16, color: Theme.of(context).colorScheme.onPrimary),
                     const SizedBox(width: 8),
                     Text(
                       currentFee.when(
-                        rate: (satPerVbyte) => '$satPerVbyte sat/vByte',
-                        fixed: (amount) => '$amount sats',
+                        rate: (BigInt satPerVbyte) => '$satPerVbyte sat/vByte',
+                        fixed: (BigInt amount) => '$amount sats',
                       ),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,

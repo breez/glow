@@ -7,19 +7,19 @@ class LightningAddressCard extends ConsumerWidget {
   final String address;
   final VoidCallback onEdit;
 
-  const LightningAddressCard({super.key, required this.address, required this.onEdit});
+  const LightningAddressCard({required this.address, required this.onEdit, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clipboardService = ref.read(clipboardServiceProvider);
+    final ClipboardService clipboardService = ref.read(clipboardServiceProvider);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: Text(
                   'Lightning Address',

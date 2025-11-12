@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:glow/features/home/widgets/balance/theme/balance_text_styles.dart';
 import 'package:glow/features/home/widgets/balance/widgets/balance_display_shimmer.dart';
-import 'models/balance_state.dart';
+import 'package:glow/features/home/widgets/balance/models/balance_state.dart';
 
 /// Pure presentation widget for balance display
 class BalanceDisplayLayout extends StatelessWidget {
-  const BalanceDisplayLayout({super.key, required this.state, this.onBalanceTap, this.onFiatBalanceTap});
+  const BalanceDisplayLayout({required this.state, super.key, this.onBalanceTap, this.onFiatBalanceTap});
 
   final BalanceState state;
   final VoidCallback? onBalanceTap;
@@ -26,7 +26,7 @@ class _BalanceLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BalanceDisplayShimmer();
+    return const BalanceDisplayShimmer();
   }
 }
 
@@ -39,7 +39,7 @@ class _BalanceErrorView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(32),
       child: Column(
-        children: [
+        children: <Widget>[
           Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
           const SizedBox(height: 16),
           Text(
@@ -62,18 +62,18 @@ class _BalanceContentView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: <Widget>[
         TextButton(
           onPressed: onBalanceTap,
           child: RichText(
             text: TextSpan(
               style: BalanceTextStyles.amount,
               text: state.formattedBalance,
-              children: <InlineSpan>[TextSpan(text: ' sats', style: BalanceTextStyles.unit)],
+              children: <InlineSpan>[const TextSpan(text: ' sats', style: BalanceTextStyles.unit)],
             ),
           ),
         ),
-        if (state.formattedFiat != null) ...[
+        if (state.formattedFiat != null) ...<Widget>[
           const SizedBox(height: 12),
           Text(state.formattedFiat!, style: BalanceTextStyles.fiatAmount),
         ],
@@ -82,7 +82,7 @@ class _BalanceContentView extends StatelessWidget {
             padding: EdgeInsets.only(top: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2)),
                 SizedBox(width: 8),
                 Text('Syncing...', style: TextStyle(fontSize: 12)),

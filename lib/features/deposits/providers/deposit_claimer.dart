@@ -13,28 +13,30 @@ class DepositClaimer {
 
   /// Formats transaction ID for display (shortened)
   String formatTxid(String txid) {
-    if (txid.length <= 16) return txid;
+    if (txid.length <= 16) {
+      return txid;
+    }
     return '${txid.substring(0, 8)}...${txid.substring(txid.length - 8)}';
   }
 
   /// Formats deposit claim error for user-friendly display
   String formatError(DepositClaimError error) {
     return error.when(
-      depositClaimFeeExceeded: (tx, vout, maxFee, actualFee) {
-        final maxFeeStr = (maxFee != null) ? ' (your max: ${formatMaxFee(maxFee)}). ' : '';
+      depositClaimFeeExceeded: (String tx, int vout, Fee? maxFee, BigInt actualFee) {
+        final String maxFeeStr = (maxFee != null) ? ' (your max: ${formatMaxFee(maxFee)}). ' : '';
         return 'Fee exceeds limit: $actualFee sats needed$maxFeeStr'
             'Tap "Retry Claim" after increasing your maximum deposit claim fee rate(sat/vByte).';
       },
-      missingUtxo: (tx, vout) => 'Transaction output not found on chain',
-      generic: (message) => message,
+      missingUtxo: (String tx, int vout) => 'Transaction output not found on chain',
+      generic: (String message) => message,
     );
   }
 
   /// Formats max fee for display
   String formatMaxFee(Fee maxFee) {
     return maxFee.when(
-      fixed: (amount) => '$amount sats',
-      rate: (rate) => '~${99 * rate.toInt()} sats ($rate sat/vByte)',
+      fixed: (BigInt amount) => '$amount sats',
+      rate: (BigInt rate) => '~${99 * rate.toInt()} sats ($rate sat/vByte)',
     );
   }
 
@@ -50,6 +52,6 @@ class DepositClaimer {
 }
 
 /// Provider for the deposit claimer service
-final depositClaimerProvider = Provider<DepositClaimer>((ref) {
+final Provider<DepositClaimer> depositClaimerProvider = Provider<DepositClaimer>((Ref ref) {
   return const DepositClaimer();
 });

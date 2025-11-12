@@ -8,7 +8,7 @@ import 'package:glow/features/receive/widgets/bitcoin_receive_view.dart';
 class ReceiveViewSwitcher extends ConsumerWidget {
   final ReceiveState state;
 
-  const ReceiveViewSwitcher({super.key, required this.state});
+  const ReceiveViewSwitcher({required this.state, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

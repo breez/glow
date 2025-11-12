@@ -4,11 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/logging/app_logger.dart';
 import 'package:glow/core/providers/input_parser_provider.dart';
+import 'package:logger/logger.dart';
 
-final _log = AppLogger.getLogger('InputHandler');
+final Logger _log = AppLogger.getLogger('InputHandler');
 
 /// Provider for input handling
-final inputHandlerProvider = Provider<InputHandler>((ref) {
+final Provider<InputHandler> inputHandlerProvider = Provider<InputHandler>((Ref ref) {
   return InputHandler(ref);
 });
 
@@ -24,18 +25,20 @@ class InputHandler {
 
     try {
       // Parse the input
-      final parser = _ref.read(inputParserProvider);
-      final result = await parser.parse(input);
+      final InputParser parser = _ref.read(inputParserProvider);
+      final ParseResult result = await parser.parse(input);
 
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        return;
+      }
 
       // Handle the parsed result
       result.when(
-        success: (inputType) {
+        success: (InputType inputType) {
           _log.i('Successfully parsed input as ${inputType.runtimeType}');
           _navigateToPaymentScreen(context, inputType);
         },
-        error: (message) {
+        error: (String message) {
           _log.e('Failed to parse input: $message');
           ScaffoldMessenger.of(
             context,
@@ -53,35 +56,35 @@ class InputHandler {
   /// Navigate to the appropriate payment screen based on input type
   void _navigateToPaymentScreen(BuildContext context, InputType inputType) {
     inputType.when(
-      bitcoinAddress: (details) {
+      bitcoinAddress: (BitcoinAddressDetails details) {
         _log.i('Navigating to Bitcoin Address screen');
         Navigator.pushNamed(context, AppRoutes.sendBitcoinAddress, arguments: details);
       },
-      bolt11Invoice: (details) {
+      bolt11Invoice: (Bolt11InvoiceDetails details) {
         _log.i('Navigating to BOLT11 screen');
         Navigator.pushNamed(context, AppRoutes.sendBolt11, arguments: details);
       },
-      bolt12Invoice: (details) {
+      bolt12Invoice: (Bolt12InvoiceDetails details) {
         _log.i('Navigating to BOLT12 Invoice screen');
         Navigator.pushNamed(context, AppRoutes.sendBolt12Invoice, arguments: details);
       },
-      bolt12Offer: (details) {
+      bolt12Offer: (Bolt12OfferDetails details) {
         _log.i('Navigating to BOLT12 Offer screen');
         Navigator.pushNamed(context, AppRoutes.sendBolt12Offer, arguments: details);
       },
-      lightningAddress: (details) {
+      lightningAddress: (LightningAddressDetails details) {
         _log.i('Navigating to Lightning Address screen');
         Navigator.pushNamed(context, AppRoutes.sendLightningAddress, arguments: details);
       },
-      lnurlPay: (details) {
+      lnurlPay: (LnurlPayRequestDetails details) {
         _log.i('Navigating to LNURL-Pay screen');
         Navigator.pushNamed(context, AppRoutes.sendLnurlPay, arguments: details);
       },
-      silentPaymentAddress: (details) {
+      silentPaymentAddress: (SilentPaymentAddressDetails details) {
         _log.i('Navigating to Silent Payment screen');
         Navigator.pushNamed(context, AppRoutes.sendSilentPayment, arguments: details);
       },
-      lnurlAuth: (details) {
+      lnurlAuth: (LnurlAuthRequestDetails details) {
         _log.i('Navigating to LNURL-Auth screen');
         Navigator.pushNamed(context, AppRoutes.lnurlAuth, arguments: details);
       },
@@ -91,23 +94,23 @@ class InputHandler {
           context,
         ).showSnackBar(const SnackBar(content: Text('URL payments are not supported')));
       },
-      bip21: (details) {
+      bip21: (Bip21Details details) {
         _log.i('Navigating to BIP21 screen');
         Navigator.pushNamed(context, AppRoutes.sendBip21, arguments: details);
       },
-      bolt12InvoiceRequest: (details) {
+      bolt12InvoiceRequest: (Bolt12InvoiceRequestDetails details) {
         _log.i('Navigating to BOLT12 Invoice Request screen');
         Navigator.pushNamed(context, AppRoutes.sendBolt12InvoiceRequest, arguments: details);
       },
-      lnurlWithdraw: (details) {
+      lnurlWithdraw: (LnurlWithdrawRequestDetails details) {
         _log.i('Navigating to LNURL-Withdraw screen');
         Navigator.pushNamed(context, AppRoutes.receiveLnurlWithdraw, arguments: details);
       },
-      sparkAddress: (details) {
+      sparkAddress: (SparkAddressDetails details) {
         _log.i('Navigating to Spark Address screen');
         Navigator.pushNamed(context, AppRoutes.sendSparkAddress, arguments: details);
       },
-      sparkInvoice: (details) {
+      sparkInvoice: (SparkInvoiceDetails details) {
         _log.i('Navigating to Spark Invoice screen');
         Navigator.pushNamed(context, AppRoutes.sendSparkInvoice, arguments: details);
       },

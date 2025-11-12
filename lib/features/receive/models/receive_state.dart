@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'receive_method.dart';
+import 'package:glow/features/receive/models/receive_method.dart';
 
 class ReceiveState extends Equatable {
   const ReceiveState({required this.method, required this.isLoading, required this.hasError, this.error});
@@ -29,5 +29,5 @@ class ReceiveState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [method, isLoading, hasError, error];
+  List<Object?> get props => <Object?>[method, isLoading, hasError, error];
 }

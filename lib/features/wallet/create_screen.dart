@@ -1,6 +1,7 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/core/models/wallet_metadata.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/logging/logger_mixin.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
@@ -15,8 +16,8 @@ class WalletCreateScreen extends ConsumerStatefulWidget {
 }
 
 class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with LoggerMixin {
-  final _nameController = TextEditingController(text: 'My Wallet');
-  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController(text: 'My Wallet');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Network _selectedNetwork = Network.mainnet;
   bool _isCreating = false;
 
@@ -27,11 +28,13 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
   }
 
   Future<void> _createWallet() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
     setState(() => _isCreating = true);
 
     try {
-      final (wallet, mnemonic) = await ref
+      final (WalletMetadata wallet, String mnemonic) = await ref
           .read(walletListProvider.notifier)
           .createWallet(name: _nameController.text.trim(), network: _selectedNetwork);
 
@@ -43,7 +46,7 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
         Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homeScreen, (_) => false);
 
         // Show success message after navigation
-        Future.delayed(Duration(milliseconds: 300), () {
+        Future<void>.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Wallet "${wallet.name}" created!'), backgroundColor: Colors.green),
@@ -65,28 +68,28 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Wallet')),
+      appBar: AppBar(title: const Text('Create Wallet')),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.all(24),
-          children: [
+          padding: const EdgeInsets.all(24),
+          children: <Widget>[
             NetworkSelector(
               selectedNetwork: _selectedNetwork,
-              onChanged: (v) => setState(() => _selectedNetwork = v),
+              onChanged: (Network v) => setState(() => _selectedNetwork = v),
             ),
-            SizedBox(height: 32),
-            WarningCard(
+            const SizedBox(height: 32),
+            const WarningCard(
               message:
                   'You will see a 12-word recovery phrase after creating your wallet. Write it down securely. '
                   'Anyone with this phrase can access your funds.',
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             FilledButton(
               onPressed: _isCreating ? null : _createWallet,
               child: _isCreating
-                  ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text('Create Wallet'),
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Text('Create Wallet'),
             ),
           ],
         ),

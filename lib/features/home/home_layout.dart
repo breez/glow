@@ -24,14 +24,14 @@ class HomeLayout extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: SingleChildScrollView(
         child: Column(
-          children: [
+          children: <Widget>[
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.3 - kToolbarHeight,
-              child: BalanceDisplay(),
+              child: const BalanceDisplay(),
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.7 - kToolbarHeight - kBottomNavigationBarHeight,
-              child: TransactionList(),
+              child: const TransactionList(),
             ),
           ],
         ),

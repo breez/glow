@@ -9,7 +9,7 @@ Future<void> showRegisterLightningAddressSheet(BuildContext context, WidgetRef r
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    builder: (bottomSheetContext) => RegisterLightningAddressSheet(
+    builder: (BuildContext bottomSheetContext) => RegisterLightningAddressSheet(
       sdk: sdk,
       onSuccess: () {
         ref.invalidate(lightningAddressProvider(true));
@@ -26,14 +26,14 @@ class RegisterLightningAddressSheet extends StatefulWidget {
   final BreezSdk sdk;
   final VoidCallback onSuccess;
 
-  const RegisterLightningAddressSheet({super.key, required this.sdk, required this.onSuccess});
+  const RegisterLightningAddressSheet({required this.sdk, required this.onSuccess, super.key});
 
   @override
   State<RegisterLightningAddressSheet> createState() => _RegisterLightningAddressSheetState();
 }
 
 class _RegisterLightningAddressSheetState extends State<RegisterLightningAddressSheet> {
-  final _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   String? _errorText;
   bool _isProcessing = false;
 
@@ -44,14 +44,14 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
   }
 
   Future<void> _handleRegister() async {
-    final value = _controller.text.trim().toLowerCase().replaceAll(' ', '');
+    final String value = _controller.text.trim().toLowerCase().replaceAll(' ', '');
 
     if (value.isEmpty) {
       setState(() => _errorText = 'Username cannot be empty');
       return;
     }
 
-    final cleaned = value.replaceAll(RegExp(r'^\.+|\.+$'), '');
+    final String cleaned = value.replaceAll(RegExp(r'^\.+|\.+$'), '');
 
     setState(() {
       _isProcessing = true;
@@ -59,7 +59,7 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
     });
 
     try {
-      final available = await widget.sdk.checkLightningAddressAvailable(
+      final bool available = await widget.sdk.checkLightningAddressAvailable(
         request: CheckLightningAddressRequest(username: cleaned),
       );
 
@@ -104,7 +104,7 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: <Widget>[
           Text('Register Lightning Address', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 8),
           Text(

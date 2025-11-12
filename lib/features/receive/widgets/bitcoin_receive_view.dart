@@ -13,13 +13,13 @@ class BitcoinReceiveView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bitcoinAddressAsync = ref.watch(bitcoinAddressProvider);
+    final AsyncValue<BitcoinAddressData?> bitcoinAddressAsync = ref.watch(bitcoinAddressProvider);
 
     return bitcoinAddressAsync.when(
-      data: (address) =>
+      data: (BitcoinAddressData? address) =>
           address != null ? _BitcoinAddressContent(address: address) : const _NoBitcoinAddress(),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, _) => ErrorView(message: 'Failed to load Bitcoin address', error: err.toString()),
+      error: (Object err, _) => ErrorView(message: 'Failed to load Bitcoin address', error: err.toString()),
     );
   }
 }
@@ -35,7 +35,7 @@ class _BitcoinAddressContent extends ConsumerWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
-        children: [
+        children: <Widget>[
           const SizedBox(height: 16),
           QRCodeCard(data: address.address),
           const SizedBox(height: 32),
@@ -60,14 +60,16 @@ class _NoBitcoinAddress extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isGenerating = ref.watch(generateBitcoinAddressProvider(null).select((state) => state.isLoading));
+    final bool isGenerating = ref.watch(
+      generateBitcoinAddressProvider(null).select((AsyncValue<BitcoinAddressData?> state) => state.isLoading),
+    );
 
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(Icons.currency_bitcoin, size: 64, color: Theme.of(context).colorScheme.primary),
             const SizedBox(height: 24),
             Text('No Bitcoin Address', style: Theme.of(context).textTheme.headlineSmall),
@@ -109,8 +111,8 @@ class _NetworkBadge extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final networkName = _getNetworkName(network);
-    final color = _getNetworkColor(context, network);
+    final String networkName = _getNetworkName(network);
+    final Color color = _getNetworkColor(context, network);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -121,7 +123,7 @@ class _NetworkBadge extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           Icon(Icons.warning_amber_rounded, size: 16, color: color),
           const SizedBox(width: 6),
           Text(

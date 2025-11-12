@@ -6,12 +6,12 @@ import 'package:glow/features/deposits/widgets/empty_deposits_state.dart';
 /// Pure presentation widget for unclaimed deposits screen
 class UnclaimedDepositsLayout extends StatelessWidget {
   const UnclaimedDepositsLayout({
-    super.key,
     required this.depositsAsync,
     required this.onRetryClaim,
     required this.onShowRefundInfo,
     required this.onCopyTxid,
     required this.depositCardBuilder,
+    super.key,
   });
 
   final AsyncValue<List<DepositCardData>> depositsAsync;
@@ -25,9 +25,12 @@ class UnclaimedDepositsLayout extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Pending Deposits')),
       body: switch (depositsAsync) {
-        AsyncData(:final value) => _DepositsListView(deposits: value, depositCardBuilder: depositCardBuilder),
-        AsyncLoading() => const _LoadingView(),
-        AsyncError(:final error) => _ErrorView(error: error),
+        AsyncData<List<DepositCardData>>(:final List<DepositCardData> value) => _DepositsListView(
+          deposits: value,
+          depositCardBuilder: depositCardBuilder,
+        ),
+        AsyncLoading<List<DepositCardData>>() => const _LoadingView(),
+        AsyncError<List<DepositCardData>>(:final Object error) => _ErrorView(error: error),
       },
     );
   }
@@ -63,7 +66,7 @@ class _DepositsListView extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       itemCount: deposits.length,
       separatorBuilder: (_, _) => const SizedBox(height: 12),
-      itemBuilder: (context, index) => depositCardBuilder(deposits[index]),
+      itemBuilder: (BuildContext context, int index) => depositCardBuilder(deposits[index]),
     );
   }
 }
@@ -76,14 +79,14 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
             const SizedBox(height: 16),
             Text('Failed to load deposits', style: theme.textTheme.titleMedium),

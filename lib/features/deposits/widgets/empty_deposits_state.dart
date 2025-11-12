@@ -9,7 +9,7 @@ class EmptyDepositsState extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Icon(
             Icons.check_circle_outline,
             size: 80,

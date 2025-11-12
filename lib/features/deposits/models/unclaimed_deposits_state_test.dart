@@ -16,11 +16,11 @@ void main() {
     }
 
     group('loading state', () {
-      testWidgets('shows loading indicator when loading', (tester) async {
+      testWidgets('shows loading indicator when loading', (WidgetTester tester) async {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: const AsyncValue.loading(),
+              depositsAsync: const AsyncValue<List<DepositCardData>>.loading(),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -45,11 +45,11 @@ void main() {
         expect(find.byType(EmptyDepositsState), findsNothing);
       });
 
-      testWidgets('shows app bar with title during loading', (tester) async {
+      testWidgets('shows app bar with title during loading', (WidgetTester tester) async {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: const AsyncValue.loading(),
+              depositsAsync: const AsyncValue<List<DepositCardData>>.loading(),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -75,8 +75,8 @@ void main() {
     });
 
     group('loaded state with deposits', () {
-      testWidgets('shows list of deposit cards when deposits exist', (tester) async {
-        final deposits = [
+      testWidgets('shows list of deposit cards when deposits exist', (WidgetTester tester) async {
+        final List<DepositInfo> deposits = <DepositInfo>[
           _createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000)),
           _createMockDeposit(txid: 'txid2', amountSats: BigInt.from(20000)),
           _createMockDeposit(txid: 'txid3', amountSats: BigInt.from(30000)),
@@ -85,7 +85,7 @@ void main() {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(AsyncValue.data(deposits)),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -110,8 +110,8 @@ void main() {
         expect(find.byType(EmptyDepositsState), findsNothing);
       });
 
-      testWidgets('shows correct deposit amounts', (tester) async {
-        final deposits = [
+      testWidgets('shows correct deposit amounts', (WidgetTester tester) async {
+        final List<DepositInfo> deposits = <DepositInfo>[
           _createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000)),
           _createMockDeposit(txid: 'txid2', amountSats: BigInt.from(20000)),
         ];
@@ -119,7 +119,7 @@ void main() {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(AsyncValue.data(deposits)),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -143,13 +143,15 @@ void main() {
         expect(find.text('20000 sats'), findsOneWidget);
       });
 
-      testWidgets('shows ListView with correct padding', (tester) async {
-        final deposits = [_createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000))];
+      testWidgets('shows ListView with correct padding', (WidgetTester tester) async {
+        final List<DepositInfo> deposits = <DepositInfo>[
+          _createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000)),
+        ];
 
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(AsyncValue.data(deposits)),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -169,21 +171,21 @@ void main() {
           ),
         );
 
-        final listView = tester.widget<ListView>(find.byType(ListView));
+        final ListView listView = tester.widget<ListView>(find.byType(ListView));
         expect(listView.padding, const EdgeInsets.all(16));
       });
     });
 
     group('loaded state without deposits', () {
-      testWidgets('shows empty state when no deposits', (tester) async {
+      testWidgets('shows empty state when no deposits', (WidgetTester tester) async {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(const AsyncValue.data([])),
+              depositsAsync: cardDataAsync(const AsyncValue<List<DepositInfo>>.data(<DepositInfo>[])),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
-              depositCardBuilder: (cardData) => DepositCard(
+              depositCardBuilder: (DepositCardData cardData) => DepositCard(
                 deposit: cardData.deposit,
                 hasError: cardData.hasError,
                 hasRefund: cardData.hasRefund,
@@ -202,15 +204,18 @@ void main() {
         expect(find.byType(CircularProgressIndicator), findsNothing);
       });
 
-      testWidgets('empty state shows correct message', (tester) async {
+      testWidgets('empty state shows correct message', (WidgetTester tester) async {
+        final List<DepositInfo> deposits = <DepositInfo>[
+          _createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000)),
+        ];
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(const AsyncValue.data([])),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
-              depositCardBuilder: (cardData) => DepositCard(
+              depositCardBuilder: (DepositCardData cardData) => DepositCard(
                 deposit: cardData.deposit,
                 hasError: cardData.hasError,
                 hasRefund: cardData.hasRefund,
@@ -230,13 +235,13 @@ void main() {
     });
 
     group('error state', () {
-      testWidgets('shows error message when error occurs', (tester) async {
-        final error = Exception('Network error');
+      testWidgets('shows error message when error occurs', (WidgetTester tester) async {
+        final Exception error = Exception('Network error');
 
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: AsyncValue.error(error, StackTrace.empty),
+              depositsAsync: AsyncValue<List<DepositCardData>>.error(error, StackTrace.empty),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -261,11 +266,11 @@ void main() {
         expect(find.byIcon(Icons.error_outline), findsOneWidget);
       });
 
-      testWidgets('error state shows correct icon size and color', (tester) async {
+      testWidgets('error state shows correct icon size and color', (WidgetTester tester) async {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: AsyncValue.error(Exception('Error'), StackTrace.empty),
+              depositsAsync: AsyncValue<List<DepositCardData>>.error(Exception('Error'), StackTrace.empty),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -285,16 +290,16 @@ void main() {
           ),
         );
 
-        final icon = tester.widget<Icon>(find.byIcon(Icons.error_outline));
+        final Icon icon = tester.widget<Icon>(find.byIcon(Icons.error_outline));
         expect(icon.size, 64);
         // Color check would require theme context
       });
 
-      testWidgets('shows no deposit cards in error state', (tester) async {
+      testWidgets('shows no deposit cards in error state', (WidgetTester tester) async {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: AsyncValue.error(Exception('Error'), StackTrace.empty),
+              depositsAsync: AsyncValue<List<DepositCardData>>.error(Exception('Error'), StackTrace.empty),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -321,13 +326,15 @@ void main() {
     });
 
     group('callbacks', () {
-      testWidgets('passes onRetryClaim to deposit cards', (tester) async {
-        final deposits = [_createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000))];
+      testWidgets('passes onRetryClaim to deposit cards', (WidgetTester tester) async {
+        final List<DepositInfo> deposits = <DepositInfo>[
+          _createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000)),
+        ];
 
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(AsyncValue.data(deposits)),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -351,13 +358,15 @@ void main() {
         expect(find.byType(DepositCard), findsOneWidget);
       });
 
-      testWidgets('passes onShowRefundInfo to deposit cards', (tester) async {
-        final deposits = [_createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000))];
+      testWidgets('passes onShowRefundInfo to deposit cards', (WidgetTester tester) async {
+        final List<DepositInfo> deposits = <DepositInfo>[
+          _createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000)),
+        ];
 
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(AsyncValue.data(deposits)),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -383,11 +392,11 @@ void main() {
     });
 
     group('layout structure', () {
-      testWidgets('always shows Scaffold', (tester) async {
+      testWidgets('always shows Scaffold', (WidgetTester tester) async {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: const AsyncValue.loading(),
+              depositsAsync: const AsyncValue<List<DepositCardData>>.loading(),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -410,11 +419,11 @@ void main() {
         expect(find.byType(Scaffold), findsOneWidget);
       });
 
-      testWidgets('always shows AppBar with title', (tester) async {
+      testWidgets('always shows AppBar with title', (WidgetTester tester) async {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: const AsyncValue.loading(),
+              depositsAsync: const AsyncValue<List<DepositCardData>>.loading(),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -440,11 +449,11 @@ void main() {
     });
 
     group('state transitions', () {
-      testWidgets('transitions from loading to loaded', (tester) async {
+      testWidgets('transitions from loading to loaded', (WidgetTester tester) async {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: const AsyncValue.loading(),
+              depositsAsync: const AsyncValue<List<DepositCardData>>.loading(),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -467,11 +476,13 @@ void main() {
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
         // Update with data
-        final deposits = [_createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000))];
+        final List<DepositInfo> deposits = <DepositInfo>[
+          _createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000)),
+        ];
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(AsyncValue.data(deposits)),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -496,13 +507,15 @@ void main() {
         expect(find.byType(DepositCard), findsOneWidget);
       });
 
-      testWidgets('transitions from loaded to error', (tester) async {
-        final deposits = [_createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000))];
+      testWidgets('transitions from loaded to error', (WidgetTester tester) async {
+        final List<DepositInfo> deposits = <DepositInfo>[
+          _createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000)),
+        ];
 
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(AsyncValue.data(deposits)),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -528,7 +541,7 @@ void main() {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: AsyncValue.error(Exception('Error'), StackTrace.empty),
+              depositsAsync: AsyncValue<List<DepositCardData>>.error(Exception('Error'), StackTrace.empty),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -555,13 +568,15 @@ void main() {
     });
 
     group('edge cases', () {
-      testWidgets('handles single deposit correctly', (tester) async {
-        final deposits = [_createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000))];
+      testWidgets('handles single deposit correctly', (WidgetTester tester) async {
+        final List<DepositInfo> deposits = <DepositInfo>[
+          _createMockDeposit(txid: 'txid1', amountSats: BigInt.from(10000)),
+        ];
 
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(AsyncValue.data(deposits)),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -584,17 +599,17 @@ void main() {
         expect(find.byType(DepositCard), findsOneWidget);
       });
 
-      testWidgets('handles many deposits correctly', (tester) async {
+      testWidgets('handles many deposits correctly', (WidgetTester tester) async {
         // Each deposit amount increases by 10,000 sats per index
-        final deposits = List.generate(10, (i) {
-          final amountSats = 10000 * (i + 1);
+        final List<DepositInfo> deposits = List<DepositInfo>.generate(10, (int i) {
+          final int amountSats = 10000 * (i + 1);
           return _createMockDeposit(txid: 'txid$i', amountSats: BigInt.from(amountSats));
         });
 
         // Use tester.view instead of deprecated tester.binding.window
-        final view = tester.view;
-        final originalPhysicalSize = view.physicalSize;
-        final originalDevicePixelRatio = view.devicePixelRatio;
+        final TestFlutterView view = tester.view;
+        final Size originalPhysicalSize = view.physicalSize;
+        final double originalDevicePixelRatio = view.devicePixelRatio;
 
         view.physicalSize = const Size(1000, 3000);
         view.devicePixelRatio = 1.0;
@@ -602,7 +617,7 @@ void main() {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(AsyncValue.data(deposits)),
+              depositsAsync: cardDataAsync(AsyncValue<List<DepositInfo>>.data(deposits)),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -631,11 +646,11 @@ void main() {
         });
       });
 
-      testWidgets('handles error with null message gracefully', (tester) async {
+      testWidgets('handles error with null message gracefully', (WidgetTester tester) async {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: AsyncValue.error('String error', StackTrace.empty),
+              depositsAsync: const AsyncValue<List<DepositCardData>>.error('String error', StackTrace.empty),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -683,13 +698,13 @@ DepositInfo _createMockDeposit({
 
 AsyncValue<List<DepositCardData>> cardDataAsync(AsyncValue<List<DepositInfo>> depositsAsync) {
   return depositsAsync.map(
-    data: (data) {
-      final cardDataList = data.value.map((deposit) {
-        final claimer = DepositClaimer();
-        final hasError = claimer.hasError(deposit);
-        final hasRefund = claimer.hasRefund(deposit);
-        final formattedTxid = claimer.formatTxid(deposit.txid);
-        final formattedErrorMessage = hasError && deposit.claimError != null
+    data: (AsyncData<List<DepositInfo>> data) {
+      final List<DepositCardData> cardDataList = data.value.map((DepositInfo deposit) {
+        final DepositClaimer claimer = const DepositClaimer();
+        final bool hasError = claimer.hasError(deposit);
+        final bool hasRefund = claimer.hasRefund(deposit);
+        final String formattedTxid = claimer.formatTxid(deposit.txid);
+        final String? formattedErrorMessage = hasError && deposit.claimError != null
             ? claimer.formatError(deposit.claimError!)
             : null;
         return DepositCardData(
@@ -700,9 +715,10 @@ AsyncValue<List<DepositCardData>> cardDataAsync(AsyncValue<List<DepositInfo>> de
           formattedErrorMessage: formattedErrorMessage,
         );
       }).toList();
-      return AsyncData(cardDataList);
+      return AsyncData<List<DepositCardData>>(cardDataList);
     },
-    loading: (loading) => const AsyncLoading(),
-    error: (error) => AsyncError(error.error, error.stackTrace),
+    loading: (AsyncLoading<List<DepositInfo>> loading) => const AsyncLoading<List<DepositCardData>>(),
+    error: (AsyncError<List<DepositInfo>> error) =>
+        AsyncError<List<DepositCardData>>(error.error, error.stackTrace),
   );
 }

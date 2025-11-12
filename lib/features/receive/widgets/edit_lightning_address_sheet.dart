@@ -11,11 +11,11 @@ Future<void> showEditLightningAddressSheet(
   BreezSdk sdk,
   String address,
 ) {
-  final username = address.split('@').first;
+  final String username = address.split('@').first;
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    builder: (bottomSheetContext) => EditLightningAddressSheet(
+    builder: (BuildContext bottomSheetContext) => EditLightningAddressSheet(
       sdk: sdk,
       currentUsername: username,
       onSuccess: () {
@@ -43,11 +43,11 @@ class EditLightningAddressSheet extends StatefulWidget {
   final VoidCallback onDelete;
 
   const EditLightningAddressSheet({
-    super.key,
     required this.sdk,
     required this.currentUsername,
     required this.onSuccess,
     required this.onDelete,
+    super.key,
   });
 
   @override
@@ -73,7 +73,7 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
   }
 
   Future<void> _handleSave() async {
-    final value = _controller.text.trim().toLowerCase().replaceAll(' ', '');
+    final String value = _controller.text.trim().toLowerCase().replaceAll(' ', '');
 
     if (value == widget.currentUsername) {
       widget.onSuccess();
@@ -85,7 +85,7 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
       return;
     }
 
-    final cleaned = value.replaceAll(RegExp(r'^\.+|\.+$'), '');
+    final String cleaned = value.replaceAll(RegExp(r'^\.+|\.+$'), '');
 
     setState(() {
       _isProcessing = true;
@@ -93,7 +93,7 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
     });
 
     try {
-      final available = await widget.sdk.checkLightningAddressAvailable(
+      final bool available = await widget.sdk.checkLightningAddressAvailable(
         request: CheckLightningAddressRequest(username: cleaned),
       );
 
@@ -159,8 +159,8 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (!_showDeleteConfirmation) ...[
+        children: <Widget>[
+          if (!_showDeleteConfirmation) ...<Widget>[
             Text('Edit Lightning Address', style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
@@ -195,7 +195,7 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
               icon: const Icon(Icons.delete_outline),
               label: const Text('Delete Lightning Address'),
             ),
-          ] else ...[
+          ] else ...<Widget>[
             Text('Delete Lightning Address?', style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(

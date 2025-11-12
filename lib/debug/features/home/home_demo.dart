@@ -15,7 +15,7 @@ class HomeDemoScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Home Demos')),
       body: ListView(
-        children: [
+        children: <Widget>[
           const Padding(
             padding: EdgeInsets.all(16),
             child: Text('Balance Display Demos', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -77,8 +77,8 @@ class HomeDemoScreen extends StatelessWidget {
   void _openBalanceDemo(BuildContext context, BalanceState state) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
+      MaterialPageRoute<Scaffold>(
+        builder: (BuildContext context) => Scaffold(
           appBar: AppBar(title: const Text('Balance Demo')),
           body: BalanceDisplayLayout(state: state),
         ),
@@ -89,8 +89,8 @@ class HomeDemoScreen extends StatelessWidget {
   void _openTransactionDemo(BuildContext context, TransactionListState state) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
+      MaterialPageRoute<Scaffold>(
+        builder: (BuildContext context) => Scaffold(
           appBar: AppBar(title: const Text('Transaction List Demo')),
           body: TransactionListLayout(state: state),
         ),
@@ -121,7 +121,7 @@ class HomeDemoScreen extends StatelessWidget {
   }
 
   TransactionListState _createLoadedTransactionState() {
-    final mockPayment1 = Payment(
+    final Payment mockPayment1 = Payment(
       id: 'demo_tx_001',
       amount: BigInt.from(50000),
       fees: BigInt.from(100),
@@ -140,7 +140,7 @@ class HomeDemoScreen extends StatelessWidget {
       ),
     );
 
-    final mockPayment2 = Payment(
+    final Payment mockPayment2 = Payment(
       id: 'demo_tx_002',
       amount: BigInt.from(25000),
       fees: BigInt.from(50),
@@ -157,7 +157,7 @@ class HomeDemoScreen extends StatelessWidget {
       ),
     );
 
-    final mockPayment3 = Payment(
+    final Payment mockPayment3 = Payment(
       id: 'demo_tx_003',
       amount: BigInt.from(100000),
       fees: BigInt.zero,
@@ -171,12 +171,11 @@ class HomeDemoScreen extends StatelessWidget {
         description: 'Incoming payment',
         invoice: 'lnbc1m1...',
         paymentHash: 'pending123...',
-        preimage: null,
         destinationPubkey: '03pending...',
       ),
     );
 
-    final transactions = [
+    final List<TransactionItemState> transactions = <TransactionItemState>[
       TransactionItemState(
         payment: mockPayment1,
         formattedAmount: '50,000',

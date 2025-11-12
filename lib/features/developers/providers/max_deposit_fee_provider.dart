@@ -6,24 +6,23 @@ import 'package:glow/core/services/config_service.dart';
 class MaxDepositClaimFeeNotifier extends Notifier<Fee> {
   @override
   Fee build() {
-    final configService = ref.watch(configServiceProvider);
+    final ConfigService configService = ref.watch(configServiceProvider);
     return configService.getMaxDepositClaimFee();
   }
 
   Future<void> setFee(Fee fee) async {
-    final configService = ref.read(configServiceProvider);
+    final ConfigService configService = ref.read(configServiceProvider);
     await configService.setMaxDepositClaimFee(fee);
     state = fee;
   }
 
   Future<void> reset() async {
-    final configService = ref.read(configServiceProvider);
+    final ConfigService configService = ref.read(configServiceProvider);
     await configService.resetMaxDepositClaimFee();
     state = configService.getMaxDepositClaimFee();
   }
 }
 
 /// Provider for max deposit claim fee
-final maxDepositClaimFeeProvider = NotifierProvider<MaxDepositClaimFeeNotifier, Fee>(
-  MaxDepositClaimFeeNotifier.new,
-);
+final NotifierProvider<MaxDepositClaimFeeNotifier, Fee> maxDepositClaimFeeProvider =
+    NotifierProvider<MaxDepositClaimFeeNotifier, Fee>(MaxDepositClaimFeeNotifier.new);

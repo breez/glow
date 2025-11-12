@@ -7,20 +7,17 @@ import 'package:pretty_qr_code/pretty_qr_code.dart';
 class QRCodeCard extends ConsumerWidget {
   final String data;
 
-  const QRCodeCard({super.key, required this.data});
+  const QRCodeCard({required this.data, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clipboardService = ref.read(clipboardServiceProvider);
+    final ClipboardService clipboardService = ref.read(clipboardServiceProvider);
     return GestureDetector(
       onTap: () => clipboardService.copyToClipboard(context, data),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-        child: PrettyQrView.data(
-          data: data,
-          decoration: const PrettyQrDecoration(shape: PrettyQrSmoothSymbol(color: Colors.black)),
-        ),
+        child: PrettyQrView.data(data: data, decoration: const PrettyQrDecoration()),
       ),
     );
   }

@@ -5,7 +5,7 @@ class SecurityTipsCard extends StatelessWidget {
 
   const SecurityTipsCard({super.key, this.tips = _defaultTips});
 
-  static const _defaultTips = [
+  static const List<SecurityTip> _defaultTips = <SecurityTip>[
     SecurityTip(Icons.edit_note, 'Write on paper (no screenshots)'),
     SecurityTip(Icons.security, 'Store in a secure location'),
     SecurityTip(Icons.do_not_disturb, 'Never share with anyone'),
@@ -16,13 +16,13 @@ class SecurityTipsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Text('Security Tips', style: Theme.of(context).textTheme.titleMedium),
-            SizedBox(height: 12),
-            ...tips.map((tip) => _SecurityTipRow(tip: tip)),
+            const SizedBox(height: 12),
+            ...tips.map((SecurityTip tip) => _SecurityTipRow(tip: tip)),
           ],
         ),
       ),
@@ -45,12 +45,12 @@ class _SecurityTipRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
-        children: [
+        children: <Widget>[
           Icon(tip.icon, size: 20, color: Colors.blue),
-          SizedBox(width: 12),
-          Expanded(child: Text(tip.text, style: TextStyle(fontSize: 14))),
+          const SizedBox(width: 12),
+          Expanded(child: Text(tip.text, style: const TextStyle(fontSize: 14))),
         ],
       ),
     );

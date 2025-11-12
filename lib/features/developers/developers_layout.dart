@@ -14,13 +14,13 @@ class DevelopersLayout extends StatelessWidget {
   final GestureTapCallback onShareAllLogs;
 
   const DevelopersLayout({
-    super.key,
     required this.network,
     required this.onChangeNetwork,
     required this.maxDepositClaimFee,
     required this.onTapMaxFeeCard,
     required this.onShareCurrentSession,
     required this.onShareAllLogs,
+    super.key,
   });
 
   @override
@@ -29,9 +29,9 @@ class DevelopersLayout extends StatelessWidget {
       appBar: AppBar(title: const Text('Debug')),
       body: ListView(
         padding: const EdgeInsets.all(16),
-        children: [
+        children: <Widget>[
           // Wallet Management Card
-          WalletCard(),
+          const WalletCard(),
 
           const SizedBox(height: 16),
 

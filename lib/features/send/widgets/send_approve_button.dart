@@ -6,10 +6,10 @@ class SendApproveButton extends StatelessWidget {
   final VoidCallback onApprove;
 
   const SendApproveButton({
-    super.key,
     required this.controller,
     required this.isValidating,
     required this.onApprove,
+    super.key,
   });
 
   @override

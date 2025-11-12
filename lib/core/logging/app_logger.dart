@@ -13,18 +13,20 @@ import 'package:path_provider/path_provider.dart';
 class AppLogger {
   static AppLogger? _instance;
   static File? _logFile;
-  static final _fileOutput = _FileOutput();
+  static final _FileOutput _fileOutput = _FileOutput();
 
   AppLogger._();
 
   static Future<void> initialize() async {
-    if (_instance != null) return;
+    if (_instance != null) {
+      return;
+    }
     _instance = AppLogger._();
 
     _logFile = await _createSessionLogFile();
     _fileOutput.setFile(_logFile!);
 
-    final log = getLogger('AppLogger');
+    final Logger log = getLogger('AppLogger');
     await _logSessionStart(log);
     await _cleanupOldLogs(log);
   }
@@ -42,25 +44,25 @@ class AppLogger {
   }
 
   static Future<File> _createSessionLogFile() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final logsDir = Directory('${dir.path}/logs');
+    final Directory dir = await getApplicationDocumentsDirectory();
+    final Directory logsDir = Directory('${dir.path}/logs');
     await logsDir.create(recursive: true);
 
-    final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').split('.')[0];
-    final file = File('${logsDir.path}/session_$timestamp.log');
+    final String timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').split('.')[0];
+    final File file = File('${logsDir.path}/session_$timestamp.log');
     await file.writeAsString('=== Session Started: ${DateTime.now()} ===\n\n');
     return file;
   }
 
   static Future<void> _logSessionStart(Logger log) async {
     try {
-      final deviceInfo = DeviceInfoPlugin();
+      final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
       if (Platform.isAndroid) {
-        final info = await deviceInfo.androidInfo;
+        final AndroidDeviceInfo info = await deviceInfo.androidInfo;
         log.i('Android ${info.model} (${info.manufacturer}), SDK ${info.version.sdkInt}');
       } else if (Platform.isIOS) {
-        final info = await deviceInfo.iosInfo;
+        final IosDeviceInfo info = await deviceInfo.iosInfo;
         log.i('iOS ${info.model} (${info.name}), ${info.systemVersion}');
       }
     } catch (e, stack) {
@@ -70,14 +72,17 @@ class AppLogger {
 
   static Future<void> _cleanupOldLogs(Logger log) async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final logsDir = Directory('${dir.path}/logs');
-      if (!await logsDir.exists()) return;
+      final Directory dir = await getApplicationDocumentsDirectory();
+      final Directory logsDir = Directory('${dir.path}/logs');
+      if (!await logsDir.exists()) {
+        return;
+      }
 
-      final files = logsDir.listSync().whereType<File>().where((f) => f.path.endsWith('.log')).toList()
-        ..sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
+      final List<File> files =
+          logsDir.listSync().whereType<File>().where((File f) => f.path.endsWith('.log')).toList()
+            ..sort((File a, File b) => b.statSync().modified.compareTo(a.statSync().modified));
 
-      for (var i = 10; i < files.length; i++) {
+      for (int i = 10; i < files.length; i++) {
         await files[i].delete();
       }
     } catch (e, stack) {
@@ -86,30 +91,38 @@ class AppLogger {
   }
 
   static Future<Directory> get logsDirectory async {
-    final dir = await getApplicationDocumentsDirectory();
+    final Directory dir = await getApplicationDocumentsDirectory();
     return Directory('${dir.path}/logs');
   }
 
   static Future<File?> createAllLogsZip() async {
-    final log = getLogger('AppLogger');
+    final Logger log = getLogger('AppLogger');
     try {
-      final logsDir = await logsDirectory;
-      if (!await logsDir.exists()) return null;
+      final Directory logsDir = await logsDirectory;
+      if (!await logsDir.exists()) {
+        return null;
+      }
 
-      final logFiles = logsDir.listSync().whereType<File>().where((f) => f.path.endsWith('.log')).toList();
+      final List<File> logFiles = logsDir
+          .listSync()
+          .whereType<File>()
+          .where((File f) => f.path.endsWith('.log'))
+          .toList();
 
-      if (logFiles.isEmpty) return null;
+      if (logFiles.isEmpty) {
+        return null;
+      }
 
-      final archive = Archive();
-      for (final file in logFiles) {
-        final bytes = await file.readAsBytes();
+      final Archive archive = Archive();
+      for (final File file in logFiles) {
+        final Uint8List bytes = await file.readAsBytes();
         archive.addFile(ArchiveFile(file.path.split('/').last, bytes.length, bytes));
       }
 
-      final zipData = ZipEncoder().encode(archive);
-      final tempDir = await getTemporaryDirectory();
-      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').split('.')[0];
-      final zipFile = File('${tempDir.path}/glow_logs_$timestamp.zip');
+      final List<int> zipData = ZipEncoder().encode(archive);
+      final Directory tempDir = await getTemporaryDirectory();
+      final String timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').split('.')[0];
+      final File zipFile = File('${tempDir.path}/glow_logs_$timestamp.zip');
       await zipFile.writeAsBytes(zipData);
 
       log.i('Created zip: ${zipFile.path}');
@@ -121,16 +134,19 @@ class AppLogger {
   }
 
   static Future<File?> createCurrentSessionZip() async {
-    if (_logFile == null) return null;
+    if (_logFile == null) {
+      return null;
+    }
 
     try {
-      final bytes = await _logFile!.readAsBytes();
-      final archive = Archive()..addFile(ArchiveFile(_logFile!.path.split('/').last, bytes.length, bytes));
+      final Uint8List bytes = await _logFile!.readAsBytes();
+      final Archive archive = Archive()
+        ..addFile(ArchiveFile(_logFile!.path.split('/').last, bytes.length, bytes));
 
-      final zipData = ZipEncoder().encode(archive);
-      final tempDir = await getTemporaryDirectory();
-      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').split('.')[0];
-      final zipFile = File('${tempDir.path}/glow_session_$timestamp.zip');
+      final List<int> zipData = ZipEncoder().encode(archive);
+      final Directory tempDir = await getTemporaryDirectory();
+      final String timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').split('.')[0];
+      final File zipFile = File('${tempDir.path}/glow_session_$timestamp.zip');
       await zipFile.writeAsBytes(zipData);
 
       return zipFile;
@@ -142,21 +158,25 @@ class AppLogger {
 
 class _CustomPrinter extends LogPrinter {
   final String className;
-  static const _classWidth = 22;
-  static const _levelWidth = 9;
+  static const int _classWidth = 22;
+  static const int _levelWidth = 9;
 
   _CustomPrinter(this.className);
 
   @override
   List<String> log(LogEvent e) {
-    final time = e.time.toUtc().toIso8601String();
-    final source = '[$className]'.padRight(_classWidth);
-    final level = '{${e.level.name.toUpperCase()}}'.padLeft(_levelWidth);
+    final String time = e.time.toUtc().toIso8601String();
+    final String source = '[$className]'.padRight(_classWidth);
+    final String level = '{${e.level.name.toUpperCase()}}'.padLeft(_levelWidth);
 
-    final b = StringBuffer('$time $source $level: ${e.message}');
-    if (e.error != null) b.writeln(e.error);
-    if (e.stackTrace != null) b.writeln(e.stackTrace);
-    return [b.toString()];
+    final StringBuffer b = StringBuffer('$time $source $level: ${e.message}');
+    if (e.error != null) {
+      b.writeln(e.error);
+    }
+    if (e.stackTrace != null) {
+      b.writeln(e.stackTrace);
+    }
+    return <String>[b.toString()];
   }
 }
 
@@ -168,17 +188,21 @@ class _FileOutput extends LogOutput {
   @override
   void output(OutputEvent event) {
     if (kDebugMode) {
-      for (var line in event.lines) {
+      for (String line in event.lines) {
         print(line);
       }
     }
-    if (_file != null) _writeToFile(event.lines);
+    if (_file != null) {
+      _writeToFile(event.lines);
+    }
   }
 
   Future<void> _writeToFile(List<String> lines) async {
-    if (_file == null) return;
+    if (_file == null) {
+      return;
+    }
     try {
-      final cleanLines = lines.map(_stripAnsi);
+      final Iterable<String> cleanLines = lines.map(_stripAnsi);
       await _file!.writeAsString('${cleanLines.join('\n')}\n', mode: FileMode.append);
     } catch (_) {}
   }

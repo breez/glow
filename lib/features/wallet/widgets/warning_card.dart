@@ -6,26 +6,26 @@ class WarningCard extends StatelessWidget {
   final IconData? icon;
   final Color? color;
 
-  const WarningCard({super.key, this.title, required this.message, this.icon, this.color});
+  const WarningCard({required this.message, super.key, this.title, this.icon, this.color});
 
   @override
   Widget build(BuildContext context) {
-    final warningColor = color ?? Colors.orange;
+    final Color warningColor = color ?? Colors.orange;
 
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Row(
-          children: [
+          children: <Widget>[
             Icon(icon ?? Icons.warning_amber_rounded, color: warningColor, size: 32),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (title != null) ...[
-                    Text(title!, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
+                children: <Widget>[
+                  if (title != null) ...<Widget>[
+                    Text(title!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
                   ],
                   Text(message, style: TextStyle(fontSize: title != null ? 14 : 13)),
                 ],

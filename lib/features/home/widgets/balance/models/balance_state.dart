@@ -21,14 +21,7 @@ class BalanceState extends Equatable {
 
   /// Factory for loading state
   factory BalanceState.loading() {
-    return BalanceState(
-      balance: BigInt.zero,
-      isLoading: true,
-      hasSynced: false,
-      formattedBalance: '0',
-      formattedFiat: null,
-      error: null,
-    );
+    return BalanceState(balance: BigInt.zero, isLoading: true, hasSynced: false, formattedBalance: '0');
   }
 
   /// Factory for loaded state
@@ -44,7 +37,6 @@ class BalanceState extends Equatable {
       hasSynced: hasSynced,
       formattedBalance: formattedBalance,
       formattedFiat: formattedFiat,
-      error: null,
     );
   }
 
@@ -55,7 +47,6 @@ class BalanceState extends Equatable {
       isLoading: false,
       hasSynced: false,
       formattedBalance: '0',
-      formattedFiat: null,
       error: error,
     );
   }
@@ -82,5 +73,5 @@ class BalanceState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [balance, isLoading, hasSynced, formattedBalance, formattedFiat, error];
+  List<Object?> get props => <Object?>[balance, isLoading, hasSynced, formattedBalance, formattedFiat, error];
 }

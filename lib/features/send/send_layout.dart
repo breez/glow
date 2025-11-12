@@ -17,7 +17,6 @@ class SendLayout extends StatelessWidget {
   final VoidCallback onApprove;
 
   const SendLayout({
-    super.key,
     required this.formKey,
     required this.controller,
     required this.textGroup,
@@ -28,11 +27,12 @@ class SendLayout extends StatelessWidget {
     required this.onScan,
     required this.onSubmit,
     required this.onApprove,
+    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(leading: const BackButton(), title: const Text('Send Payment')),
       body: Padding(
@@ -45,7 +45,7 @@ class SendLayout extends StatelessWidget {
             ),
             padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
             child: Column(
-              children: [
+              children: <Widget>[
                 SendForm(
                   controller: controller,
                   focusNode: focusNode,

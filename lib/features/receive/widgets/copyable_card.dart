@@ -7,11 +7,11 @@ class CopyableCard extends ConsumerWidget {
   final String title;
   final String content;
 
-  const CopyableCard({super.key, required this.title, required this.content});
+  const CopyableCard({required this.title, required this.content, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clipboardService = ref.read(clipboardServiceProvider);
+    final ClipboardService clipboardService = ref.read(clipboardServiceProvider);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -20,9 +20,9 @@ class CopyableCard extends ConsumerWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: Text(
                   title,

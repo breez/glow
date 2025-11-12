@@ -5,13 +5,13 @@ class PaymentFormatter {
   const PaymentFormatter();
 
   String formatSats(BigInt sats) {
-    final str = sats.toString();
-    final buffer = StringBuffer();
-    final length = str.length;
+    final String str = sats.toString();
+    final StringBuffer buffer = StringBuffer();
+    final int length = str.length;
 
     for (int i = 0; i < length; i++) {
       buffer.write(str[i]);
-      final position = length - i - 1;
+      final int position = length - i - 1;
       if (position > 0 && position % 3 == 0) {
         buffer.write(',');
       }
@@ -47,7 +47,7 @@ class PaymentFormatter {
   }
 
   String formatDate(BigInt timestamp) {
-    final date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
+    final DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
     return '${date.day}/${date.month}/${date.year} at ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
 }

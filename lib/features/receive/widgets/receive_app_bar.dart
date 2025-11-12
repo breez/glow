@@ -4,11 +4,11 @@ import 'package:glow/features/receive/models/receive_state.dart';
 
 class ReceiveAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ReceiveAppBar({
-    super.key,
     required this.showAppBarControls,
     required this.state,
     required this.onChangeMethod,
     required this.onRequest,
+    super.key,
   });
 
   final bool showAppBarControls;
@@ -23,7 +23,7 @@ class ReceiveAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: showAppBarControls
           ? ReceiveMethodDropdown(selectedMethod: state.method, onChanged: onChangeMethod)
           : const Text('Receive'),
-      actions: showAppBarControls ? [StaticAmountRequestIcon(showAmountInput: onRequest)] : null,
+      actions: showAppBarControls ? <Widget>[StaticAmountRequestIcon(showAmountInput: onRequest)] : null,
     );
   }
 
@@ -36,23 +36,28 @@ class ReceiveMethodDropdown extends StatelessWidget {
   final ReceiveMethod selectedMethod;
   final ValueChanged<ReceiveMethod> onChanged;
 
-  const ReceiveMethodDropdown({super.key, required this.selectedMethod, required this.onChanged});
+  const ReceiveMethodDropdown({required this.selectedMethod, required this.onChanged, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return DropdownButton<ReceiveMethod>(
       value: selectedMethod,
-      onChanged: (method) {
-        if (method != null) onChanged(method);
+      onChanged: (ReceiveMethod? method) {
+        if (method != null) {
+          onChanged(method);
+        }
       },
       underline: const SizedBox.shrink(),
       icon: const Icon(Icons.arrow_drop_down),
       style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onSurface),
       dropdownColor: theme.colorScheme.surface,
       items: ReceiveMethod.values
-          .map((method) => DropdownMenuItem(value: method, child: Text(method.label)))
+          .map(
+            (ReceiveMethod method) =>
+                DropdownMenuItem<ReceiveMethod>(value: method, child: Text(method.label)),
+          )
           .toList(),
     );
   }
@@ -62,7 +67,7 @@ class ReceiveMethodDropdown extends StatelessWidget {
 class StaticAmountRequestIcon extends StatelessWidget {
   final VoidCallback? showAmountInput;
 
-  const StaticAmountRequestIcon({super.key, required this.showAmountInput});
+  const StaticAmountRequestIcon({required this.showAmountInput, super.key});
 
   @override
   Widget build(BuildContext context) {

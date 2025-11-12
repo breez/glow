@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/providers/sdk_provider.dart';
 
 /// Provider for parsing input strings using the SDK
-final inputParserProvider = Provider<InputParser>((ref) {
+final Provider<InputParser> inputParserProvider = Provider<InputParser>((Ref ref) {
   return InputParser(ref);
 });
 
@@ -15,12 +15,12 @@ class InputParser {
   /// Parse input string using SDK's parse API
   Future<ParseResult> parse(String input) async {
     try {
-      final sdk = await _ref.watch(sdkProvider.future);
+      final BreezSdk sdk = await _ref.watch(sdkProvider.future);
 
       log.i('Parsing input: ${input.substring(0, input.length > 50 ? 50 : input.length)}...');
 
       // Call SDK parse method
-      final inputType = await sdk.parse(input: input);
+      final InputType inputType = await sdk.parse(input: input);
 
       log.i('Successfully parsed input type: ${inputType.runtimeType}');
       return ParseResult.success(inputType);
@@ -40,8 +40,8 @@ sealed class ParseResult {
 
   T when<T>({required T Function(InputType inputType) success, required T Function(String message) error}) {
     return switch (this) {
-      ParseSuccess(:final inputType) => success(inputType),
-      ParseError(:final message) => error(message),
+      ParseSuccess(:final InputType inputType) => success(inputType),
+      ParseError(:final String message) => error(message),
     };
   }
 }

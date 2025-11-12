@@ -6,7 +6,7 @@ class ErrorView extends StatelessWidget {
   final String error;
   final VoidCallback? onRetry;
 
-  const ErrorView({super.key, required this.message, required this.error, this.onRetry});
+  const ErrorView({required this.message, required this.error, super.key, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class ErrorView extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(Icons.error_outline_rounded, size: 48, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
             Text(
@@ -32,7 +32,7 @@ class ErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
-            if (onRetry != null) ...[
+            if (onRetry != null) ...<Widget>[
               const SizedBox(height: 16),
               TextButton(onPressed: onRetry, child: const Text('Try again')),
             ],

@@ -14,7 +14,7 @@ class WalletMetadata {
   WalletMetadata copyWith({String? id, String? name, bool? isVerified}) =>
       WalletMetadata(id: id ?? this.id, name: name ?? this.name, isVerified: isVerified ?? this.isVerified);
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'isVerified': isVerified};
+  Map<String, dynamic> toJson() => <String, dynamic>{'id': id, 'name': name, 'isVerified': isVerified};
 
   factory WalletMetadata.fromJson(Map<String, dynamic> json) => WalletMetadata(
     id: json['id'] as String,

@@ -10,13 +10,15 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 /// - Lightning payments (uses description if available)
 /// - Withdrawals and deposits
 String getPaymentTitle(Payment payment) {
-  final details = payment.details;
-  if (details == null) return 'Payment';
+  final PaymentDetails? details = payment.details;
+  if (details == null) {
+    return 'Payment';
+  }
 
   return switch (details) {
     PaymentDetails_Spark() => 'Spark Payment',
-    PaymentDetails_Token(:final metadata) => metadata.name,
-    PaymentDetails_Lightning(:final description) =>
+    PaymentDetails_Token(:final TokenMetadata metadata) => metadata.name,
+    PaymentDetails_Lightning(:final String? description) =>
       description?.isNotEmpty == true ? description! : 'Lightning Payment',
     PaymentDetails_Withdraw() => 'Withdrawal',
     PaymentDetails_Deposit() => 'Deposit',

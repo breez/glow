@@ -39,18 +39,16 @@ ThemeData buildDarkTheme() {
   );
 }
 
-const _darkColorScheme = ColorScheme.dark(
+const ColorScheme _darkColorScheme = ColorScheme.dark(
   primary: Colors.white,
   onPrimary: Colors.white,
   secondary: Colors.white,
   onSecondary: Colors.white,
   surface: BreezColors.darkBackground,
-  onSurface: Colors.white,
   error: BreezColors.warningDark,
-  onError: Colors.black,
 );
 
-const _darkAppBarTheme = AppBarTheme(
+const AppBarTheme _darkAppBarTheme = AppBarTheme(
   centerTitle: false,
   elevation: 0,
   scrolledUnderElevation: 0,
@@ -66,13 +64,13 @@ const _darkAppBarTheme = AppBarTheme(
   ),
 );
 
-const _darkBottomAppBarTheme = BottomAppBarThemeData(
+const BottomAppBarThemeData _darkBottomAppBarTheme = BottomAppBarThemeData(
   height: 60,
   elevation: 0,
   color: BreezColors.primaryLight,
 );
 
-final _darkFilledButtonTheme = FilledButtonThemeData(
+final FilledButtonThemeData _darkFilledButtonTheme = FilledButtonThemeData(
   style: FilledButton.styleFrom(
     backgroundColor: BreezColors.primaryLight,
     foregroundColor: Colors.white,
@@ -81,13 +79,13 @@ final _darkFilledButtonTheme = FilledButtonThemeData(
   ),
 );
 
-const _darkFabTheme = FloatingActionButtonThemeData(
+const FloatingActionButtonThemeData _darkFabTheme = FloatingActionButtonThemeData(
   backgroundColor: BreezColors.primaryLight,
   foregroundColor: Colors.white,
   sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
 );
 
-const _darkDialogTheme = DialogThemeData(
+const DialogThemeData _darkDialogTheme = DialogThemeData(
   backgroundColor: BreezColors.darkSurface,
   titleTextStyle: TextStyle(
     color: Colors.white,
@@ -99,34 +97,42 @@ const _darkDialogTheme = DialogThemeData(
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
 );
 
-const _darkCardTheme = CardThemeData(
+const CardThemeData _darkCardTheme = CardThemeData(
   color: BreezColors.darkSurface,
   elevation: 0,
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
 );
 
-const _darkDrawerTheme = DrawerThemeData(
+const DrawerThemeData _darkDrawerTheme = DrawerThemeData(
   backgroundColor: BreezColors.darkSurface,
   scrimColor: Colors.black54,
 );
 
-final _darkDatePickerTheme = DatePickerThemeData(
+final DatePickerThemeData _darkDatePickerTheme = DatePickerThemeData(
   backgroundColor: BreezColors.darkSurface,
   headerBackgroundColor: BreezColors.primary,
   headerForegroundColor: Colors.white,
   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-  dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
-    if (states.contains(WidgetState.selected)) return BreezColors.primary;
+  dayBackgroundColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+    if (states.contains(WidgetState.selected)) {
+      return BreezColors.primary;
+    }
     return Colors.transparent;
   }),
-  dayForegroundColor: WidgetStateProperty.resolveWith((states) {
-    if (states.contains(WidgetState.selected)) return Colors.white;
-    if (states.contains(WidgetState.disabled)) return Colors.white38;
+  dayForegroundColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+    if (states.contains(WidgetState.selected)) {
+      return Colors.white;
+    }
+    if (states.contains(WidgetState.disabled)) {
+      return Colors.white38;
+    }
     return Colors.white;
   }),
   todayBorder: const BorderSide(color: BreezColors.primary),
-  todayForegroundColor: WidgetStateProperty.resolveWith((states) {
-    if (states.contains(WidgetState.selected)) return Colors.white;
+  todayForegroundColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+    if (states.contains(WidgetState.selected)) {
+      return Colors.white;
+    }
     return BreezColors.primary;
   }),
 );

@@ -3,6 +3,6 @@ import 'package:glow/features/home/widgets/transactions/providers/transaction_pr
 import 'package:glow/features/home/models/home_state_factory.dart';
 
 /// Provider for HomeStateFactory
-final homeStateFactoryProvider = Provider<HomeStateFactory>((ref) {
+final Provider<HomeStateFactory> homeStateFactoryProvider = Provider<HomeStateFactory>((Ref ref) {
   return HomeStateFactory(transactionFormatter: ref.watch(transactionFormatterProvider));
 });

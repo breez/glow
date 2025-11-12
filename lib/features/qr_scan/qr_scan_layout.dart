@@ -6,11 +6,11 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 /// Pure presentation widget for QR scan view
 class QRScanLayout extends StatelessWidget {
   const QRScanLayout({
-    super.key,
     required this.qrKey,
     required this.cameraController,
     required this.onImagePickerTap,
     required this.onCancel,
+    super.key,
   });
 
   final GlobalKey qrKey;

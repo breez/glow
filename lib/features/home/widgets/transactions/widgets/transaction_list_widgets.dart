@@ -6,7 +6,7 @@ import 'package:glow/features/home/widgets/transactions/widgets/transaction_list
 
 /// Individual transaction list item widget
 class TransactionListItem extends StatelessWidget {
-  const TransactionListItem({super.key, required this.transaction, this.onTap});
+  const TransactionListItem({required this.transaction, super.key, this.onTap});
 
   final TransactionItemState transaction;
   final VoidCallback? onTap;
@@ -50,9 +50,9 @@ class TransactionListItem extends StatelessWidget {
   }
 
   Widget _buildIcon(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final isCompleted = transaction.payment.status == PaymentStatus.completed;
-    final color = transaction.isReceive
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final bool isCompleted = transaction.payment.status == PaymentStatus.completed;
+    final Color color = transaction.isReceive
         ? Colors.green
         : isCompleted
         ? colorScheme.primary
@@ -89,13 +89,13 @@ class TransactionListItem extends StatelessWidget {
   }
 
   Widget _buildSubtitle(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final subtitleColor = colorScheme.onSurface;
-    final statusColor = _getStatusColor(transaction.payment.status);
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color subtitleColor = colorScheme.onSurface;
+    final Color statusColor = _getStatusColor(transaction.payment.status);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: <Widget>[
         Text(
           transaction.formattedTime,
           style: TextStyle(
@@ -106,7 +106,7 @@ class TransactionListItem extends StatelessWidget {
             letterSpacing: 0.39,
           ),
         ),
-        if (transaction.payment.status != PaymentStatus.completed) ...[
+        if (transaction.payment.status != PaymentStatus.completed) ...<Widget>[
           const SizedBox(width: 8),
           Text(
             transaction.formattedStatus,
@@ -124,18 +124,18 @@ class TransactionListItem extends StatelessWidget {
   }
 
   Widget _buildAmount(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final amountColor = colorScheme.onSurface;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color amountColor = colorScheme.onSurface;
 
-    final hasFees = transaction.payment.fees > BigInt.zero;
-    final isPending = transaction.payment.status == PaymentStatus.pending;
+    final bool hasFees = transaction.payment.fees > BigInt.zero;
+    final bool isPending = transaction.payment.status == PaymentStatus.pending;
 
     return SizedBox(
       height: 44,
       child: Column(
         mainAxisAlignment: (hasFees && !isPending) ? MainAxisAlignment.spaceAround : MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
+        children: <Widget>[
           Text(
             transaction.formattedAmountWithSign,
             style: TextStyle(
@@ -177,9 +177,9 @@ class TransactionListEmpty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(32),
         child: Text('Glow is ready to receive funds.', style: TransactionListTextStyles.emptyState),
       ),
     );
@@ -192,13 +192,13 @@ class TransactionListLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TransactionListShimmer();
+    return const TransactionListShimmer();
   }
 }
 
 /// Error state widget for transaction list
 class TransactionListError extends StatelessWidget {
-  const TransactionListError({super.key, required this.error, this.onRetry});
+  const TransactionListError({required this.error, super.key, this.onRetry});
 
   final String error;
   final VoidCallback? onRetry;
@@ -210,7 +210,7 @@ class TransactionListError extends StatelessWidget {
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
             Text(
@@ -227,7 +227,7 @@ class TransactionListError extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
-            if (onRetry != null) ...[
+            if (onRetry != null) ...<Widget>[
               const SizedBox(height: 16),
               ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
             ],

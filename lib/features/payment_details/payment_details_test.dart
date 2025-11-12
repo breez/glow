@@ -16,7 +16,7 @@ import 'package:glow/features/payment_details/widgets/payment_details_widgets.da
 
 void main() {
   group('PaymentFormatter Unit Tests', () {
-    const formatter = PaymentFormatter();
+    const PaymentFormatter formatter = PaymentFormatter();
 
     test('formats sats with thousand separators', () {
       expect(formatter.formatSats(BigInt.from(1000)), '1,000');
@@ -43,18 +43,18 @@ void main() {
 
     test('formats date correctly', () {
       // Unix timestamp for 2024-01-15 12:30:00
-      final timestamp = BigInt.from(1705321800);
-      final formatted = formatter.formatDate(timestamp);
+      final BigInt timestamp = BigInt.from(1705321800);
+      final String formatted = formatter.formatDate(timestamp);
       expect(formatted, contains('15/1/2024'));
     });
   });
 
   group('PaymentDetailsStateFactory Unit Tests', () {
-    const formatter = PaymentFormatter();
-    const factory = PaymentDetailsStateFactory(formatter);
+    const PaymentFormatter formatter = PaymentFormatter();
+    const PaymentDetailsStateFactory factory = PaymentDetailsStateFactory(formatter);
 
     test('creates state with formatted values', () {
-      final payment = Payment(
+      final Payment payment = Payment(
         id: 'test_001',
         amount: BigInt.from(100000),
         fees: BigInt.from(500),
@@ -62,10 +62,9 @@ void main() {
         paymentType: PaymentType.send,
         method: PaymentMethod.lightning,
         timestamp: BigInt.from(1705321800),
-        details: null,
       );
 
-      final state = factory.createState(payment);
+      final PaymentDetailsState state = factory.createState(payment);
 
       expect(state.formattedAmount, '100,000');
       expect(state.formattedFees, '500');
@@ -76,7 +75,7 @@ void main() {
     });
 
     test('sets shouldShowFees to false when fees are zero', () {
-      final payment = Payment(
+      final Payment payment = Payment(
         id: 'test_002',
         amount: BigInt.from(50000),
         fees: BigInt.zero,
@@ -84,17 +83,16 @@ void main() {
         paymentType: PaymentType.receive,
         method: PaymentMethod.lightning,
         timestamp: BigInt.from(1705321800),
-        details: null,
       );
 
-      final state = factory.createState(payment);
+      final PaymentDetailsState state = factory.createState(payment);
 
       expect(state.shouldShowFees, false);
     });
   });
 
   group('PaymentAmountDisplay Widget Tests', () {
-    testWidgets('displays formatted amount correctly', (tester) async {
+    testWidgets('displays formatted amount correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(body: PaymentAmountDisplay(formattedAmount: '1,234,567')),
@@ -107,7 +105,7 @@ void main() {
   });
 
   group('PaymentDetailRow Widget Tests', () {
-    testWidgets('displays label and value', (tester) async {
+    testWidgets('displays label and value', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -120,7 +118,7 @@ void main() {
       expect(find.text('Completed'), findsOneWidget);
     });
 
-    testWidgets('shows copy icon when copyable is true', (tester) async {
+    testWidgets('shows copy icon when copyable is true', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -132,11 +130,11 @@ void main() {
       expect(find.byIcon(Icons.copy), findsOneWidget);
     });
 
-    testWidgets('does not show copy icon when copyable is false', (tester) async {
+    testWidgets('does not show copy icon when copyable is false', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: PaymentDetailRow(label: 'Status', value: 'Completed', copyable: false),
+            body: PaymentDetailRow(label: 'Status', value: 'Completed'),
           ),
         ),
       );
@@ -146,8 +144,8 @@ void main() {
   });
 
   group('PaymentDetailsLayout Widget Tests', () {
-    testWidgets('displays all basic payment information', (tester) async {
-      final payment = Payment(
+    testWidgets('displays all basic payment information', (WidgetTester tester) async {
+      final Payment payment = Payment(
         id: 'test_payment_123',
         amount: BigInt.from(50000),
         fees: BigInt.from(100),
@@ -155,10 +153,9 @@ void main() {
         paymentType: PaymentType.send,
         method: PaymentMethod.lightning,
         timestamp: BigInt.from(1705321800),
-        details: null,
       );
 
-      final state = PaymentDetailsState(
+      final PaymentDetailsState state = PaymentDetailsState(
         payment: payment,
         formattedAmount: '50,000',
         formattedFees: '100',
@@ -181,8 +178,8 @@ void main() {
       expect(find.text('test_payment_123'), findsOneWidget);
     });
 
-    testWidgets('hides fees when shouldShowFees is false', (tester) async {
-      final payment = Payment(
+    testWidgets('hides fees when shouldShowFees is false', (WidgetTester tester) async {
+      final Payment payment = Payment(
         id: 'test_payment_456',
         amount: BigInt.from(25000),
         fees: BigInt.zero,
@@ -190,10 +187,9 @@ void main() {
         paymentType: PaymentType.receive,
         method: PaymentMethod.lightning,
         timestamp: BigInt.from(1705321800),
-        details: null,
       );
 
-      final state = PaymentDetailsState(
+      final PaymentDetailsState state = PaymentDetailsState(
         payment: payment,
         formattedAmount: '25,000',
         formattedFees: '0',
@@ -210,8 +206,8 @@ void main() {
       expect(find.text('0 sats'), findsNothing);
     });
 
-    testWidgets('displays Lightning payment details', (tester) async {
-      final payment = Payment(
+    testWidgets('displays Lightning payment details', (WidgetTester tester) async {
+      final Payment payment = Payment(
         id: 'lightning_test',
         amount: BigInt.from(10000),
         fees: BigInt.from(50),
@@ -228,7 +224,7 @@ void main() {
         ),
       );
 
-      final state = PaymentDetailsState(
+      final PaymentDetailsState state = PaymentDetailsState(
         payment: payment,
         formattedAmount: '10,000',
         formattedFees: '50',
@@ -251,7 +247,7 @@ void main() {
 
   group('PaymentDetailsState Equality Tests', () {
     test('two states with same values are equal', () {
-      final payment = Payment(
+      final Payment payment = Payment(
         id: 'test_001',
         amount: BigInt.from(100000),
         fees: BigInt.zero,
@@ -259,10 +255,9 @@ void main() {
         paymentType: PaymentType.send,
         method: PaymentMethod.lightning,
         timestamp: BigInt.from(1705321800),
-        details: null,
       );
 
-      final state1 = PaymentDetailsState(
+      final PaymentDetailsState state1 = PaymentDetailsState(
         payment: payment,
         formattedAmount: '100,000',
         formattedFees: '0',
@@ -273,7 +268,7 @@ void main() {
         shouldShowFees: false,
       );
 
-      final state2 = PaymentDetailsState(
+      final PaymentDetailsState state2 = PaymentDetailsState(
         payment: payment,
         formattedAmount: '100,000',
         formattedFees: '0',
@@ -289,7 +284,7 @@ void main() {
     });
 
     test('two states with different formatted values are not equal', () {
-      final payment = Payment(
+      final Payment payment = Payment(
         id: 'test_001',
         amount: BigInt.from(100000),
         fees: BigInt.zero,
@@ -297,10 +292,9 @@ void main() {
         paymentType: PaymentType.send,
         method: PaymentMethod.lightning,
         timestamp: BigInt.from(1705321800),
-        details: null,
       );
 
-      final state1 = PaymentDetailsState(
+      final PaymentDetailsState state1 = PaymentDetailsState(
         payment: payment,
         formattedAmount: '100,000',
         formattedFees: '0',
@@ -311,7 +305,7 @@ void main() {
         shouldShowFees: false,
       );
 
-      final state2 = PaymentDetailsState(
+      final PaymentDetailsState state2 = PaymentDetailsState(
         payment: payment,
         formattedAmount: '200,000', // Different!
         formattedFees: '0',

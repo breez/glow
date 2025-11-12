@@ -24,13 +24,13 @@ class TransactionFormatter {
 
   /// Formats sats with thousand separators (spaces)
   String formatSats(BigInt sats) {
-    final str = sats.toString();
-    final buffer = StringBuffer();
-    final length = str.length;
+    final String str = sats.toString();
+    final StringBuffer buffer = StringBuffer();
+    final int length = str.length;
 
     for (int i = 0; i < length; i++) {
       buffer.write(str[i]);
-      final position = length - i - 1;
+      final int position = length - i - 1;
       if (position > 0 && position % 3 == 0) {
         buffer.write(' ');
       }
@@ -41,7 +41,7 @@ class TransactionFormatter {
 
   /// Formats sats to BTC with proper decimal places (8 decimals)
   String formatBtc(BigInt sats) {
-    final btc = sats.toDouble() / _satoshisPerBitcoin;
+    final double btc = sats.toDouble() / _satoshisPerBitcoin;
     return btc.toStringAsFixed(8);
   }
 
@@ -55,18 +55,20 @@ class TransactionFormatter {
 
   /// Converts sats to fiat using exchange rate
   String formatFiat(BigInt sats, double exchangeRate, String currencySymbol) {
-    final btc = sats.toDouble() / _satoshisPerBitcoin;
-    final fiatValue = btc * exchangeRate;
+    final double btc = sats.toDouble() / _satoshisPerBitcoin;
+    final double fiatValue = btc * exchangeRate;
     return '$currencySymbol${fiatValue.toStringAsFixed(2)}';
   }
 
   /// Parses a string amount to satoshis
   /// Handles both BTC and SAT formats
   BigInt parseSats(String amount, {BalanceUnit unit = BalanceUnit.sats}) {
-    if (amount.isEmpty) return BigInt.zero;
+    if (amount.isEmpty) {
+      return BigInt.zero;
+    }
 
-    final cleaned = amount.replaceAll(RegExp(r'[^\d.]'), '');
-    final parsed = double.tryParse(cleaned) ?? 0;
+    final String cleaned = amount.replaceAll(RegExp(r'[^\d.]'), '');
+    final double parsed = double.tryParse(cleaned) ?? 0;
 
     return switch (unit) {
       BalanceUnit.sats => BigInt.from(parsed.toInt()),
@@ -106,8 +108,8 @@ class TransactionFormatter {
   /// Formats timestamp to relative time (e.g., "2 hours ago")
   /// Uses relative format for dates within 4 days, otherwise shows full date
   String formatRelativeTime(BigInt timestamp) {
-    final date = _toDateTime(timestamp);
-    final fourDaysAgo = DateTime.now().subtract(const Duration(days: 4));
+    final DateTime date = _toDateTime(timestamp);
+    final DateTime fourDaysAgo = DateTime.now().subtract(const Duration(days: 4));
 
     if (fourDaysAgo.isBefore(date)) {
       return timeago.format(date, locale: _getSystemLocale().languageCode);
@@ -131,17 +133,19 @@ class TransactionFormatter {
 
   /// Formats full datetime for display
   String formatDateTime(BigInt timestamp) {
-    final date = _toDateTime(timestamp);
+    final DateTime date = _toDateTime(timestamp);
     return '${date.day}/${date.month}/${date.year} at ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
 
   /// Gets a short description for payment details
   String getShortDescription(PaymentDetails? details) {
-    if (details == null) return '';
+    if (details == null) {
+      return '';
+    }
 
     return switch (details) {
-      PaymentDetails_Lightning(:final description) => description ?? '',
-      PaymentDetails_Token(:final metadata) => metadata.name,
+      PaymentDetails_Lightning(:final String? description) => description ?? '',
+      PaymentDetails_Token(:final TokenMetadata metadata) => metadata.name,
       PaymentDetails_Withdraw() => 'On-chain withdrawal',
       PaymentDetails_Deposit() => 'On-chain deposit',
       PaymentDetails_Spark() => 'Spark payment',
@@ -150,7 +154,7 @@ class TransactionFormatter {
 
   /// Formats amount with sign based on payment type
   String formatAmountWithSign(BigInt amount, PaymentType type) {
-    final formattedAmount = formatSats(amount);
+    final String formattedAmount = formatSats(amount);
     return switch (type) {
       PaymentType.send => '-$formattedAmount',
       PaymentType.receive => '+$formattedAmount',
@@ -166,12 +170,12 @@ class TransactionFormatter {
   /// Gets the system locale for date/time formatting
   Locale _getSystemLocale() {
     try {
-      final parts = Platform.localeName.split('_');
+      final List<String> parts = Platform.localeName.split('_');
       return Locale(parts[0], parts.length > 1 ? parts[1] : null);
     } catch (e) {
-      var defaultLocaleParts = AppConfig.defaultLocale.split('_');
-      var defaultLocaleCode = defaultLocaleParts[0];
-      var countryCode = defaultLocaleParts.length > 1 ? defaultLocaleParts[1] : null;
+      final List<String> defaultLocaleParts = AppConfig.defaultLocale.split('_');
+      final String defaultLocaleCode = defaultLocaleParts[0];
+      final String? countryCode = defaultLocaleParts.length > 1 ? defaultLocaleParts[1] : null;
       return Locale(defaultLocaleCode, countryCode);
     }
   }

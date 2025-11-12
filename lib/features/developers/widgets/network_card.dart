@@ -6,7 +6,7 @@ class NetworkCard extends ConsumerWidget {
   final Network network;
   final void Function(Network network) onChangeNetwork;
 
-  const NetworkCard({super.key, required this.network, required this.onChangeNetwork});
+  const NetworkCard({required this.network, required this.onChangeNetwork, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,7 +15,7 @@ class NetworkCard extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Text('Network', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
             Text(
@@ -26,7 +26,7 @@ class NetworkCard extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Row(
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: OutlinedButton(
                     onPressed: network == Network.mainnet

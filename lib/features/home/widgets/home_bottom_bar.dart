@@ -8,7 +8,7 @@ class HomeBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomAppBar(
       child: Row(
-        children: [
+        children: <Widget>[
           Expanded(
             child: _ActionButton(
               label: 'SEND',

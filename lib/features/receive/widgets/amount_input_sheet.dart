@@ -14,14 +14,14 @@ import 'package:glow/features/receive/widgets/error_view.dart';
 class AmountInputSheet extends ConsumerStatefulWidget {
   final ReceiveMethod receiveMethod;
 
-  const AmountInputSheet({super.key, required this.receiveMethod});
+  const AmountInputSheet({required this.receiveMethod, super.key});
 
   @override
   ConsumerState<AmountInputSheet> createState() => _AmountInputSheetState();
 }
 
 class _AmountInputSheetState extends ConsumerState<AmountInputSheet> {
-  final _amountController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
   BigInt? _generatedAmountSats;
 
   @override
@@ -31,7 +31,7 @@ class _AmountInputSheetState extends ConsumerState<AmountInputSheet> {
   }
 
   void _generatePaymentRequest() {
-    final amount = parseSats(_amountController.text);
+    final BigInt? amount = parseSats(_amountController.text);
     if (amount != null && amount > BigInt.zero) {
       setState(() => _generatedAmountSats = amount);
     }
@@ -59,9 +59,9 @@ class _AmountInputSheetState extends ConsumerState<AmountInputSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Expanded(child: Text('Request Payment', style: Theme.of(context).textTheme.headlineSmall)),
               IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
             ],
@@ -85,7 +85,7 @@ class _AmountInputSheetState extends ConsumerState<AmountInputSheet> {
               ),
               border: InputBorder.none,
             ),
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
             onSubmitted: (_) => _generatePaymentRequest(),
           ),
           const SizedBox(height: 24),
@@ -134,7 +134,7 @@ class _LightningInvoiceDisplay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final receiveResponse = ref.watch(
+    final AsyncValue<ReceivePaymentResponse> receiveResponse = ref.watch(
       receivePaymentProvider(
         ReceivePaymentRequest(
           paymentMethod: ReceivePaymentMethod.bolt11Invoice(description: 'Payment', amountSats: amountSats),
@@ -143,11 +143,12 @@ class _LightningInvoiceDisplay extends ConsumerWidget {
     );
 
     return receiveResponse.when(
-      data: (response) => _InvoiceContent(amountSats: amountSats, response: response, onBack: onBack),
+      data: (ReceivePaymentResponse response) =>
+          _InvoiceContent(amountSats: amountSats, response: response, onBack: onBack),
       loading: () => const Center(
         child: Padding(padding: EdgeInsets.all(48.0), child: CircularProgressIndicator()),
       ),
-      error: (err, _) => Padding(
+      error: (Object err, _) => Padding(
         padding: const EdgeInsets.all(24),
         child: ErrorView(message: 'Failed to generate invoice', error: err.toString(), onRetry: onBack),
       ),
@@ -169,9 +170,9 @@ class _InvoiceContent extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Expanded(child: Text('Invoice', style: Theme.of(context).textTheme.headlineSmall)),
               IconButton(icon: const Icon(Icons.close), onPressed: onBack),
             ],
@@ -186,7 +187,7 @@ class _InvoiceContent extends StatelessWidget {
           QRCodeCard(data: response.paymentRequest),
           const SizedBox(height: 32),
           CopyableCard(title: 'Lightning Invoice', content: response.paymentRequest),
-          if (response.fee > BigInt.zero) ...[
+          if (response.fee > BigInt.zero) ...<Widget>[
             const SizedBox(height: 16),
             Text(
               'Fee: ${formatSats(response.fee)} sats',
@@ -209,10 +210,12 @@ class _BitcoinAddressDisplay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bip21DataAsync = ref.watch(bitcoinAddressWithAmountProvider(amountSats));
+    final AsyncValue<BitcoinBip21Data?> bip21DataAsync = ref.watch(
+      bitcoinAddressWithAmountProvider(amountSats),
+    );
 
     return bip21DataAsync.when(
-      data: (bip21Data) {
+      data: (BitcoinBip21Data? bip21Data) {
         if (bip21Data == null) {
           return Padding(
             padding: const EdgeInsets.all(24),
@@ -235,7 +238,7 @@ class _BitcoinAddressDisplay extends ConsumerWidget {
       loading: () => const Center(
         child: Padding(padding: EdgeInsets.all(48.0), child: CircularProgressIndicator()),
       ),
-      error: (err, _) => Padding(
+      error: (Object err, _) => Padding(
         padding: const EdgeInsets.all(24),
         child: ErrorView(message: 'Failed to load Bitcoin address', error: err.toString(), onRetry: onBack),
       ),
@@ -265,9 +268,9 @@ class _BitcoinAddressWithAmountContent extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Expanded(child: Text('Bitcoin Address', style: Theme.of(context).textTheme.headlineSmall)),
               IconButton(icon: const Icon(Icons.close), onPressed: onBack),
             ],
@@ -290,7 +293,7 @@ class _BitcoinAddressWithAmountContent extends StatelessWidget {
           CopyableCard(title: 'Bitcoin Address', content: address),
           const SizedBox(height: 16),
           // Show network warning if not mainnet
-          if (network != BitcoinNetwork.bitcoin) ...[
+          if (network != BitcoinNetwork.bitcoin) ...<Widget>[
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -298,7 +301,7 @@ class _BitcoinAddressWithAmountContent extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
-                children: [
+                children: <Widget>[
                   Icon(Icons.warning_amber_rounded, size: 20, color: Theme.of(context).colorScheme.error),
                   const SizedBox(width: 12),
                   Expanded(

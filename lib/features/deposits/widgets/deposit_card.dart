@@ -14,15 +14,15 @@ class DepositCard extends StatefulWidget {
   final VoidCallback onCopyTxid;
 
   const DepositCard({
-    super.key,
     required this.deposit,
     required this.hasError,
     required this.hasRefund,
     required this.formattedTxid,
-    this.formattedErrorMessage,
     required this.onRetryClaim,
     required this.onShowRefundInfo,
     required this.onCopyTxid,
+    super.key,
+    this.formattedErrorMessage,
   });
 
   @override
@@ -34,8 +34,8 @@ class _DepositCardState extends State<DepositCard> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final hasError = widget.hasError;
+    final ThemeData theme = Theme.of(context);
+    final bool hasError = widget.hasError;
 
     return Card(
       elevation: 0,
@@ -52,7 +52,7 @@ class _DepositCardState extends State<DepositCard> {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               _DepositCardHeader(deposit: widget.deposit, isExpanded: _isExpanded, hasError: hasError),
               if (_isExpanded)
                 _DepositCardExpandedContent(
@@ -83,10 +83,10 @@ class _DepositCardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Row(
-      children: [
+      children: <Widget>[
         _DepositIconContainer(hasError: hasError),
         const SizedBox(width: 12),
         Expanded(
@@ -109,7 +109,7 @@ class _DepositIconContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -135,11 +135,11 @@ class _DepositAmountInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           '${deposit.amountSats.toString()} sats',
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -163,10 +163,10 @@ class _DepositCardExpandedContent extends StatelessWidget {
     required this.hasError,
     required this.hasRefund,
     required this.formattedTxid,
-    this.formattedErrorMessage,
     required this.onRetryClaim,
     required this.onShowRefundInfo,
     required this.onCopyTxid,
+    this.formattedErrorMessage,
   });
 
   final DepositInfo deposit;
@@ -182,20 +182,20 @@ class _DepositCardExpandedContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         const SizedBox(height: 16),
         const Divider(height: 1),
         const SizedBox(height: 16),
         _DepositDetailRow(label: 'Transaction', value: formattedTxid, onTap: onCopyTxid),
         const SizedBox(height: 8),
         _DepositDetailRow(label: 'Output', value: '${deposit.vout}'),
-        if (hasError && deposit.claimError != null && formattedErrorMessage != null) ...[
+        if (hasError && deposit.claimError != null && formattedErrorMessage != null) ...<Widget>[
           const SizedBox(height: 16),
           DepositErrorBanner(errorMessage: formattedErrorMessage!),
         ],
         const SizedBox(height: 16),
         _RetryClaimButton(onPressed: onRetryClaim),
-        if (hasRefund) ...[const SizedBox(height: 8), _ViewRefundButton(onPressed: onShowRefundInfo)],
+        if (hasRefund) ...<Widget>[const SizedBox(height: 8), _ViewRefundButton(onPressed: onShowRefundInfo)],
       ],
     );
   }
@@ -211,11 +211,11 @@ class _DepositDetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         SizedBox(
           width: 90,
           child: Text(

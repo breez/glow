@@ -5,18 +5,18 @@ class NetworkSelector extends StatelessWidget {
   final Network selectedNetwork;
   final ValueChanged<Network> onChanged;
 
-  const NetworkSelector({super.key, required this.selectedNetwork, required this.onChanged});
+  const NetworkSelector({required this.selectedNetwork, required this.onChanged, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text('Network', style: Theme.of(context).textTheme.titleMedium),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         RadioGroup<Network>(
           groupValue: selectedNetwork,
-          onChanged: (v) => onChanged(v!),
+          onChanged: (Network? v) => onChanged(v!),
           child: Card(
             child: Column(
               children: <Widget>[
@@ -25,7 +25,7 @@ class NetworkSelector extends StatelessWidget {
                   label: 'Mainnet',
                   onTap: () => onChanged(Network.mainnet),
                 ),
-                Divider(height: 1),
+                const Divider(height: 1),
                 _NetworkOption(
                   network: Network.regtest,
                   label: 'Regtest',
@@ -52,7 +52,7 @@ class _NetworkOption extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap,
       child: Row(
-        children: [
+        children: <Widget>[
           Radio<Network>(value: network),
           Expanded(child: Text(label)),
         ],

@@ -4,11 +4,13 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/core/models/wallet_metadata.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/logging/app_logger.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
+import 'package:logger/logger.dart';
 
-final log = AppLogger.getLogger('SetupActions');
+final Logger log = AppLogger.getLogger('SetupActions');
 final AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
 
 class SetupActions extends StatelessWidget {
@@ -40,21 +42,23 @@ class _RegisterButtonState extends ConsumerState<_RegisterButton> {
   bool _isCreating = false;
 
   String _generateWalletName() {
-    final random = Random();
-    final digits = random.nextInt(10000).toString().padLeft(4, '0');
+    final Random random = Random();
+    final String digits = random.nextInt(10000).toString().padLeft(4, '0');
     return 'Glow$digits';
   }
 
   Future<void> _handleCreateWallet() async {
-    if (_isCreating) return;
+    if (_isCreating) {
+      return;
+    }
 
     setState(() => _isCreating = true);
 
     try {
-      final walletName = _generateWalletName();
+      final String walletName = _generateWalletName();
       log.i('Creating wallet: $walletName on mainnet');
 
-      final (wallet, mnemonic) = await ref
+      final (WalletMetadata wallet, String mnemonic) = await ref
           .read(walletListProvider.notifier)
           .createWallet(name: walletName, network: Network.mainnet);
 
@@ -66,7 +70,7 @@ class _RegisterButtonState extends ConsumerState<_RegisterButton> {
         Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homeScreen, (_) => false);
 
         // Show success message after navigation
-        Future.delayed(const Duration(milliseconds: 300), () {
+        Future<void>.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -117,9 +121,9 @@ class _RegisterButtonState extends ConsumerState<_RegisterButton> {
               )
             : Semantics(
                 button: true,
-                label: 'LET\'S GLOW!',
+                label: "LET'S GLOW!",
                 child: AutoSizeText(
-                  'LET\'S GLOW!',
+                  "LET'S GLOW!",
                   style: themeData.textTheme.labelLarge?.copyWith(color: themeData.primaryColor),
                   stepGranularity: 0.1,
                   group: widget.autoSizeGroup,

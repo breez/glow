@@ -2,8 +2,10 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:glow/core/config/app_config.dart';
+import 'package:glow/core/models/wallet_metadata.dart';
 import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/providers/theme_provider.dart';
@@ -15,7 +17,7 @@ import 'package:glow/core/theme/theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'core/logging/app_logger.dart';
+import 'package:glow/core/logging/app_logger.dart';
 
 Future<void> _precacheSvgImages() async {
   final AssetManifest assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
@@ -35,18 +37,18 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
   // Initialize i18n & l10n
   Intl.defaultLocale = AppConfig.defaultLocale;
-  await initializeDateFormatting(AppConfig.defaultLocale, null);
+  await initializeDateFormatting(AppConfig.defaultLocale);
   TransactionFormatter.setupLocales();
 
   await BreezSdkSparkLib.init();
   await AppLogger.initialize();
-  final prefs = await SharedPreferences.getInstance();
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
   runApp(
     ProviderScope(
-      overrides: [configServiceProvider.overrideWithValue(ConfigService(prefs))],
+      overrides: <Override>[configServiceProvider.overrideWithValue(ConfigService(prefs))],
       child: const MainApp(),
     ),
   );
@@ -57,7 +59,7 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
+    final ThemeMode themeMode = ref.watch(themeModeProvider);
     final ThemeData themeData = themeMode == ThemeMode.dark ? buildDarkTheme() : buildLightTheme();
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -65,7 +67,7 @@ class MainApp extends ConsumerWidget {
       child: MaterialApp(
         title: 'Glow',
         initialRoute: AppRoutes.homeScreen,
-        routes: {AppRoutes.homeScreen: (context) => const _AppRouter()},
+        routes: <String, WidgetBuilder>{AppRoutes.homeScreen: (BuildContext context) => const _AppRouter()},
         onGenerateRoute: AppRoutes.generateRoute,
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
@@ -86,8 +88,8 @@ class _AppRouter extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasWalletsAsync = ref.watch(hasWalletsProvider);
-    final activeWallet = ref.watch(activeWalletProvider);
+    final AsyncValue<bool> hasWalletsAsync = ref.watch(hasWalletsProvider);
+    final AsyncValue<WalletMetadata?> activeWallet = ref.watch(activeWalletProvider);
 
     // Show loading while checking if wallets exist
     if (hasWalletsAsync.isLoading) {
@@ -102,7 +104,7 @@ class _AppRouter extends ConsumerWidget {
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
                 const SizedBox(height: 16),
                 Text('Failed to load wallets', style: Theme.of(context).textTheme.titleLarge),
@@ -126,7 +128,7 @@ class _AppRouter extends ConsumerWidget {
       );
     }
 
-    final hasWallets = hasWalletsAsync.value ?? false;
+    final bool hasWallets = hasWalletsAsync.value ?? false;
 
     // No wallets exist - show setup screen
     if (!hasWallets) {
@@ -146,7 +148,7 @@ class _AppRouter extends ConsumerWidget {
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
                 const SizedBox(height: 16),
                 Text('Failed to load wallet', style: Theme.of(context).textTheme.titleLarge),

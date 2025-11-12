@@ -1,13 +1,13 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
-import 'models/payment_details_state.dart';
-import 'widgets/payment_details_widgets.dart';
+import 'package:glow/features/payment_details/models/payment_details_state.dart';
+import 'package:glow/features/payment_details/widgets/payment_details_widgets.dart';
 
 /// Pure presentation widget for payment details
 /// Only consumes provided state and renders widgets
 /// No business logic, data mutation, or side effects.
 class PaymentDetailsLayout extends StatelessWidget {
-  const PaymentDetailsLayout({super.key, required this.state});
+  const PaymentDetailsLayout({required this.state, super.key});
 
   final PaymentDetailsState state;
 
@@ -17,7 +17,7 @@ class PaymentDetailsLayout extends StatelessWidget {
       appBar: AppBar(title: const Text('Payment Details')),
       body: ListView(
         padding: const EdgeInsets.all(16),
-        children: [
+        children: <Widget>[
           // Amount Section
           PaymentAmountDisplay(formattedAmount: state.formattedAmount),
 
@@ -35,7 +35,7 @@ class PaymentDetailsLayout extends StatelessWidget {
           PaymentDetailRow(label: 'Payment ID', value: state.payment.id, copyable: true),
 
           // Payment-specific details
-          if (state.payment.details != null) ...[
+          if (state.payment.details != null) ...<Widget>[
             const Divider(height: 32),
             _buildPaymentSpecificDetails(state.payment.details!),
           ],

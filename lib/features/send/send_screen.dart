@@ -7,8 +7,9 @@ import 'package:glow/features/send/send_layout.dart';
 import 'package:glow/routing/input_handlers.dart';
 import 'package:glow/core/logging/app_logger.dart';
 import 'package:glow/features/send/providers/send_input_validator.dart';
+import 'package:logger/logger.dart';
 
-final _log = AppLogger.getLogger('SendScreen');
+final Logger _log = AppLogger.getLogger('SendScreen');
 
 /// A page that allows users to enter payment information via text input, paste, or QR scan.
 class SendScreen extends ConsumerStatefulWidget {
@@ -19,10 +20,10 @@ class SendScreen extends ConsumerStatefulWidget {
 }
 
 class _SendScreenState extends ConsumerState<SendScreen> {
-  final formKey = GlobalKey<FormState>();
-  final paymentInfoController = TextEditingController();
-  final textGroup = AutoSizeGroup();
-  final focusNode = FocusNode();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController paymentInfoController = TextEditingController();
+  final AutoSizeGroup textGroup = AutoSizeGroup();
+  final FocusNode focusNode = FocusNode();
   bool isValidating = false;
   String errorMessage = '';
 
@@ -50,8 +51,8 @@ class _SendScreenState extends ConsumerState<SendScreen> {
   }
 
   Future<void> _onPaste() async {
-    final clipboardService = ref.read(clipboardServiceProvider);
-    final clipboardText = await clipboardService.getClipboardText();
+    final ClipboardService clipboardService = ref.read(clipboardServiceProvider);
+    final String? clipboardText = await clipboardService.getClipboardText();
     if (clipboardText != null && clipboardText.isNotEmpty) {
       setState(() {
         paymentInfoController.text = clipboardText;
@@ -68,7 +69,7 @@ class _SendScreenState extends ConsumerState<SendScreen> {
     // Unfocus text field
     focusNode.unfocus();
 
-    final qrScanService = ref.read(qrScanServiceProvider);
+    final QrScanService qrScanService = ref.read(qrScanServiceProvider);
     final String? barcode = await qrScanService.scanQrCode(context);
     if (barcode == null) {
       return;
@@ -76,7 +77,7 @@ class _SendScreenState extends ConsumerState<SendScreen> {
 
     if (barcode.isEmpty && mounted) {
       final ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
-      scaffoldMessenger.showSnackBar(SnackBar(content: Text('No QR code found in image')));
+      scaffoldMessenger.showSnackBar(const SnackBar(content: Text('No QR code found in image')));
       return;
     }
 
@@ -104,10 +105,12 @@ class _SendScreenState extends ConsumerState<SendScreen> {
       errorMessage = '';
     });
 
-    final validator = ref.read(sendInputValidatorProvider);
-    final error = await validator.validate(paymentInfoController.text);
+    final SendInputValidator validator = ref.read(sendInputValidatorProvider);
+    final String? error = await validator.validate(paymentInfoController.text);
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       errorMessage = error ?? '';
@@ -119,12 +122,16 @@ class _SendScreenState extends ConsumerState<SendScreen> {
   Future<void> _onApprove() async {
     _log.i('Approve button pressed');
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     // Validate input first
     await _validateInput();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     // Check if validation passed
     if (!formKey.currentState!.validate()) {
@@ -142,8 +149,8 @@ class _SendScreenState extends ConsumerState<SendScreen> {
     });
 
     try {
-      final inputHandler = ref.read(inputHandlerProvider);
-      final input = paymentInfoController.text.trim();
+      final InputHandler inputHandler = ref.read(inputHandlerProvider);
+      final String input = paymentInfoController.text.trim();
 
       _log.i('Processing payment input');
 

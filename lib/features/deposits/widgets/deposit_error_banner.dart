@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 class DepositErrorBanner extends StatelessWidget {
   final String errorMessage;
 
-  const DepositErrorBanner({super.key, required this.errorMessage});
+  const DepositErrorBanner({required this.errorMessage, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -19,13 +19,13 @@ class DepositErrorBanner extends StatelessWidget {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Icon(Icons.error_outline, size: 18, color: theme.colorScheme.error),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   'Claim Error',
                   style: theme.textTheme.labelMedium?.copyWith(

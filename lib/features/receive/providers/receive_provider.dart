@@ -14,4 +14,5 @@ class ReceiveNotifier extends Notifier<ReceiveState> {
   void setError(String error) => state = state.copyWith(hasError: true, error: error);
 }
 
-final receiveProvider = NotifierProvider<ReceiveNotifier, ReceiveState>(ReceiveNotifier.new);
+final NotifierProvider<ReceiveNotifier, ReceiveState> receiveProvider =
+    NotifierProvider<ReceiveNotifier, ReceiveState>(ReceiveNotifier.new);

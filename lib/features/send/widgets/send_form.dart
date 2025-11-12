@@ -7,11 +7,11 @@ class SendForm extends StatelessWidget {
   final ValueChanged<String> onSubmit;
 
   const SendForm({
-    super.key,
     required this.controller,
     required this.focusNode,
     required this.errorMessage,
     required this.onSubmit,
+    super.key,
   });
 
   @override

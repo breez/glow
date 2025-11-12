@@ -13,7 +13,7 @@ class LogsCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Text('Logs', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
             Text(

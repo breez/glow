@@ -7,7 +7,7 @@ class MnemonicService with LoggerMixin {
   /// Generate a new 12-word BIP39 mnemonic
   String generateMnemonic() {
     try {
-      final mnemonic = bip39.generateMnemonic(strength: 128);
+      final String mnemonic = bip39.generateMnemonic();
       log.i('Generated new 12-word mnemonic');
       return mnemonic;
     } catch (e, stack) {
@@ -19,17 +19,17 @@ class MnemonicService with LoggerMixin {
   /// Validate a BIP39 mnemonic
   (bool, String?) validateMnemonic(String mnemonic) {
     try {
-      final cleaned = mnemonic.trim().toLowerCase();
-      final words = cleaned.split(RegExp(r'\s+'));
+      final String cleaned = mnemonic.trim().toLowerCase();
+      final List<String> words = cleaned.split(RegExp(r'\s+'));
 
       if (words.length != 12) {
-        final error = 'Must be exactly 12 words (found ${words.length})';
+        final String error = 'Must be exactly 12 words (found ${words.length})';
         log.w('Mnemonic validation failed: $error');
         return (false, error);
       }
 
       if (!bip39.validateMnemonic(cleaned)) {
-        const error = 'Invalid mnemonic checksum';
+        const String error = 'Invalid mnemonic checksum';
         log.w('Mnemonic validation failed: $error');
         return (false, error);
       }
@@ -44,7 +44,9 @@ class MnemonicService with LoggerMixin {
 
   /// Normalize a mnemonic string
   String normalizeMnemonic(String mnemonic) =>
-      mnemonic.trim().toLowerCase().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).join(' ');
+      mnemonic.trim().toLowerCase().split(RegExp(r'\s+')).where((String w) => w.isNotEmpty).join(' ');
 }
 
-final mnemonicServiceProvider = Provider<MnemonicService>((ref) => MnemonicService());
+final Provider<MnemonicService> mnemonicServiceProvider = Provider<MnemonicService>(
+  (Ref ref) => MnemonicService(),
+);

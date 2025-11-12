@@ -16,22 +16,22 @@ class LightningReceiveView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lightningAddress = ref.watch(lightningAddressProvider(true));
-    final sdkAsync = ref.watch(sdkProvider);
+    final AsyncValue<LightningAddressInfo?> lightningAddress = ref.watch(lightningAddressProvider(true));
+    final AsyncValue<BreezSdk> sdkAsync = ref.watch(sdkProvider);
 
     return lightningAddress.when(
-      data: (address) => address != null
+      data: (LightningAddressInfo? address) => address != null
           ? _LightningAddressContent(address: address.lightningAddress, sdk: sdkAsync.value!)
           : NoLightningAddressView(
               onRegister: () async {
-                final sdk = sdkAsync.value;
+                final BreezSdk? sdk = sdkAsync.value;
                 if (sdk != null) {
                   await showRegisterLightningAddressSheet(context, ref, sdk);
                 }
               },
             ),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, _) => ErrorView(message: 'Failed to load Lightning Address', error: err.toString()),
+      error: (Object err, _) => ErrorView(message: 'Failed to load Lightning Address', error: err.toString()),
     );
   }
 }
@@ -48,7 +48,7 @@ class _LightningAddressContent extends ConsumerWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
-        children: [
+        children: <Widget>[
           const SizedBox(height: 16),
           QRCodeCard(data: address),
           const SizedBox(height: 32),

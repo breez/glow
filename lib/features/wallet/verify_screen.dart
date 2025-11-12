@@ -11,7 +11,7 @@ class WalletVerifyScreen extends ConsumerStatefulWidget {
   final WalletMetadata wallet;
   final String mnemonic;
 
-  const WalletVerifyScreen({super.key, required this.wallet, required this.mnemonic});
+  const WalletVerifyScreen({required this.wallet, required this.mnemonic, super.key});
 
   @override
   ConsumerState<WalletVerifyScreen> createState() => _WalletVerifyScreenState();
@@ -28,9 +28,9 @@ class _WalletVerifyScreenState extends ConsumerState<WalletVerifyScreen> with Lo
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Recovery phrase verified!'), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Recovery phrase verified!'), backgroundColor: Colors.green),
+        );
       }
     } catch (e) {
       log.e('Failed to verify wallet', error: e);
@@ -46,29 +46,29 @@ class _WalletVerifyScreenState extends ConsumerState<WalletVerifyScreen> with Lo
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Verify Recovery Phrase')),
+      appBar: AppBar(title: const Text('Verify Recovery Phrase')),
       body: ListView(
-        padding: EdgeInsets.all(24),
-        children: [
-          WarningCard(
+        padding: const EdgeInsets.all(24),
+        children: <Widget>[
+          const WarningCard(
             title: 'Write This Down!',
             message:
                 'Please confirm that you have written down your recovery phrase. '
                 'This is essential for recovering your wallet if you lose access to your device.',
           ),
-          SizedBox(height: 24),
-          RecoveryPhraseGrid(mnemonic: widget.mnemonic, showCopyButton: true),
-          SizedBox(height: 24),
-          SecurityTipsCard(),
-          SizedBox(height: 32),
+          const SizedBox(height: 24),
+          RecoveryPhraseGrid(mnemonic: widget.mnemonic),
+          const SizedBox(height: 24),
+          const SecurityTipsCard(),
+          const SizedBox(height: 32),
           FilledButton(
             onPressed: _isConfirming ? null : _confirm,
             child: _isConfirming
-                ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : Text('I Have Written It Down'),
+                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Text('I Have Written It Down'),
           ),
-          SizedBox(height: 16),
-          OutlinedButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+          const SizedBox(height: 16),
+          OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
         ],
       ),
     );

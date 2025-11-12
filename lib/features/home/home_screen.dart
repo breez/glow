@@ -9,14 +9,14 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeData = Theme.of(context);
+    final ThemeData themeData = Theme.of(context);
     ref.watch(sdkEventListenerProvider);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: themeData.appBarTheme.systemOverlayStyle!.copyWith(
         systemNavigationBarColor: themeData.bottomAppBarTheme.color,
       ),
-      child: HomeLayout(),
+      child: const HomeLayout(),
     );
   }
 }

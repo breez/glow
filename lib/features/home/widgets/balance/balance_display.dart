@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/home/widgets/balance/balance_display_layout.dart';
+import 'package:glow/features/home/widgets/balance/models/balance_state.dart';
 import 'package:glow/features/home/widgets/balance/providers/balance_providers.dart';
 
 /// BalanceDisplay widget - handles setup and dependency injection
@@ -12,7 +13,7 @@ class BalanceDisplay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Get formatted state from provider
-    final state = ref.watch(balanceStateProvider);
+    final BalanceState state = ref.watch(balanceStateProvider);
 
     // Return pure presentation widget
     return BalanceDisplayLayout(
@@ -24,13 +25,13 @@ class BalanceDisplay extends ConsumerWidget {
 
   /// Handle tap on balance area
   void _onBalanceTap() {
-    // TODO: Change preferred Currency to the next one
+    // TODO(erdemyerebasmaz): Change preferred Currency to the next one
     // (e.g., from BTC to SAT or vice versa, or hide balance)
   }
 
   /// Handle tap on fiat conversion area
   void _onFiatBalanceTap() {
-    // TODO: Change preferred Fiat Currency to the next one
+    // TODO(erdemyerebasmaz): Change preferred Fiat Currency to the next one
     // (e.g., from USD to EUR or vice versa)
   }
 }

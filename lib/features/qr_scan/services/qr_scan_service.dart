@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/logging/app_logger.dart';
 import 'package:glow/routing/app_routes.dart';
+import 'package:logger/logger.dart';
 
-final log = AppLogger.getLogger('QrScanService');
+final Logger log = AppLogger.getLogger('QrScanService');
 
 /// Provider for QR scan service
-final qrScanServiceProvider = Provider<QrScanService>((ref) {
-  return QrScanService();
+final Provider<QrScanService> qrScanServiceProvider = Provider<QrScanService>((Ref ref) {
+  return const QrScanService();
 });
 
 class QrScanService {

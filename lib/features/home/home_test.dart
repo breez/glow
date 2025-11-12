@@ -12,7 +12,7 @@ import 'package:glow/features/home/widgets/transactions/widgets/transaction_list
 
 void main() {
   group('BalanceFormatter Unit Tests', () {
-    const formatter = TransactionFormatter();
+    const TransactionFormatter formatter = TransactionFormatter();
 
     test('formats sats with thousand separators', () {
       expect(formatter.formatSats(BigInt.from(1000)), '1,000');
@@ -27,21 +27,18 @@ void main() {
     });
 
     test('formats balance with unit', () {
-      expect(formatter.formatBalance(BigInt.from(1000), unit: BalanceUnit.sats), '1,000 sats');
-      expect(
-        formatter.formatBalance(BigInt.from(100000000), unit: BalanceUnit.btc),
-        '1.00000000 BTC',
-      );
+      expect(formatter.formatBalance(BigInt.from(1000)), '1,000 sats');
+      expect(formatter.formatBalance(BigInt.from(100000000), unit: BalanceUnit.btc), '1.00000000 BTC');
     });
 
     test('formats fiat correctly', () {
-      final formatted = formatter.formatFiat(BigInt.from(100000000), 45000.0, '\$');
+      final String formatted = formatter.formatFiat(BigInt.from(100000000), 45000.0, '\$');
       expect(formatted, '\$45000.00');
     });
   });
 
   group('TransactionFormatter Unit Tests', () {
-    const formatter = TransactionFormatter();
+    const TransactionFormatter formatter = TransactionFormatter();
 
     test('formats sats with thousand separators', () {
       expect(formatter.formatSats(BigInt.from(50000)), '50,000');
@@ -70,36 +67,42 @@ void main() {
     });
 
     test('formats relative time', () {
-      final now = DateTime.now();
+      final DateTime now = DateTime.now();
 
       // Just now
-      final justNow = BigInt.from(now.millisecondsSinceEpoch ~/ 1000);
+      final BigInt justNow = BigInt.from(now.millisecondsSinceEpoch ~/ 1000);
       expect(formatter.formatRelativeTime(justNow), 'Just now');
 
       // Minutes ago
-      final minutesAgo = BigInt.from(now.subtract(const Duration(minutes: 5)).millisecondsSinceEpoch ~/ 1000);
+      final BigInt minutesAgo = BigInt.from(
+        now.subtract(const Duration(minutes: 5)).millisecondsSinceEpoch ~/ 1000,
+      );
       expect(formatter.formatRelativeTime(minutesAgo), '5m ago');
 
       // Hours ago
-      final hoursAgo = BigInt.from(now.subtract(const Duration(hours: 2)).millisecondsSinceEpoch ~/ 1000);
+      final BigInt hoursAgo = BigInt.from(
+        now.subtract(const Duration(hours: 2)).millisecondsSinceEpoch ~/ 1000,
+      );
       expect(formatter.formatRelativeTime(hoursAgo), '2h ago');
     });
   });
 
   group('HomeStateFactory Unit Tests', () {
-    const factory = HomeStateFactory(
-      transactionFormatter: TransactionFormatter(),
-    );
+    const HomeStateFactory factory = HomeStateFactory(transactionFormatter: TransactionFormatter());
 
     test('creates loading balance state', () {
-      final state = factory.createBalanceState(balance: BigInt.zero, hasSynced: false, isLoading: true);
+      final BalanceState state = factory.createBalanceState(
+        balance: BigInt.zero,
+        hasSynced: false,
+        isLoading: true,
+      );
 
       expect(state.isLoading, true);
       expect(state.hasSynced, false);
     });
 
     test('creates loaded balance state', () {
-      final state = factory.createBalanceState(
+      final BalanceState state = factory.createBalanceState(
         balance: BigInt.from(1000000),
         hasSynced: true,
         isLoading: false,
@@ -112,7 +115,7 @@ void main() {
     });
 
     test('creates transaction item state', () {
-      final payment = Payment(
+      final Payment payment = Payment(
         id: 'test_001',
         amount: BigInt.from(50000),
         fees: BigInt.from(100),
@@ -120,10 +123,9 @@ void main() {
         paymentType: PaymentType.receive,
         method: PaymentMethod.lightning,
         timestamp: BigInt.from(DateTime.now().millisecondsSinceEpoch ~/ 1000),
-        details: null,
       );
 
-      final state = factory.createTransactionItemState(payment);
+      final TransactionItemState state = factory.createTransactionItemState(payment);
 
       expect(state.formattedAmount, '50,000');
       expect(state.formattedAmountWithSign, '+50,000');
@@ -132,7 +134,7 @@ void main() {
     });
 
     test('creates transaction list state', () {
-      final payment = Payment(
+      final Payment payment = Payment(
         id: 'test_001',
         amount: BigInt.from(50000),
         fees: BigInt.zero,
@@ -140,11 +142,10 @@ void main() {
         paymentType: PaymentType.receive,
         method: PaymentMethod.lightning,
         timestamp: BigInt.from(DateTime.now().millisecondsSinceEpoch ~/ 1000),
-        details: null,
       );
 
-      final state = factory.createTransactionListState(
-        payments: [payment],
+      final TransactionListState state = factory.createTransactionListState(
+        payments: <Payment>[payment],
         hasSynced: true,
         isLoading: false,
       );
@@ -155,7 +156,11 @@ void main() {
     });
 
     test('creates empty transaction list state', () {
-      final state = factory.createTransactionListState(payments: [], hasSynced: true, isLoading: false);
+      final TransactionListState state = factory.createTransactionListState(
+        payments: <Payment>[],
+        hasSynced: true,
+        isLoading: false,
+      );
 
       expect(state.isEmpty, true);
       expect(state.hasTransactions, false);
@@ -163,8 +168,8 @@ void main() {
   });
 
   group('BalanceDisplayLayout Widget Tests', () {
-    testWidgets('displays loading state', (tester) async {
-      final state = BalanceState.loading();
+    testWidgets('displays loading state', (WidgetTester tester) async {
+      final BalanceState state = BalanceState.loading();
 
       await tester.pumpWidget(
         MaterialApp(
@@ -175,8 +180,8 @@ void main() {
       expect(find.byType(BalanceDisplayShimmer), findsOneWidget);
     });
 
-    testWidgets('displays loaded balance', (tester) async {
-      final state = BalanceState.loaded(
+    testWidgets('displays loaded balance', (WidgetTester tester) async {
+      final BalanceState state = BalanceState.loaded(
         balance: BigInt.from(1000000),
         hasSynced: true,
         formattedBalance: '1,000,000',
@@ -189,13 +194,13 @@ void main() {
       );
 
       expect(find.byType(RichText), findsOneWidget);
-      final richText = tester.widget<RichText>(find.byType(RichText));
+      final RichText richText = tester.widget<RichText>(find.byType(RichText));
       expect(richText.text.toPlainText(), contains('1,000,000'));
       expect(richText.text.toPlainText(), contains('sats'));
     });
 
-    testWidgets('displays error state', (tester) async {
-      final state = BalanceState.error('Network error');
+    testWidgets('displays error state', (WidgetTester tester) async {
+      final BalanceState state = BalanceState.error('Network error');
 
       await tester.pumpWidget(
         MaterialApp(
@@ -209,8 +214,8 @@ void main() {
   });
 
   group('TransactionListLayout Widget Tests', () {
-    testWidgets('displays loading state', (tester) async {
-      final state = TransactionListState.loading();
+    testWidgets('displays loading state', (WidgetTester tester) async {
+      final TransactionListState state = TransactionListState.loading();
 
       await tester.pumpWidget(
         MaterialApp(
@@ -221,8 +226,8 @@ void main() {
       expect(find.byType(TransactionListShimmer), findsOneWidget);
     });
 
-    testWidgets('displays empty state', (tester) async {
-      final state = TransactionListState.empty();
+    testWidgets('displays empty state', (WidgetTester tester) async {
+      final TransactionListState state = TransactionListState.empty();
 
       await tester.pumpWidget(
         MaterialApp(
@@ -233,8 +238,8 @@ void main() {
       expect(find.text('Glow is ready to receive funds.'), findsOneWidget);
     });
 
-    testWidgets('displays transaction list', (tester) async {
-      final mockPayment = Payment(
+    testWidgets('displays transaction list', (WidgetTester tester) async {
+      final Payment mockPayment = Payment(
         id: 'test_001',
         amount: BigInt.from(50000),
         fees: BigInt.zero,
@@ -251,7 +256,7 @@ void main() {
         ),
       );
 
-      final transaction = TransactionItemState(
+      final TransactionItemState transaction = TransactionItemState(
         payment: mockPayment,
         formattedAmount: '50,000',
         formattedAmountWithSign: '+50,000',
@@ -262,7 +267,10 @@ void main() {
         isReceive: true,
       );
 
-      final state = TransactionListState.loaded(transactions: [transaction], hasSynced: true);
+      final TransactionListState state = TransactionListState.loaded(
+        transactions: <TransactionItemState>[transaction],
+        hasSynced: true,
+      );
 
       await tester.pumpWidget(
         MaterialApp(
@@ -278,13 +286,13 @@ void main() {
 
   group('BalanceState Equality Tests', () {
     test('two states with same values are equal', () {
-      final state1 = BalanceState.loaded(
+      final BalanceState state1 = BalanceState.loaded(
         balance: BigInt.from(1000),
         hasSynced: true,
         formattedBalance: '1,000',
       );
 
-      final state2 = BalanceState.loaded(
+      final BalanceState state2 = BalanceState.loaded(
         balance: BigInt.from(1000),
         hasSynced: true,
         formattedBalance: '1,000',
@@ -294,13 +302,13 @@ void main() {
     });
 
     test('two states with different values are not equal', () {
-      final state1 = BalanceState.loaded(
+      final BalanceState state1 = BalanceState.loaded(
         balance: BigInt.from(1000),
         hasSynced: true,
         formattedBalance: '1,000',
       );
 
-      final state2 = BalanceState.loaded(
+      final BalanceState state2 = BalanceState.loaded(
         balance: BigInt.from(2000),
         hasSynced: true,
         formattedBalance: '2,000',

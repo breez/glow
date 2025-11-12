@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,9 +18,9 @@ class DevelopersScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => MaxFeeBottomSheet(
+      builder: (BuildContext context) => MaxFeeBottomSheet(
         currentFee: currentFee,
-        onSave: (fee) async {
+        onSave: (Fee fee) async {
           try {
             await ref.read(maxDepositClaimFeeProvider.notifier).setFee(fee);
 
@@ -61,7 +63,7 @@ class DevelopersScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preparing logs...')));
       }
 
-      final zipFile = await AppLogger.createCurrentSessionZip();
+      final File? zipFile = await AppLogger.createCurrentSessionZip();
 
       if (zipFile == null) {
         if (context.mounted) {
@@ -74,7 +76,7 @@ class DevelopersScreen extends ConsumerWidget {
         ShareParams(
           subject: 'Glow - Current Session Logs',
           text: 'Debug logs from current session',
-          files: [XFile(zipFile.path)],
+          files: <XFile>[XFile(zipFile.path)],
         ),
       );
     } catch (e) {
@@ -90,7 +92,7 @@ class DevelopersScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preparing logs...')));
       }
 
-      final zipFile = await AppLogger.createAllLogsZip();
+      final File? zipFile = await AppLogger.createAllLogsZip();
 
       if (zipFile == null) {
         if (context.mounted) {
@@ -103,7 +105,7 @@ class DevelopersScreen extends ConsumerWidget {
         ShareParams(
           subject: 'Glow - All Session Logs',
           text: 'Debug logs from all sessions',
-          files: [XFile(zipFile.path)],
+          files: <XFile>[XFile(zipFile.path)],
         ),
       );
     } catch (e) {
@@ -115,8 +117,8 @@ class DevelopersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final network = ref.watch(networkProvider);
-    final maxDepositClaimFee = ref.watch(maxDepositClaimFeeProvider);
+    final Network network = ref.watch(networkProvider);
+    final Fee maxDepositClaimFee = ref.watch(maxDepositClaimFeeProvider);
 
     return DevelopersLayout(
       network: network,

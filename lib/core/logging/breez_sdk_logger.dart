@@ -18,11 +18,11 @@ class BreezSdkLogger {
       return;
     }
 
-    final log = AppLogger.getLogger('BreezSDK');
+    final Logger log = AppLogger.getLogger('BreezSDK');
 
     try {
       _instance!._logStream = initLogging().asBroadcastStream();
-      _instance!._logStream!.listen((entry) => _logEntry(entry, log));
+      _instance!._logStream!.listen((LogEntry entry) => _logEntry(entry, log));
       AppLogger.getLogger('BreezSdkLogger').i('Registered SDK log listener');
     } catch (e) {
       AppLogger.getLogger('BreezSdkLogger').w('Already initialized: $e');
@@ -30,14 +30,15 @@ class BreezSdkLogger {
   }
 
   static void _logEntry(LogEntry entry, Logger log) {
-    final logFn = switch (entry.level) {
-      'ERROR' => log.e,
-      'WARN' => log.w,
-      'INFO' => log.i,
-      'DEBUG' => log.d,
-      'TRACE' => log.t,
-      _ => log.i,
-    };
+    final void Function(dynamic message, {Object? error, StackTrace? stackTrace, DateTime? time}) logFn =
+        switch (entry.level) {
+          'ERROR' => log.e,
+          'WARN' => log.w,
+          'INFO' => log.i,
+          'DEBUG' => log.d,
+          'TRACE' => log.t,
+          _ => log.i,
+        };
     logFn(entry.line);
   }
 }

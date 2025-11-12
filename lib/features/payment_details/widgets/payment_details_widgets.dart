@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 /// Dedicated widget for displaying payment amount
 class PaymentAmountDisplay extends StatelessWidget {
-  const PaymentAmountDisplay({super.key, required this.formattedAmount});
+  const PaymentAmountDisplay({required this.formattedAmount, super.key});
 
   final String formattedAmount;
 
@@ -13,7 +13,7 @@ class PaymentAmountDisplay extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
       child: Column(
-        children: [
+        children: <Widget>[
           Text(
             formattedAmount,
             style: TextStyle(
@@ -40,7 +40,7 @@ class PaymentAmountDisplay extends StatelessWidget {
 
 /// Dedicated widget for displaying a detail row with optional copy functionality
 class PaymentDetailRow extends StatelessWidget {
-  const PaymentDetailRow({super.key, required this.label, required this.value, this.copyable = false});
+  const PaymentDetailRow({required this.label, required this.value, super.key, this.copyable = false});
 
   final String label;
   final String value;
@@ -52,7 +52,7 @@ class PaymentDetailRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           SizedBox(
             width: 100,
             child: Text(
@@ -63,7 +63,7 @@ class PaymentDetailRow extends StatelessWidget {
           const SizedBox(width: 4),
           Expanded(
             child: Row(
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                 ),
@@ -92,14 +92,14 @@ class PaymentDetailRow extends StatelessWidget {
 
 /// Dedicated widget for Lightning payment details
 class LightningPaymentDetails extends StatelessWidget {
-  const LightningPaymentDetails({super.key, required this.details});
+  const LightningPaymentDetails({required this.details, super.key});
 
   final PaymentDetails_Lightning details;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         if (details.description?.isNotEmpty == true)
           PaymentDetailRow(label: 'Description', value: details.description!),
         PaymentDetailRow(label: 'Invoice', value: details.invoice, copyable: true),
@@ -114,14 +114,14 @@ class LightningPaymentDetails extends StatelessWidget {
 
 /// Dedicated widget for Token payment details
 class TokenPaymentDetails extends StatelessWidget {
-  const TokenPaymentDetails({super.key, required this.details});
+  const TokenPaymentDetails({required this.details, super.key});
 
   final PaymentDetails_Token details;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         PaymentDetailRow(label: 'Token', value: details.metadata.name),
         PaymentDetailRow(label: 'Ticker', value: details.metadata.ticker),
         PaymentDetailRow(label: 'TX Hash', value: details.txHash, copyable: true),
@@ -132,7 +132,7 @@ class TokenPaymentDetails extends StatelessWidget {
 
 /// Dedicated widget for Withdraw payment details
 class WithdrawPaymentDetails extends StatelessWidget {
-  const WithdrawPaymentDetails({super.key, required this.details});
+  const WithdrawPaymentDetails({required this.details, super.key});
 
   final PaymentDetails_Withdraw details;
 
@@ -144,7 +144,7 @@ class WithdrawPaymentDetails extends StatelessWidget {
 
 /// Dedicated widget for Deposit payment details
 class DepositPaymentDetails extends StatelessWidget {
-  const DepositPaymentDetails({super.key, required this.details});
+  const DepositPaymentDetails({required this.details, super.key});
 
   final PaymentDetails_Deposit details;
 

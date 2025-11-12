@@ -1,6 +1,6 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:equatable/equatable.dart';
-import '../services/payment_formatter.dart';
+import 'package:glow/features/payment_details/services/payment_formatter.dart';
 
 /// State representation for payment details screen
 class PaymentDetailsState extends Equatable {
@@ -25,7 +25,7 @@ class PaymentDetailsState extends Equatable {
   final bool shouldShowFees;
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     payment.id,
     formattedAmount,
     formattedFees,

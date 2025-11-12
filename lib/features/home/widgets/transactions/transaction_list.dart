@@ -1,6 +1,7 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/features/home/widgets/transactions/providers/transaction_providers.dart';
 import 'package:glow/features/home/widgets/transactions/transaction_list_layout.dart';
@@ -17,12 +18,12 @@ class TransactionList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Get formatted state from provider
-    final state = ref.watch(transactionListStateProvider);
+    final TransactionListState state = ref.watch(transactionListStateProvider);
 
     // Return pure presentation widget
     return TransactionListLayout(
       state: state,
-      onTransactionTap: (payment) => _onTransactionTap(context, payment),
+      onTransactionTap: (Payment payment) => _onTransactionTap(context, payment),
       onRetry: () {
         // Invalidate providers to retry
         ref.invalidate(paymentsProvider);
@@ -32,7 +33,9 @@ class TransactionList extends ConsumerWidget {
 
   /// Pops navigation with result
   void _onTransactionTap(BuildContext context, Payment payment) {
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      return;
+    }
 
     Navigator.of(context).pushNamed(AppRoutes.paymentDetails, arguments: payment);
   }

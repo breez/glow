@@ -19,7 +19,7 @@ class BreezSdkFooter extends StatelessWidget {
             children: <Widget>[
               SvgPicture.asset(
                 'assets/svg/drawer_footer.svg',
-                colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcATop),
+                colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
                 height: 39,
                 width: 183,
                 fit: BoxFit.scaleDown,

@@ -59,7 +59,7 @@ class _AnimatedLogoState extends State<AnimatedLogo> with SingleTickerProviderSt
     final Color scaffoldBgColor = themeData.scaffoldBackgroundColor;
 
     return AnimatedBuilder(
-      animation: Listenable.merge([_scaleAnimation, _opacityAnimation, _glowAnimation]),
+      animation: Listenable.merge(<Listenable?>[_scaleAnimation, _opacityAnimation, _glowAnimation]),
       builder: (BuildContext context, Widget? child) {
         // Single pulse effect - fade out glow smoothly after peak
         final double pulseValue = _glowAnimation.value;
@@ -78,23 +78,23 @@ class _AnimatedLogoState extends State<AnimatedLogo> with SingleTickerProviderSt
                   alignment: Alignment.center,
                   child: Stack(
                     alignment: Alignment.center,
-                    children: [
+                    children: <Widget>[
                       // Glow layer behind the image - fades out smoothly
                       Container(
                         height: 128.0,
                         width: 128.0,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          boxShadow: [
+                          boxShadow: <BoxShadow>[
                             BoxShadow(
-                              color: themeData.colorScheme.primary.withOpacity(0.4 * glowOpacity),
+                              color: themeData.colorScheme.primary.withValues(alpha: .4 * glowOpacity),
                               blurRadius: 30 + (glowOpacity * 15),
                               spreadRadius: 5 + (glowOpacity * 5),
                             ),
                             BoxShadow(
                               color: pulseValue == 1.0
                                   ? scaffoldBgColor
-                                  : themeData.colorScheme.secondary.withOpacity(0.4 * glowOpacity),
+                                  : themeData.colorScheme.secondary.withValues(alpha: .4 * glowOpacity),
                               blurRadius: 15,
                               spreadRadius: 2,
                             ),
@@ -120,7 +120,7 @@ class _AnimatedLogoState extends State<AnimatedLogo> with SingleTickerProviderSt
                     'TBD: Tagline Text',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.85),
+                      color: Colors.white.withValues(alpha: .85),
                       fontSize: 21.0,
                       height: 1.1,
                       fontWeight: FontWeight.w500,

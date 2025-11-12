@@ -25,7 +25,7 @@ class BalanceDisplayShimmer extends StatelessWidget {
           text: TextSpan(
             style: BalanceTextStyles.amount,
             text: 0.toString(),
-            children: <InlineSpan>[TextSpan(text: ' sats', style: BalanceTextStyles.unit)],
+            children: <InlineSpan>[const TextSpan(text: ' sats', style: BalanceTextStyles.unit)],
           ),
         ),
       ),

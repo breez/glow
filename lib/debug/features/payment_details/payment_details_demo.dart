@@ -19,7 +19,7 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Payment Details Demos')),
       body: ListView(
-        children: [
+        children: <Widget>[
           ListTile(
             title: const Text('Completed Lightning Send'),
             subtitle: const Text('Demo: Successful Lightning payment'),
@@ -56,13 +56,18 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
   }
 
   void _openDemo(BuildContext context, PaymentDetailsState state) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentDetailsLayout(state: state)));
+    Navigator.push(
+      context,
+      MaterialPageRoute<PaymentDetailsLayout>(
+        builder: (BuildContext context) => PaymentDetailsLayout(state: state),
+      ),
+    );
   }
 
   // Demo state factories
   PaymentDetailsState _createCompletedLightningState() {
-    const formatter = PaymentFormatter();
-    final payment = Payment(
+    const PaymentFormatter formatter = PaymentFormatter();
+    final Payment payment = Payment(
       id: 'demo_lightning_001',
       amount: BigInt.from(50000),
       fees: BigInt.from(100),
@@ -92,8 +97,8 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
   }
 
   PaymentDetailsState _createPendingLightningState() {
-    const formatter = PaymentFormatter();
-    final payment = Payment(
+    const PaymentFormatter formatter = PaymentFormatter();
+    final Payment payment = Payment(
       id: 'demo_lightning_002',
       amount: BigInt.from(100000),
       fees: BigInt.zero,
@@ -105,7 +110,6 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
         description: 'Invoice for services',
         invoice: 'lnbc1m1pj9x8z7pp5...',
         paymentHash: 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-        preimage: null,
         destinationPubkey: '03xyz9876...',
       ),
     );
@@ -123,8 +127,8 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
   }
 
   PaymentDetailsState _createFailedLightningState() {
-    const formatter = PaymentFormatter();
-    final payment = Payment(
+    const PaymentFormatter formatter = PaymentFormatter();
+    final Payment payment = Payment(
       id: 'demo_lightning_003',
       amount: BigInt.from(25000),
       fees: BigInt.zero,
@@ -136,7 +140,6 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
         description: 'Failed payment',
         invoice: 'lnbc250n1pj9x8z7pp5...',
         paymentHash: '9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba',
-        preimage: null,
         destinationPubkey: '03def5678...',
       ),
     );
@@ -154,8 +157,8 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
   }
 
   PaymentDetailsState _createTokenPaymentState() {
-    const formatter = PaymentFormatter();
-    final payment = Payment(
+    const PaymentFormatter formatter = PaymentFormatter();
+    final Payment payment = Payment(
       id: 'demo_token_001',
       amount: BigInt.from(1000),
       fees: BigInt.from(50),
@@ -190,8 +193,8 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
   }
 
   PaymentDetailsState _createDepositState() {
-    const formatter = PaymentFormatter();
-    final payment = Payment(
+    const PaymentFormatter formatter = PaymentFormatter();
+    final Payment payment = Payment(
       id: 'demo_deposit_001',
       amount: BigInt.from(500000),
       fees: BigInt.zero,
@@ -217,8 +220,8 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
   }
 
   PaymentDetailsState _createWithdrawState() {
-    const formatter = PaymentFormatter();
-    final payment = Payment(
+    const PaymentFormatter formatter = PaymentFormatter();
+    final Payment payment = Payment(
       id: 'demo_withdraw_001',
       amount: BigInt.from(300000),
       fees: BigInt.from(2000),

@@ -8,8 +8,9 @@ import 'package:glow/features/deposits/unclaimed_deposits_layout.dart';
 import 'package:glow/core/logging/app_logger.dart';
 import 'package:glow/features/deposits/widgets/deposit_card.dart';
 import 'package:glow/features/deposits/models/unclaimed_deposits_state.dart';
+import 'package:logger/logger.dart';
 
-final log = AppLogger.getLogger('UnclaimedDepositsScreen');
+final Logger log = AppLogger.getLogger('UnclaimedDepositsScreen');
 
 /// Unclaimed Deposits Screen - handles setup and business logic coordination
 /// - UnclaimedDepositsScreen: setup, lifecycle, and business logic coordination
@@ -20,18 +21,18 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final depositsAsync = ref.watch(unclaimedDepositsProvider);
-    final clipboardService = ref.read(clipboardServiceProvider);
-    final claimer = ref.read(depositClaimerProvider);
+    final AsyncValue<List<DepositInfo>> depositsAsync = ref.watch(unclaimedDepositsProvider);
+    final ClipboardService clipboardService = ref.read(clipboardServiceProvider);
+    final DepositClaimer claimer = ref.read(depositClaimerProvider);
 
     // Map DepositInfo to DepositCardData for UI
-    AsyncValue<List<DepositCardData>> cardDataAsync = depositsAsync.when(
-      data: (deposits) => AsyncData(
-        deposits.map((deposit) {
-          final hasError = claimer.hasError(deposit);
-          final hasRefund = claimer.hasRefund(deposit);
-          final formattedTxid = claimer.formatTxid(deposit.txid);
-          final formattedErrorMessage = hasError && deposit.claimError != null
+    final AsyncValue<List<DepositCardData>> cardDataAsync = depositsAsync.when(
+      data: (List<DepositInfo> deposits) => AsyncData<List<DepositCardData>>(
+        deposits.map((DepositInfo deposit) {
+          final bool hasError = claimer.hasError(deposit);
+          final bool hasRefund = claimer.hasRefund(deposit);
+          final String formattedTxid = claimer.formatTxid(deposit.txid);
+          final String? formattedErrorMessage = hasError && deposit.claimError != null
               ? claimer.formatError(deposit.claimError!)
               : null;
           return DepositCardData(
@@ -43,12 +44,12 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
           );
         }).toList(),
       ),
-      loading: () => const AsyncLoading(),
-      error: (err, stack) => AsyncError(err, stack),
+      loading: () => const AsyncLoading<List<DepositCardData>>(),
+      error: (Object err, StackTrace stack) => AsyncError<List<DepositCardData>>(err, stack),
     );
 
     Widget buildDepositCard(DepositCardData cardData) {
-      final deposit = cardData.deposit;
+      final DepositInfo deposit = cardData.deposit;
       return DepositCard(
         deposit: deposit,
         hasError: cardData.hasError,
@@ -63,9 +64,10 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
 
     return UnclaimedDepositsLayout(
       depositsAsync: cardDataAsync,
-      onRetryClaim: (cardData) => _handleRetryClaim(context, ref, cardData.deposit),
-      onShowRefundInfo: (cardData) => _showRefundInfo(context, cardData.deposit),
-      onCopyTxid: (cardData) => clipboardService.copyToClipboard(context, cardData.deposit.txid),
+      onRetryClaim: (DepositCardData cardData) => _handleRetryClaim(context, ref, cardData.deposit),
+      onShowRefundInfo: (DepositCardData cardData) => _showRefundInfo(context, cardData.deposit),
+      onCopyTxid: (DepositCardData cardData) =>
+          clipboardService.copyToClipboard(context, cardData.deposit.txid),
       depositCardBuilder: buildDepositCard,
     );
   }
@@ -73,7 +75,7 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
   Future<void> _handleRetryClaim(BuildContext context, WidgetRef ref, DepositInfo deposit) async {
     log.i('Retrying claim for deposit: ${deposit.txid}');
 
-    final claimer = ref.read(depositClaimerProvider);
+    final DepositClaimer claimer = ref.read(depositClaimerProvider);
 
     try {
       _showClaimingDialog(context);
@@ -105,7 +107,11 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
             padding: EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: [CircularProgressIndicator(), SizedBox(height: 16), Text('Claiming deposit...')],
+              children: <Widget>[
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Claiming deposit...'),
+              ],
             ),
           ),
         ),
@@ -124,7 +130,6 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
       SnackBar(
         content: Text('Failed to claim: $error'),
         backgroundColor: Theme.of(context).colorScheme.error,
-        duration: const Duration(seconds: 4),
       ),
     );
   }
@@ -139,11 +144,11 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               'A refund transaction is available for this deposit. This allows you to recover your funds back to an on-chain address.',
             ),
-            if (deposit.refundTxId != null) ...[
+            if (deposit.refundTxId != null) ...<Widget>[
               const SizedBox(height: 16),
               const Text('Refund TX ID:', style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 4),
@@ -154,7 +159,9 @@ class UnclaimedDepositsScreen extends ConsumerWidget {
             ],
           ],
         ),
-        actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Close'))],
+        actions: <Widget>[
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Close')),
+        ],
       ),
     );
   }

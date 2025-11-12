@@ -21,8 +21,8 @@ class HomeStateFactory {
       return BalanceState.loading();
     }
 
-    final formattedBalance = transactionFormatter.formatSats(balance);
-    final formattedFiat = (exchangeRate != null && currencySymbol != null)
+    final String formattedBalance = transactionFormatter.formatSats(balance);
+    final String? formattedFiat = (exchangeRate != null && currencySymbol != null)
         ? transactionFormatter.formatFiat(balance, exchangeRate, currencySymbol)
         : null;
 
@@ -36,7 +36,7 @@ class HomeStateFactory {
 
   /// Creates TransactionItemState from Payment
   TransactionItemState createTransactionItemState(Payment payment) {
-    final isReceive = payment.paymentType == PaymentType.receive;
+    final bool isReceive = payment.paymentType == PaymentType.receive;
 
     return TransactionItemState(
       payment: payment,
@@ -64,7 +64,9 @@ class HomeStateFactory {
       return TransactionListState.empty();
     }
 
-    final transactionItems = payments.map((payment) => createTransactionItemState(payment)).toList();
+    final List<TransactionItemState> transactionItems = payments
+        .map((Payment payment) => createTransactionItemState(payment))
+        .toList();
 
     return TransactionListState.loaded(transactions: transactionItems, hasSynced: hasSynced);
   }

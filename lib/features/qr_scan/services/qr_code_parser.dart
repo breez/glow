@@ -7,8 +7,8 @@ class QRCodeParser {
 
   /// Extracts the first valid code from barcode capture
   String? extractCode(BarcodeCapture capture) {
-    for (final barcode in capture.barcodes) {
-      final code = barcode.rawValue;
+    for (final Barcode barcode in capture.barcodes) {
+      final String? code = barcode.rawValue;
       if (isValidCode(code)) {
         return code;
       }

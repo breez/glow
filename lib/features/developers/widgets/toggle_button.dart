@@ -5,11 +5,11 @@ class ToggleButton extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const ToggleButton({super.key, required this.label, required this.isSelected, required this.onTap});
+  const ToggleButton({required this.label, required this.isSelected, required this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return InkWell(
       onTap: onTap,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:glow/core/models/wallet_metadata.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/providers/sdk_provider.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
@@ -14,9 +15,9 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activeWallet = ref.watch(activeWalletProvider);
-    final hasSynced = ref.watch(hasSyncedProvider);
-    final themeData = Theme.of(context);
+    final AsyncValue<WalletMetadata?> activeWallet = ref.watch(activeWalletProvider);
+    final bool hasSynced = ref.watch(hasSyncedProvider);
+    final ThemeData themeData = Theme.of(context);
 
     return AppBar(
       leading: IconButton(
@@ -29,9 +30,9 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
         onPressed: () => Scaffold.of(context).openDrawer(),
       ),
       backgroundColor: Colors.transparent,
-      actions: [
+      actions: <Widget>[
         _SyncIndicator(hasSynced: hasSynced),
-        _UnclaimedDepositsWarning(),
+        const _UnclaimedDepositsWarning(),
         _VerificationWarning(activeWallet: activeWallet, ref: ref),
       ],
     );
@@ -45,7 +46,9 @@ class _SyncIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (hasSynced) return const SizedBox.shrink();
+    if (hasSynced) {
+      return const SizedBox.shrink();
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -68,15 +71,17 @@ class _UnclaimedDepositsWarning extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasUnclaimedAsync = ref.watch(hasUnclaimedDepositsProvider);
-    final countAsync = ref.watch(unclaimedDepositsCountProvider);
+    final AsyncValue<bool> hasUnclaimedAsync = ref.watch(hasUnclaimedDepositsProvider);
+    final AsyncValue<int> countAsync = ref.watch(unclaimedDepositsCountProvider);
 
     return hasUnclaimedAsync.when(
-      data: (hasUnclaimed) {
-        if (!hasUnclaimed) return const SizedBox.shrink();
+      data: (bool hasUnclaimed) {
+        if (!hasUnclaimed) {
+          return const SizedBox.shrink();
+        }
 
         return countAsync.when(
-          data: (count) => IconButton(
+          data: (int count) => IconButton(
             icon: Badge(label: Text(count.toString()), child: const Icon(Icons.warning_amber_rounded)),
             onPressed: () => Navigator.pushNamed(context, AppRoutes.unclaimedDeposits),
             tooltip: 'Pending deposits',
@@ -92,7 +97,7 @@ class _UnclaimedDepositsWarning extends ConsumerWidget {
 }
 
 class _VerificationWarning extends StatelessWidget {
-  final AsyncValue activeWallet;
+  final AsyncValue<WalletMetadata?> activeWallet;
   final WidgetRef ref;
 
   const _VerificationWarning({required this.activeWallet, required this.ref});
@@ -100,7 +105,7 @@ class _VerificationWarning extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return activeWallet.when(
-      data: (wallet) => wallet != null && !wallet.isVerified
+      data: (WalletMetadata? wallet) => wallet != null && !wallet.isVerified
           ? IconButton(
               onPressed: () => _handleVerification(context, wallet),
               icon: Icon(Icons.warning_amber_rounded, color: Theme.of(context).appBarTheme.iconTheme?.color),
@@ -112,14 +117,14 @@ class _VerificationWarning extends StatelessWidget {
     );
   }
 
-  Future<void> _handleVerification(BuildContext context, wallet) async {
-    final mnemonic = await ref.read(walletStorageServiceProvider).loadMnemonic(wallet.id);
+  Future<void> _handleVerification(BuildContext context, WalletMetadata wallet) async {
+    final String? mnemonic = await ref.read(walletStorageServiceProvider).loadMnemonic(wallet.id);
 
     if (mnemonic != null && context.mounted) {
       Navigator.pushNamed(
         context,
         AppRoutes.walletVerify,
-        arguments: {'wallet': wallet, 'mnemonic': mnemonic},
+        arguments: <String, dynamic>{'wallet': wallet, 'mnemonic': mnemonic},
       );
     }
   }

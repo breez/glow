@@ -79,8 +79,8 @@ class AppRoutes {
 
       // Payment details
       case paymentDetails:
-        final args = settings.arguments as Payment;
-        return MaterialPageRoute(
+        final Payment args = settings.arguments as Payment;
+        return MaterialPageRoute<PaymentDetailsScreen>(
           builder: (_) => PaymentDetailsScreen(payment: args),
           settings: settings,
         );
@@ -99,19 +99,19 @@ class AppRoutes {
         return MaterialPageRoute<String>(builder: (_) => const WalletListScreen());
 
       case walletVerify:
-        final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
+        final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute<WalletVerifyScreen>(
           builder: (_) => WalletVerifyScreen(wallet: args['wallet'], mnemonic: args['mnemonic']),
           settings: settings,
         );
 
       // Send payment routes
       case AppRoutes.sendScreen:
-        return MaterialPageRoute(builder: (_) => const SendScreen(), settings: settings);
+        return MaterialPageRoute<SendScreen>(builder: (_) => const SendScreen(), settings: settings);
 
       case sendBitcoinAddress:
-        final args = settings.arguments as BitcoinAddressDetails;
-        return MaterialPageRoute(
+        final BitcoinAddressDetails args = settings.arguments as BitcoinAddressDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'Bitcoin Address Payment',
             content: _BitcoinAddressWidget(details: args),
@@ -120,8 +120,8 @@ class AppRoutes {
         );
 
       case sendBolt11:
-        final args = settings.arguments as Bolt11InvoiceDetails;
-        return MaterialPageRoute(
+        final Bolt11InvoiceDetails args = settings.arguments as Bolt11InvoiceDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'BOLT11 Invoice',
             content: _Bolt11Widget(details: args),
@@ -130,8 +130,8 @@ class AppRoutes {
         );
 
       case sendBolt12Invoice:
-        final args = settings.arguments as Bolt12InvoiceDetails;
-        return MaterialPageRoute(
+        final Bolt12InvoiceDetails args = settings.arguments as Bolt12InvoiceDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'BOLT12 Invoice',
             content: _Bolt12InvoiceWidget(details: args),
@@ -140,8 +140,8 @@ class AppRoutes {
         );
 
       case sendBolt12Offer:
-        final args = settings.arguments as Bolt12OfferDetails;
-        return MaterialPageRoute(
+        final Bolt12OfferDetails args = settings.arguments as Bolt12OfferDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'BOLT12 Offer',
             content: _Bolt12OfferWidget(details: args),
@@ -150,8 +150,8 @@ class AppRoutes {
         );
 
       case sendLightningAddress:
-        final args = settings.arguments as LightningAddressDetails;
-        return MaterialPageRoute(
+        final LightningAddressDetails args = settings.arguments as LightningAddressDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'Lightning Address',
             content: _LightningAddressWidget(details: args),
@@ -160,8 +160,8 @@ class AppRoutes {
         );
 
       case sendLnurlPay:
-        final args = settings.arguments as LnurlPayRequestDetails;
-        return MaterialPageRoute(
+        final LnurlPayRequestDetails args = settings.arguments as LnurlPayRequestDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'LNURL-Pay',
             content: _LnurlPayWidget(details: args),
@@ -170,8 +170,8 @@ class AppRoutes {
         );
 
       case sendSilentPayment:
-        final args = settings.arguments as SilentPaymentAddressDetails;
-        return MaterialPageRoute(
+        final SilentPaymentAddressDetails args = settings.arguments as SilentPaymentAddressDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'Silent Payment',
             content: _SilentPaymentWidget(details: args),
@@ -180,8 +180,8 @@ class AppRoutes {
         );
 
       case sendBip21:
-        final args = settings.arguments as Bip21Details;
-        return MaterialPageRoute(
+        final Bip21Details args = settings.arguments as Bip21Details;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'BIP21 Payment',
             content: _Bip21Widget(details: args),
@@ -191,17 +191,17 @@ class AppRoutes {
 
       case sendBolt12InvoiceRequest:
         // final args = settings.arguments as Bolt12InvoiceRequestDetails;
-        return MaterialPageRoute(
-          builder: (_) => _PlaceholderScreen(
+        return MaterialPageRoute<_PlaceholderScreen>(
+          builder: (_) => const _PlaceholderScreen(
             title: 'BOLT12 Invoice Request',
-            content: const _Bolt12InvoiceRequestWidget(),
+            content: _Bolt12InvoiceRequestWidget(),
           ),
           settings: settings,
         );
 
       case sendSparkAddress:
-        final args = settings.arguments as SparkAddressDetails;
-        return MaterialPageRoute(
+        final SparkAddressDetails args = settings.arguments as SparkAddressDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'Spark Address Payment',
             content: _SparkAddressWidget(details: args),
@@ -210,8 +210,8 @@ class AppRoutes {
         );
 
       case sendSparkInvoice:
-        final args = settings.arguments as SparkInvoiceDetails;
-        return MaterialPageRoute(
+        final SparkInvoiceDetails args = settings.arguments as SparkInvoiceDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'Spark Invoice Payment',
             content: _SparkInvoiceWidget(details: args),
@@ -221,12 +221,15 @@ class AppRoutes {
 
       // Deposit claim routes
       case AppRoutes.unclaimedDeposits:
-        return MaterialPageRoute(builder: (_) => const UnclaimedDepositsScreen(), settings: settings);
+        return MaterialPageRoute<UnclaimedDepositsScreen>(
+          builder: (_) => const UnclaimedDepositsScreen(),
+          settings: settings,
+        );
 
       // Receive routes
       case receiveLnurlWithdraw:
-        final args = settings.arguments as LnurlWithdrawRequestDetails;
-        return MaterialPageRoute(
+        final LnurlWithdrawRequestDetails args = settings.arguments as LnurlWithdrawRequestDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'LNURL Withdraw',
             content: _LnurlWithdrawWidget(details: args),
@@ -235,12 +238,12 @@ class AppRoutes {
         );
 
       case AppRoutes.receiveScreen:
-        return MaterialPageRoute(builder: (_) => const ReceiveScreen(), settings: settings);
+        return MaterialPageRoute<ReceiveScreen>(builder: (_) => const ReceiveScreen(), settings: settings);
 
       // Auth routes
       case lnurlAuth:
-        final args = settings.arguments as LnurlAuthRequestDetails;
-        return MaterialPageRoute(
+        final LnurlAuthRequestDetails args = settings.arguments as LnurlAuthRequestDetails;
+        return MaterialPageRoute<_PlaceholderScreen>(
           builder: (_) => _PlaceholderScreen(
             title: 'LNURL Auth',
             content: _LnurlAuthWidget(details: args),
@@ -250,30 +253,33 @@ class AppRoutes {
 
       // App Settings routes
       case appSettings:
-        return MaterialPageRoute(
-          builder: (_) => _PlaceholderScreen(
+        return MaterialPageRoute<_PlaceholderScreen>(
+          builder: (_) => const _PlaceholderScreen(
             title: 'Settings',
-            content: const _InfoField(label: 'Status', value: 'App configuration coming soon'),
+            content: _InfoField(label: 'Status', value: 'App configuration coming soon'),
           ),
           settings: settings,
         );
 
       case walletSettings:
-        return MaterialPageRoute(
-          builder: (_) => _PlaceholderScreen(
+        return MaterialPageRoute<_PlaceholderScreen>(
+          builder: (_) => const _PlaceholderScreen(
             title: 'Wallet Settings',
-            content: const _InfoField(label: 'Status', value: 'Manage your wallet settings'),
+            content: _InfoField(label: 'Status', value: 'Manage your wallet settings'),
           ),
           settings: settings,
         );
 
       // Developers routes
       case developersScreen:
-        return MaterialPageRoute(builder: (_) => const DevelopersScreen(), settings: settings);
+        return MaterialPageRoute<DevelopersScreen>(
+          builder: (_) => const DevelopersScreen(),
+          settings: settings,
+        );
 
       default:
         // Route not found
-        return MaterialPageRoute(
+        return MaterialPageRoute<_RouteNotFoundScreen>(
           builder: (_) => _RouteNotFoundScreen(settings.name ?? 'unknown'),
           settings: settings,
         );
@@ -294,7 +300,7 @@ class _BitcoinAddressWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Address', value: details.address, monospace: true),
         _InfoField(label: 'Network', value: details.network.name),
         if (details.source.bip21Uri != null)
@@ -313,12 +319,14 @@ class _Bolt11Widget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expiry = DateTime.fromMillisecondsSinceEpoch((details.timestamp + details.expiry).toInt() * 1000);
-    final created = DateTime.fromMillisecondsSinceEpoch(details.timestamp.toInt() * 1000);
+    final DateTime expiry = DateTime.fromMillisecondsSinceEpoch(
+      (details.timestamp + details.expiry).toInt() * 1000,
+    );
+    final DateTime created = DateTime.fromMillisecondsSinceEpoch(details.timestamp.toInt() * 1000);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Amount', value: _formatAmount(details.amountMsat)),
         if (details.description != null) _InfoField(label: 'Description', value: details.description!),
         _InfoField(label: 'Payment Hash', value: details.paymentHash, monospace: true),
@@ -344,7 +352,7 @@ class _Bolt12InvoiceWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Amount', value: _formatAmount(details.amountMsat)),
         const Divider(height: 24),
         _InfoField(label: 'Invoice', value: details.invoice.invoice, monospace: true),
@@ -362,7 +370,7 @@ class _Bolt12OfferWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         if (details.description != null) _InfoField(label: 'Description', value: details.description!),
         if (details.issuer != null) _InfoField(label: 'Issuer', value: details.issuer!),
         if (details.minAmount != null)
@@ -394,7 +402,7 @@ class _LightningAddressWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Lightning Address', value: details.address),
         _InfoField(label: 'Domain', value: details.payRequest.domain),
         _InfoField(
@@ -421,7 +429,7 @@ class _LnurlPayWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Domain', value: details.domain),
         _InfoField(
           label: 'Amount Range',
@@ -450,7 +458,7 @@ class _SilentPaymentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Address', value: details.address, monospace: true),
         _InfoField(label: 'Network', value: details.network.name),
         if (details.source.bip21Uri != null)
@@ -471,7 +479,7 @@ class _Bip21Widget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'URI', value: details.uri, monospace: true),
         if (details.amountSat != null) _InfoField(label: 'Amount', value: '${details.amountSat} sats'),
         if (details.label != null) _InfoField(label: 'Label', value: details.label!),
@@ -480,16 +488,16 @@ class _Bip21Widget extends StatelessWidget {
         const Divider(height: 24),
         _InfoField(label: 'Payment Methods', value: '${details.paymentMethods.length} available'),
         ...details.paymentMethods.map(
-          (method) => Padding(
+          (InputType method) => Padding(
             padding: const EdgeInsets.only(left: 16, bottom: 8),
             child: Text('• ${_getInputTypeName(method)}', style: Theme.of(context).textTheme.bodyMedium),
           ),
         ),
-        if (details.extras.isNotEmpty) ...[
+        if (details.extras.isNotEmpty) ...<Widget>[
           const Divider(height: 24),
           const _InfoField(label: 'Extra Parameters', value: ''),
           ...details.extras.map(
-            (extra) => Padding(
+            (Bip21Extra extra) => Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 8),
               child: Text(
                 '${extra.key}: ${extra.value}',
@@ -510,7 +518,7 @@ class _Bolt12InvoiceRequestWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Status', value: 'Ready to create invoice from BOLT12 offer'),
         _InfoField(label: 'Description', value: 'This flow will fetch an invoice from a BOLT12 offer'),
       ],
@@ -527,7 +535,7 @@ class _SparkAddressWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Spark Address', value: details.address, monospace: true),
         _InfoField(label: 'Identity Key', value: details.identityPublicKey, monospace: true),
         _InfoField(label: 'Network', value: details.network.name),
@@ -547,13 +555,13 @@ class _SparkInvoiceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expiry = details.expiryTime != null
+    final DateTime? expiry = details.expiryTime != null
         ? DateTime.fromMillisecondsSinceEpoch(details.expiryTime!.toInt() * 1000)
         : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Invoice', value: details.invoice, monospace: true),
         _InfoField(label: 'Identity Key', value: details.identityPublicKey, monospace: true),
         _InfoField(label: 'Network', value: details.network.name),
@@ -578,7 +586,7 @@ class _LnurlWithdrawWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Description', value: details.defaultDescription),
         _InfoField(
           label: 'Amount Range',
@@ -601,7 +609,7 @@ class _LnurlAuthWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _InfoField(label: 'Domain', value: details.domain),
         if (details.action != null) _InfoField(label: 'Action', value: details.action!),
         const Divider(height: 24),
@@ -631,10 +639,10 @@ class _PlaceholderScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+          children: <Widget>[
             Center(
               child: Column(
-                children: [
+                children: <Widget>[
                   Icon(Icons.construction, size: 64, color: Theme.of(context).colorScheme.primary),
                   const SizedBox(height: 16),
                   Text('Coming Soon', style: Theme.of(context).textTheme.headlineMedium),
@@ -655,7 +663,7 @@ class _PlaceholderScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     Text(
                       'Payment Details',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -695,7 +703,7 @@ class _InfoField extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Text(
             label,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -718,16 +726,18 @@ class _InfoField extends StatelessWidget {
 
 /// Format amounts from millisatoshis
 String _formatAmount(BigInt? amountMsat) {
-  if (amountMsat == null) return 'Any amount';
-  final sats = (amountMsat ~/ BigInt.from(1000)).toString();
+  if (amountMsat == null) {
+    return 'Any amount';
+  }
+  final String sats = (amountMsat ~/ BigInt.from(1000)).toString();
   return '$sats sats';
 }
 
 /// Format Amount type (handles both Bitcoin and Currency)
 String _formatAmountType(Amount amount) {
   return amount.when(
-    bitcoin: (amountMsat) => _formatAmount(amountMsat),
-    currency: (iso4217Code, fractionalAmount) => '$iso4217Code $fractionalAmount',
+    bitcoin: (BigInt amountMsat) => _formatAmount(amountMsat),
+    currency: (String iso4217Code, BigInt fractionalAmount) => '$iso4217Code $fractionalAmount',
   );
 }
 
@@ -766,7 +776,7 @@ class _RouteNotFoundScreen extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
               const SizedBox(height: 16),
               Text('Route Not Found', style: Theme.of(context).textTheme.headlineMedium),

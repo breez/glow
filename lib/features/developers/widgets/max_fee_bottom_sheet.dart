@@ -7,7 +7,7 @@ class MaxFeeBottomSheet extends StatefulWidget {
   final Function(Fee) onSave;
   final VoidCallback onReset;
 
-  const MaxFeeBottomSheet({super.key, required this.currentFee, required this.onSave, required this.onReset});
+  const MaxFeeBottomSheet({required this.currentFee, required this.onSave, required this.onReset, super.key});
 
   @override
   State<MaxFeeBottomSheet> createState() => _MaxFeeBottomSheetState();
@@ -33,8 +33,8 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
     super.initState();
     _useFixedFee = widget.currentFee.when(rate: (_) => false, fixed: (_) => true);
     _sliderValue = widget.currentFee.when(
-      rate: (rate) => rate.toDouble(),
-      fixed: (amount) => amount.toDouble(),
+      rate: (BigInt rate) => rate.toDouble(),
+      fixed: (BigInt amount) => amount.toDouble(),
     );
   }
 
@@ -49,7 +49,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
   }
 
   Fee get _currentFee {
-    final rate = BigInt.from(_sliderValue.round());
+    final BigInt rate = BigInt.from(_sliderValue.round());
     if (_useFixedFee) {
       return Fee.fixed(amount: rate);
     } else {
@@ -58,38 +58,50 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
   }
 
   String get _feeDescription {
-    final rate = _sliderValue.round();
+    final int rate = _sliderValue.round();
     if (_useFixedFee) {
       return '$rate sats fixed';
     } else {
-      final estimatedFee = (_conversionFactor * rate).round();
+      final int estimatedFee = (_conversionFactor * rate).round();
       return '$rate sat/vByte (~$estimatedFee sats)';
     }
   }
 
   String get _speedLabel {
     if (_useFixedFee) {
-      if (_sliderValue < 300) return 'Economy';
-      if (_sliderValue < 500) return 'Standard';
-      if (_sliderValue < 800) return 'Fast';
+      if (_sliderValue < 300) {
+        return 'Economy';
+      }
+      if (_sliderValue < 500) {
+        return 'Standard';
+      }
+      if (_sliderValue < 800) {
+        return 'Fast';
+      }
       return 'Priority';
     } else {
-      if (_sliderValue < 2) return 'Economy';
-      if (_sliderValue < 4) return 'Standard';
-      if (_sliderValue < 7) return 'Fast';
+      if (_sliderValue < 2) {
+        return 'Economy';
+      }
+      if (_sliderValue < 4) {
+        return 'Standard';
+      }
+      if (_sliderValue < 7) {
+        return 'Fast';
+      }
       return 'Priority';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Container(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           // Handle bar
           Container(
             margin: const EdgeInsets.only(top: 12, bottom: 8),
@@ -106,7 +118,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: [
+              children: <Widget>[
                 // Title
                 Text(
                   'Deposit Claim Fee',
@@ -128,10 +140,10 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
-                    children: [
+                    children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                        children: <Widget>[
                           Text(
                             _speedLabel,
                             style: theme.textTheme.labelLarge?.copyWith(
@@ -169,7 +181,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       Expanded(
                         child: ToggleButton(
                           label: 'Rate',
@@ -177,7 +189,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                           onTap: () {
                             setState(() {
                               // Convert current fixed fee to rate
-                              final newRate = _fixedToRate(_sliderValue);
+                              final double newRate = _fixedToRate(_sliderValue);
                               _useFixedFee = false;
                               _sliderValue = newRate;
                             });
@@ -191,7 +203,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                           onTap: () {
                             setState(() {
                               // Convert current rate to fixed fee
-                              final newFixed = _rateToFixed(_sliderValue);
+                              final double newFixed = _rateToFixed(_sliderValue);
                               _useFixedFee = true;
                               _sliderValue = newFixed;
                             });
@@ -206,7 +218,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
 
                 // Slider
                 Column(
-                  children: [
+                  children: <Widget>[
                     Slider(
                       activeColor: Theme.of(context).primaryColorLight.withValues(alpha: 0.75),
                       thumbColor: Theme.of(context).primaryColorLight,
@@ -215,7 +227,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                       max: _useFixedFee ? _maxFixed : _maxRate,
                       divisions: _useFixedFee ? 18 : 9,
                       label: _feeDescription,
-                      onChanged: (value) {
+                      onChanged: (double value) {
                         setState(() {
                           _sliderValue = value;
                         });
@@ -225,7 +237,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                        children: <Widget>[
                           Text(
                             _useFixedFee ? '${_minFixed.round()} sats' : '${_minRate.floor()} sat/vB',
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -254,7 +266,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       Icon(Icons.info_outline, size: 20, color: theme.colorScheme.onSurfaceVariant),
                       const SizedBox(width: 12),
                       Expanded(
@@ -273,7 +285,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
 
                 // Buttons
                 Row(
-                  children: [
+                  children: <Widget>[
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () {

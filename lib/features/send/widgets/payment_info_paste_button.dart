@@ -24,7 +24,6 @@ class PaymentInfoPasteButton extends StatelessWidget {
           style: Theme.of(context).textTheme.labelLarge,
           maxLines: 1,
           group: textGroup,
-          minFontSize: 12,
           stepGranularity: 0.1,
         ),
         onPressed: onPressed,
