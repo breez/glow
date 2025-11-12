@@ -227,6 +227,11 @@ final sdkEventListenerProvider = Provider<void>((ref) {
           await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
           await ref.read(paymentsProvider.notifier).refreshIfChanged();
         },
+        paymentPending: (payment) async {
+          log.i('Payment pending: ${payment.id}');
+          await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
+          await ref.read(paymentsProvider.notifier).refreshIfChanged();
+        },
         paymentFailed: (payment) async {
           log.e('Payment failed: ${payment.id}');
           await ref.read(paymentsProvider.notifier).refreshIfChanged();
