@@ -1,8 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:glow/features/send/widgets/paste_and_scan_actions.dart';
 import 'package:glow/features/send/widgets/send_actions_row.dart';
 import 'package:glow/features/send/widgets/send_approve_button.dart';
 import 'package:glow/features/send/widgets/send_form.dart';
+import 'package:glow/features/widgets/card_wrapper.dart';
 
 class SendLayout extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -32,17 +34,12 @@ class SendLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(leading: const BackButton(), title: const Text('Send Payment')),
+      appBar: AppBar(leading: const BackButton(), title: const Text('Payee Information')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
-          child: Container(
-            decoration: ShapeDecoration(
-              color: theme.colorScheme.surface,
-              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-            ),
+          child: CardWrapper(
             padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
             child: Column(
               children: <Widget>[
@@ -54,17 +51,16 @@ class SendLayout extends StatelessWidget {
                   onSubmit: onSubmit,
                 ),
                 const SizedBox(height: 36),
-                SendActionsRow(onPaste: onPaste, onScan: onScan, textGroup: textGroup),
+                PasteAndScanActions(onPaste: onPaste, onScan: onScan, textGroup: textGroup),
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SendApproveButton(controller: controller, isValidating: isValidating, onApprove: onApprove),
-        ),
+      bottomNavigationBar: SendApproveButton(
+        controller: controller,
+        isValidating: isValidating,
+        onApprove: onApprove,
       ),
     );
   }

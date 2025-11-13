@@ -40,8 +40,8 @@ class BottomNavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
+    final ThemeData theme = Theme.of(context);
+    final double screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
       padding:
@@ -49,7 +49,7 @@ class BottomNavButton extends StatelessWidget {
           EdgeInsets.only(bottom: stickToBottom ? MediaQuery.of(context).viewInsets.bottom + 40.0 : 40.0),
       child: Column(
         mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
-        children: [
+        children: <Widget>[
           ConstrainedBox(
             constraints: constraints ?? const BoxConstraints(minHeight: 48.0, minWidth: 168.0),
             child: ElevatedButton(

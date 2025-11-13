@@ -17,7 +17,7 @@ class SendActionsRow extends StatelessWidget {
         Expanded(
           child: PaymentInfoPasteButton(onPressed: onPaste, textGroup: textGroup),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 32),
         Expanded(
           child: PaymentInfoScanButton(onPressed: onScan, textGroup: textGroup),
         ),

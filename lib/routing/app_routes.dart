@@ -11,6 +11,7 @@ import 'package:glow/features/wallet/import_screen.dart';
 import 'package:glow/features/wallet/list_screen.dart';
 import 'package:glow/features/wallet/setup_screen.dart';
 import 'package:glow/features/wallet/verify_screen.dart';
+import 'package:glow/features/widgets/bottom_nav_button.dart';
 
 // Import your payment screens here when they're created
 // import 'package:glow/screens/send/bitcoin_address_screen.dart';
@@ -674,16 +675,13 @@ class _PlaceholderScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            Center(
-              child: FilledButton.icon(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Go Back'),
-              ),
-            ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavButton(
+        stickToBottom: true,
+        text: 'CLOSE',
+        onPressed: () => Navigator.of(context).pop(),
       ),
     );
   }

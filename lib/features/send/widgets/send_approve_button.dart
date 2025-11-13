@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glow/features/widgets/bottom_nav_button.dart';
 
 class SendApproveButton extends StatelessWidget {
   final TextEditingController controller;
@@ -14,16 +15,11 @@ class SendApproveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton(
+    return BottomNavButton(
+      text: 'NEXT',
       onPressed: controller.text.isNotEmpty && !isValidating ? onApprove : null,
-      child: SizedBox(
-        height: 48,
-        child: Center(
-          child: isValidating
-              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-              : const Text('NEXT', style: TextStyle(fontSize: 16)),
-        ),
-      ),
+      loading: isValidating,
+      stickToBottom: true,
     );
   }
 }
