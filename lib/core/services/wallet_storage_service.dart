@@ -40,8 +40,8 @@ class WalletStorageService with LoggerMixin {
         return <WalletMetadata>[];
       }
 
-      final List<WalletMetadata> wallets = (jsonDecode(json) as List<Map<String, dynamic>>)
-          .map((Map<String, dynamic> e) => WalletMetadata.fromJson(e))
+      final List<WalletMetadata> wallets = (jsonDecode(json) as List<dynamic>)
+          .map((dynamic e) => WalletMetadata.fromJson(e as Map<String, dynamic>))
           .toList();
       if (wallets.isEmpty) {
         log.d('Wallet list is empty after decoding');
