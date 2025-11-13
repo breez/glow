@@ -47,6 +47,7 @@ class SendLayout extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 SendForm(
+                  formKey: formKey,
                   controller: controller,
                   focusNode: focusNode,
                   errorMessage: errorMessage,

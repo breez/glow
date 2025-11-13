@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class SendForm extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
   final TextEditingController controller;
   final FocusNode focusNode;
   final String errorMessage;
   final ValueChanged<String> onSubmit;
 
   const SendForm({
+    required this.formKey,
     required this.controller,
     required this.focusNode,
     required this.errorMessage,
@@ -17,6 +19,7 @@ class SendForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: formKey,
       child: TextFormField(
         controller: controller,
         focusNode: focusNode,
