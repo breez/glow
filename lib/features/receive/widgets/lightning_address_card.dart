@@ -1,9 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/services/clipboard_service.dart';
 
 /// Card widget for displaying Lightning Address with edit and copy actions
 class LightningAddressCard extends ConsumerWidget {
+  static const String customizeValue = 'customize';
   final String address;
   final VoidCallback onEdit;
 
@@ -11,52 +12,55 @@ class LightningAddressCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ClipboardService clipboardService = ref.read(clipboardServiceProvider);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  'Lightning Address',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
+    final ThemeData themeData = Theme.of(context);
+
+    return GestureDetector(
+      onTapDown: (TapDownDetails details) {
+        // TODO(erdemyerebasmaz): Display dropdown menu in a static place that does not obstruct LN Address
+        final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+        final Offset offset = details.globalPosition;
+
+        showMenu(
+          context: context,
+          color: themeData.cardTheme.color,
+          position: RelativeRect.fromRect(Rect.fromPoints(offset, offset), Offset.zero & overlay.size),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
+          items: const <PopupMenuItem<String>>[
+            PopupMenuItem<String>(
+              value: customizeValue,
+              child: Row(
+                children: <Widget>[Icon(Icons.edit), SizedBox(width: 8.0), Text('Customize Address')],
               ),
-              IconButton(
-                icon: const Icon(Icons.edit, size: 20),
-                onPressed: onEdit,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                tooltip: 'Edit',
+            ),
+          ],
+        ).then((String? value) {
+          if (value == customizeValue) {
+            onEdit();
+          }
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).canvasColor,
+          borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+        ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          width: MediaQuery.of(context).size.width,
+          child: Center(
+            child: AutoSizeText(
+              address,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                letterSpacing: 0.15,
+                fontWeight: FontWeight.w500,
               ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.copy, size: 20),
-                onPressed: () => clipboardService.copyToClipboard(context, address),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                tooltip: 'Copy',
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            address,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.onSurface,
+              maxLines: 1,
+              stepGranularity: 0.1,
             ),
           ),
-        ],
+        ),
       ),
     );
   }
