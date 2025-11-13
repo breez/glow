@@ -15,7 +15,7 @@ class HomeDrawer extends StatelessWidget {
     final ThemeData themeData = Theme.of(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
-        systemNavigationBarColor: themeData.drawerTheme.backgroundColor,
+        systemNavigationBarColor: themeData.cardTheme.color,
       ),
       child: Drawer(
         child: Column(

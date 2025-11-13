@@ -12,7 +12,7 @@ class CardWrapper extends StatelessWidget {
     return Container(
       decoration: ShapeDecoration(
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-        color: Theme.of(context).drawerTheme.backgroundColor,
+        color: Theme.of(context).cardTheme.color,
       ),
       padding: padding ?? const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       child: child,

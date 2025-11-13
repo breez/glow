@@ -53,7 +53,7 @@ class ReceiveMethodDropdown extends StatelessWidget {
           onChanged(method);
         }
       },
-      color: theme.drawerTheme.backgroundColor,
+      color: theme.cardTheme.color,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       constraints: const BoxConstraints(minHeight: 48, maxWidth: 180),
       elevation: 12.0,

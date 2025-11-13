@@ -18,7 +18,7 @@ class TransactionListItem extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: Container(
-          color: Theme.of(context).drawerTheme.backgroundColor,
+          color: Theme.of(context).cardTheme.color,
           child: ListTile(
             onTap: onTap,
             leading: _buildAvatarContainer(context),
