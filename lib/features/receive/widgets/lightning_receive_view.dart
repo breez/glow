@@ -2,6 +2,7 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:glow/features/receive/widgets/copy_and_share_actions.dart';
 import 'package:glow/features/receive/widgets/error_view.dart';
 import 'package:glow/features/receive/widgets/info_card.dart';
 import 'package:glow/features/receive/widgets/lightning_address_card.dart';
@@ -52,6 +53,8 @@ class _LightningAddressContent extends ConsumerWidget {
         child: Column(
           children: <Widget>[
             QRCodeCard(data: address),
+            const SizedBox(height: 24),
+            CopyAndShareActions(data: address),
             const SizedBox(height: 24),
             LightningAddressCard(
               address: address,
