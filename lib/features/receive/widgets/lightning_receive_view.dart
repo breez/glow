@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/providers/sdk_provider.dart';
 import 'package:glow/features/receive/widgets/copy_and_share_actions.dart';
 import 'package:glow/features/receive/widgets/error_view.dart';
-import 'package:glow/features/receive/widgets/info_card.dart';
 import 'package:glow/features/receive/widgets/lightning_address_card.dart';
 import 'package:glow/features/receive/widgets/no_lightning_address_view.dart';
 import 'package:glow/features/receive/widgets/qr_code_card.dart';
@@ -59,11 +58,6 @@ class _LightningAddressContent extends ConsumerWidget {
             LightningAddressCard(
               address: address,
               onEdit: () => showEditLightningAddressSheet(context, ref, sdk, address),
-            ),
-            const SizedBox(height: 24),
-            const InfoCard(
-              icon: Icons.info_outline,
-              text: 'Anyone can send you sats using this Lightning Address',
             ),
           ],
         ),

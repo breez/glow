@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/providers/bitcoin_address_provider.dart';
 import 'package:glow/features/receive/widgets/qr_code_card.dart';
 import 'package:glow/features/receive/widgets/copyable_card.dart';
-import 'package:glow/features/receive/widgets/info_card.dart';
 import 'package:glow/features/receive/widgets/error_view.dart';
 
 /// Bitcoin receive view - displays on-chain Bitcoin address with QR code
@@ -43,11 +42,6 @@ class _BitcoinAddressContent extends ConsumerWidget {
           const SizedBox(height: 8),
           // Network indicator
           _NetworkBadge(network: address.network),
-          const SizedBox(height: 16),
-          const InfoCard(
-            icon: Icons.info_outline,
-            text: 'Bitcoin on-chain transactions may take 10-60 minutes to confirm',
-          ),
         ],
       ),
     );
