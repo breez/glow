@@ -104,8 +104,9 @@ class StaticAmountRequestIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.add),
-      tooltip: 'Request Specific Amount',
+      alignment: Alignment.center,
+      icon: const Icon(Icons.edit_note_rounded, size: 24.0),
+      tooltip: 'Specify amount for payment request',
       onPressed: showAmountInput,
     );
   }
