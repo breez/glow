@@ -9,6 +9,7 @@ import 'package:glow/features/receive/widgets/no_lightning_address_view.dart';
 import 'package:glow/features/receive/widgets/qr_code_card.dart';
 import 'package:glow/features/receive/widgets/edit_lightning_address_sheet.dart';
 import 'package:glow/features/receive/widgets/register_lightning_address_sheet.dart';
+import 'package:glow/features/widgets/card_wrapper.dart';
 
 /// Lightning receive view - displays Lightning Address with QR code
 class LightningReceiveView extends ConsumerWidget {
@@ -47,21 +48,22 @@ class _LightningAddressContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      child: Column(
-        children: <Widget>[
-          const SizedBox(height: 16),
-          QRCodeCard(data: address),
-          const SizedBox(height: 32),
-          LightningAddressCard(
-            address: address,
-            onEdit: () => showEditLightningAddressSheet(context, ref, sdk, address),
-          ),
-          const SizedBox(height: 16),
-          const InfoCard(
-            icon: Icons.info_outline,
-            text: 'Anyone can send you sats using this Lightning Address',
-          ),
-        ],
+      child: CardWrapper(
+        child: Column(
+          children: <Widget>[
+            QRCodeCard(data: address),
+            const SizedBox(height: 24),
+            LightningAddressCard(
+              address: address,
+              onEdit: () => showEditLightningAddressSheet(context, ref, sdk, address),
+            ),
+            const SizedBox(height: 24),
+            const InfoCard(
+              icon: Icons.info_outline,
+              text: 'Anyone can send you sats using this Lightning Address',
+            ),
+          ],
+        ),
       ),
     );
   }
