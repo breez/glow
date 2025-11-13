@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:glow/features/receive/models/receive_method.dart';
 import 'package:glow/features/receive/models/receive_state.dart';
@@ -41,24 +44,53 @@ class ReceiveMethodDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final Size screenSize = MediaQuery.of(context).size;
 
-    return DropdownButton<ReceiveMethod>(
-      value: selectedMethod,
-      onChanged: (ReceiveMethod? method) {
+    return PopupMenuButton<ReceiveMethod>(
+      initialValue: selectedMethod,
+      onSelected: (ReceiveMethod? method) {
         if (method != null) {
           onChanged(method);
         }
       },
-      underline: const SizedBox.shrink(),
-      icon: const Icon(Icons.arrow_drop_down),
-      style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onSurface),
-      dropdownColor: theme.colorScheme.surface,
-      items: ReceiveMethod.values
+      color: theme.drawerTheme.backgroundColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      constraints: const BoxConstraints(minHeight: 48, maxWidth: 180),
+      elevation: 12.0,
+
+      position: PopupMenuPosition.under,
+      offset: selectedMethod == ReceiveMethod.lightning ? const Offset(-20, 0) : const Offset(0, 0),
+      itemBuilder: (BuildContext context) => ReceiveMethod.values
+          .where((ReceiveMethod method) => method != selectedMethod)
           .map(
-            (ReceiveMethod method) =>
-                DropdownMenuItem<ReceiveMethod>(value: method, child: Text(method.label)),
+            (ReceiveMethod method) => PopupMenuItem<ReceiveMethod>(
+              value: method,
+              child: Container(
+                width: min(screenSize.width * 0.5, 168),
+                constraints: const BoxConstraints(minHeight: 48, maxWidth: 180),
+                alignment: Alignment.center,
+                child: AutoSizeText(
+                  method.label.toUpperCase(),
+                  style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onSurface),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  stepGranularity: 0.1,
+                ),
+              ),
+            ),
           )
           .toList(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(selectedMethod.label.toUpperCase(), style: theme.appBarTheme.titleTextStyle),
+            const SizedBox(width: 4.0),
+            Icon(Icons.arrow_drop_down, color: theme.colorScheme.secondary),
+          ],
+        ),
+      ),
     );
   }
 }
