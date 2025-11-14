@@ -2,21 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/receive/models/receive_state.dart';
 import 'package:glow/features/receive/models/receive_method.dart';
+import 'package:glow/features/receive/providers/receive_form_controllers.dart';
 import 'package:glow/features/receive/widgets/lightning_receive_view.dart';
 import 'package:glow/features/receive/widgets/bitcoin_receive_view.dart';
+import 'package:glow/features/receive/widgets/amount_input_view.dart';
 
 class ReceiveViewSwitcher extends ConsumerWidget {
   final ReceiveState state;
+  final ReceiveFormControllers formControllers;
 
-  const ReceiveViewSwitcher({required this.state, super.key});
+  const ReceiveViewSwitcher({required this.state, required this.formControllers, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (state.isLoading) {
+    if (state.isLoading && state.flowStep == AmountInputFlowStep.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (state.hasError) {
+    if (state.hasError && state.flowStep == AmountInputFlowStep.initial) {
       return Center(child: Text(state.error ?? 'Unknown error'));
     }
 
@@ -24,9 +27,16 @@ class ReceiveViewSwitcher extends ConsumerWidget {
       duration: const Duration(milliseconds: 200),
       switchInCurve: Curves.easeIn,
       switchOutCurve: Curves.easeOut,
-      child: switch (state.method) {
-        ReceiveMethod.lightning => const LightningReceiveView(),
-        ReceiveMethod.bitcoin => const BitcoinReceiveView(),
+      child: switch (state.flowStep) {
+        AmountInputFlowStep.initial => switch (state.method) {
+          ReceiveMethod.lightning => const LightningReceiveView(),
+          ReceiveMethod.bitcoin => const BitcoinReceiveView(),
+        },
+        AmountInputFlowStep.inputAmount => AmountInputView(
+          method: state.method,
+          formControllers: formControllers,
+        ),
+        AmountInputFlowStep.displayPayment => PaymentDisplayView(state: state),
       },
     );
   }

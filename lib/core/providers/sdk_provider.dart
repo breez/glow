@@ -173,20 +173,6 @@ final Provider<AsyncValue<BigInt>> balanceProvider = Provider<AsyncValue<BigInt>
   );
 });
 
-/// Generate payment request
-final FutureProviderFamily<ReceivePaymentResponse, ReceivePaymentRequest> receivePaymentProvider =
-    FutureProvider.autoDispose.family<ReceivePaymentResponse, ReceivePaymentRequest>((
-      Ref ref,
-      ReceivePaymentRequest request,
-    ) async {
-      log.d('receivePaymentProvider called with request: ${request.paymentMethod}');
-      final BreezSdk sdk = await ref.watch(sdkProvider.future);
-      final BreezSdkService service = ref.read(breezSdkServiceProvider);
-      final ReceivePaymentResponse response = await service.receivePayment(sdk, request);
-      log.d('Payment request generated: ${response.paymentRequest}');
-      return response;
-    });
-
 /// Lightning address - with optional auto-registration
 final FutureProviderFamily<LightningAddressInfo?, bool> lightningAddressProvider = FutureProvider.autoDispose
     .family<LightningAddressInfo?, bool>((Ref ref, bool autoRegister) async {

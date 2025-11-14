@@ -6,27 +6,35 @@ import 'package:glow/features/receive/models/receive_method.dart';
 import 'package:glow/features/receive/models/receive_state.dart';
 
 class ReceiveAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final ReceiveState state;
+  final VoidCallback? onRequest;
+  final ValueChanged<ReceiveMethod> onChangeMethod;
+  final VoidCallback goBackInFlow;
+
   const ReceiveAppBar({
-    required this.showAppBarControls,
     required this.state,
-    required this.onChangeMethod,
     required this.onRequest,
+    required this.onChangeMethod,
+    required this.goBackInFlow,
     super.key,
   });
 
-  final bool showAppBarControls;
-  final ReceiveState state;
-  final ValueChanged<ReceiveMethod> onChangeMethod;
-  final VoidCallback? onRequest;
-
   @override
   Widget build(BuildContext context) {
+    final bool showAppBarControls =
+        (!state.isLoading && !state.hasError) || state.flowStep != AmountInputFlowStep.initial;
+
     return AppBar(
+      leading: showAppBarControls
+          ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: goBackInFlow)
+          : null,
       centerTitle: showAppBarControls,
       title: showAppBarControls
           ? ReceiveMethodDropdown(selectedMethod: state.method, onChanged: onChangeMethod)
           : const Text('Receive'),
-      actions: showAppBarControls ? <Widget>[StaticAmountRequestIcon(showAmountInput: onRequest)] : null,
+      actions: showAppBarControls && state.method != ReceiveMethod.bitcoin
+          ? <Widget>[StaticAmountRequestIcon(showAmountInput: onRequest)]
+          : null,
     );
   }
 
