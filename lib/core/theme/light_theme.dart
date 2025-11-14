@@ -29,6 +29,7 @@ ThemeData buildLightTheme() {
     chipTheme: _lightChipTheme,
     drawerTheme: _lightDrawerTheme,
     datePickerTheme: _lightDatePickerTheme,
+    snackBarTheme: _lightSnackBarTheme,
 
     // Text / icons
     textTheme: ThemeData.dark().textTheme,
@@ -139,4 +140,10 @@ final DatePickerThemeData _lightDatePickerTheme = DatePickerThemeData(
     }
     return BreezColors.lightBackground;
   }),
+);
+
+const SnackBarThemeData _lightSnackBarTheme = SnackBarThemeData(
+  backgroundColor: Color(0xFF334560),
+  actionTextColor: BreezColors.warning,
+  contentTextStyle: TextStyle(color: Colors.white, fontSize: 14.0, letterSpacing: 0.25, height: 1.2),
 );

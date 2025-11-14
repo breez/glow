@@ -29,6 +29,7 @@ ThemeData buildDarkTheme() {
     chipTheme: const ChipThemeData(backgroundColor: BreezColors.primary),
     drawerTheme: _darkDrawerTheme,
     datePickerTheme: _darkDatePickerTheme,
+    snackBarTheme: _darkSnackBarTheme,
 
     // Text / icons
     primaryIconTheme: const IconThemeData(color: Colors.white),
@@ -135,4 +136,10 @@ final DatePickerThemeData _darkDatePickerTheme = DatePickerThemeData(
     }
     return BreezColors.primary;
   }),
+);
+
+const SnackBarThemeData _darkSnackBarTheme = SnackBarThemeData(
+  backgroundColor: Color(0xFF334560),
+  actionTextColor: BreezColors.warningDark,
+  contentTextStyle: TextStyle(color: Colors.white, fontSize: 14.0, letterSpacing: 0.25, height: 1.2),
 );
