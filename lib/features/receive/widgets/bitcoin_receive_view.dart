@@ -2,9 +2,11 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/providers/bitcoin_address_provider.dart';
+import 'package:glow/features/receive/widgets/copy_and_share_actions.dart';
 import 'package:glow/features/receive/widgets/qr_code_card.dart';
 import 'package:glow/features/receive/widgets/copyable_card.dart';
 import 'package:glow/features/receive/widgets/error_view.dart';
+import 'package:glow/features/widgets/card_wrapper.dart';
 
 /// Bitcoin receive view - displays on-chain Bitcoin address with QR code
 class BitcoinReceiveView extends ConsumerWidget {
@@ -33,16 +35,14 @@ class _BitcoinAddressContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      child: Column(
-        children: <Widget>[
-          const SizedBox(height: 16),
-          QRCodeCard(data: address.address),
-          const SizedBox(height: 32),
-          CopyableCard(title: 'Bitcoin Address', content: address.address),
-          const SizedBox(height: 8),
-          // Network indicator
-          _NetworkBadge(network: address.network),
-        ],
+      child: CardWrapper(
+        child: Column(
+          children: <Widget>[
+            QRCodeCard(data: address.address),
+            const SizedBox(height: 24),
+            CopyAndShareActions(data: address.address),
+          ],
+        ),
       ),
     );
   }
