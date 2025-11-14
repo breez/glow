@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:glow/features/send/widgets/paste_and_scan_actions.dart';
-import 'package:glow/features/send/widgets/send_actions_row.dart';
 import 'package:glow/features/send/widgets/send_approve_button.dart';
 import 'package:glow/features/send/widgets/send_form.dart';
 import 'package:glow/features/widgets/card_wrapper.dart';
