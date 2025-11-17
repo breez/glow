@@ -22,7 +22,11 @@ class LightningReceiveView extends ConsumerWidget {
 
     return lightningAddress.when(
       data: (LightningAddressInfo? address) => address != null
-          ? _LightningAddressContent(address: address.lightningAddress, sdk: sdkAsync.value!)
+          ? _LightningAddressContent(
+              address: address.lightningAddress,
+              lnurl: address.lnurl,
+              sdk: sdkAsync.value!,
+            )
           : NoLightningAddressView(
               onRegister: () async {
                 final BreezSdk? sdk = sdkAsync.value;
@@ -39,10 +43,11 @@ class LightningReceiveView extends ConsumerWidget {
 
 /// Content displayed when Lightning Address exists
 class _LightningAddressContent extends ConsumerWidget {
-  final String address;
   final BreezSdk sdk;
+  final String address;
+  final String lnurl;
 
-  const _LightningAddressContent({required this.address, required this.sdk});
+  const _LightningAddressContent({required this.sdk, required this.address, required this.lnurl});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,7 +56,7 @@ class _LightningAddressContent extends ConsumerWidget {
       child: CardWrapper(
         child: Column(
           children: <Widget>[
-            QRCodeCard(data: address),
+            QRCodeCard(data: lnurl),
             const SizedBox(height: 24),
             CopyAndShareActions(data: address),
             const SizedBox(height: 24),
