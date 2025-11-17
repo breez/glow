@@ -79,7 +79,7 @@ class ReceiveMethodDropdown extends StatelessWidget {
                 alignment: Alignment.center,
                 child: AutoSizeText(
                   method.label.toUpperCase(),
-                  style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onSurface),
+                  style: const TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   stepGranularity: 0.1,

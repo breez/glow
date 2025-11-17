@@ -56,6 +56,7 @@ const AppBarTheme _darkAppBarTheme = AppBarTheme(
   backgroundColor: BreezColors.darkBackground,
   foregroundColor: Colors.white,
   iconTheme: IconThemeData(color: Colors.white),
+  titleTextStyle: TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
   systemOverlayStyle: SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarBrightness: Brightness.dark,
