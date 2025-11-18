@@ -11,7 +11,7 @@ import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/providers/theme_provider.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
 import 'package:glow/features/home/home_screen.dart';
-import 'package:glow/features/wallet/setup_screen.dart';
+import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';
 import 'package:glow/core/services/config_service.dart';
 import 'package:glow/core/theme/theme.dart';
 import 'package:intl/date_symbol_data_local.dart';

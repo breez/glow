@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/models/wallet_metadata.dart';
-import 'package:glow/features/wallet/backup_phrase_info_screen.dart';
-import 'package:glow/features/wallet/phrase_grid_screen.dart';
-import 'package:glow/features/wallet/phrase_verification_screen.dart';
+import 'package:glow/features/wallet/backup/backup_phrase_info_screen.dart';
+import 'package:glow/features/wallet/backup/phrase_grid_screen.dart';
+import 'package:glow/features/wallet/backup/phrase_verification_screen.dart';
 
 class WalletVerifyScreen extends ConsumerStatefulWidget {
   final WalletMetadata wallet;

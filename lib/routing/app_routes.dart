@@ -7,10 +7,10 @@ import 'package:glow/features/payment_details/payment_details_screen.dart';
 import 'package:glow/features/send/send_screen.dart';
 import 'package:glow/features/deposits/unclaimed_deposits_screen.dart';
 import 'package:glow/features/wallet/create_screen.dart';
-import 'package:glow/features/wallet/import_screen.dart';
+import 'package:glow/features/wallet/restore/import_screen.dart';
 import 'package:glow/features/wallet/list_screen.dart';
-import 'package:glow/features/wallet/setup_screen.dart';
-import 'package:glow/features/wallet/verify_screen.dart';
+import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';
+import 'package:glow/features/wallet/backup/verify_screen.dart';
 import 'package:glow/features/widgets/bottom_nav_button.dart';
 
 // Import your payment screens here when they're created
