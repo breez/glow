@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -31,7 +32,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
       backgroundColor: Colors.transparent,
       actions: <Widget>[
-        _SyncIndicator(hasSynced: hasSynced),
+        if (kDebugMode) ...[_SyncIndicator(hasSynced: hasSynced)],
         const _UnclaimedDepositsWarning(),
         _VerificationWarning(activeWallet: activeWallet, ref: ref),
       ],
