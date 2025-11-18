@@ -5,8 +5,9 @@ class Profile {
   final ProfileAnimal animal;
   final ProfileColor color;
   final String? customName;
+  final String? customImagePath;
 
-  const Profile({required this.animal, required this.color, this.customName});
+  const Profile({required this.animal, required this.color, this.customName, this.customImagePath});
 
   /// Returns an anonymous profile with default values
   factory Profile.anonymous() {
@@ -16,11 +17,17 @@ class Profile {
   /// Returns custom name if set, otherwise generates "Color Animal" format
   String get displayName => customName ?? '${color.displayName} ${animal.displayName}';
 
-  Profile copyWith({ProfileAnimal? animal, ProfileColor? color, String? customName}) {
+  Profile copyWith({
+    ProfileAnimal? animal,
+    ProfileColor? color,
+    String? customName,
+    String? customImagePath,
+  }) {
     return Profile(
       animal: animal ?? this.animal,
       color: color ?? this.color,
       customName: customName ?? this.customName,
+      customImagePath: customImagePath ?? this.customImagePath,
     );
   }
 }

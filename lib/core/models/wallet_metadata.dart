@@ -29,6 +29,7 @@ class WalletMetadata {
     'animal': profile.animal.name,
     'color': profile.color.name,
     'customName': profile.customName,
+    'customImagePath': profile.customImagePath,
     'isVerified': isVerified,
   };
 
@@ -43,7 +44,12 @@ class WalletMetadata {
       // New format: has animal/color
       final ProfileAnimal animal = ProfileAnimal.values.byName(json['animal'] as String);
       final ProfileColor color = ProfileColor.values.byName(json['color'] as String);
-      profile = Profile(animal: animal, color: color, customName: json['customName'] as String?);
+      profile = Profile(
+        animal: animal,
+        color: color,
+        customName: json['customName'] as String?,
+        customImagePath: json['customImagePath'] as String?,
+      );
     } else {
       // Old format: has name field - generate new profile and use name as customName
       final String? oldName = json['name'] as String?;
@@ -65,10 +71,12 @@ class WalletMetadata {
           other.profile.animal == profile.animal &&
           other.profile.color == profile.color &&
           other.profile.customName == profile.customName &&
+          other.profile.customImagePath == profile.customImagePath &&
           other.isVerified == isVerified;
 
   @override
-  int get hashCode => Object.hash(id, profile.animal, profile.color, profile.customName, isVerified);
+  int get hashCode =>
+      Object.hash(id, profile.animal, profile.color, profile.customName, profile.customImagePath, isVerified);
 
   @override
   String toString() => 'WalletMetadata(id: $id, profile: ${profile.displayName}, isVerified: $isVerified)';

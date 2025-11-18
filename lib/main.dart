@@ -19,6 +19,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glow/core/logging/app_logger.dart';
+import 'package:glow/features/profile/services/profile_image_cache.dart';
+import 'package:path/path.dart' as path;
 
 Future<void> _precacheSvgImages() async {
   final AssetManifest assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
@@ -28,6 +30,18 @@ Future<void> _precacheSvgImages() async {
   for (final String svgPath in svgPaths) {
     final SvgAssetLoader loader = SvgAssetLoader(svgPath);
     await svg.cache.putIfAbsent(loader.cacheKey(null), () => loader.loadBytes(null));
+  }
+}
+
+/// Precache profile image for active wallet to avoid drawer jank
+Future<void> _precacheProfileImage(WalletMetadata? wallet) async {
+  if (wallet?.profile.customImagePath != null && wallet!.profile.customImagePath!.isNotEmpty) {
+    try {
+      final String fileName = path.basename(wallet.profile.customImagePath!);
+      await ProfileImageCache().getProfileImageFile(fileName: fileName);
+    } catch (_) {
+      // Ignore errors - will fallback to icon avatar
+    }
   }
 }
 
@@ -91,6 +105,13 @@ class _AppRouter extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<bool> hasWalletsAsync = ref.watch(hasWalletsProvider);
     final AsyncValue<WalletMetadata?> activeWallet = ref.watch(activeWalletProvider);
+
+    // Precache profile image when active wallet is available
+    activeWallet.whenData((WalletMetadata? wallet) {
+      if (wallet != null) {
+        _precacheProfileImage(wallet);
+      }
+    });
 
     // Show loading while checking if wallets exist
     if (hasWalletsAsync.isLoading) {

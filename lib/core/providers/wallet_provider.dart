@@ -11,16 +11,16 @@ import 'package:logger/logger.dart';
 final Logger log = AppLogger.getLogger('WalletProvider');
 
 class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
-  late final WalletStorageService _storage;
-  late final MnemonicService _mnemonicService;
+  WalletStorageService? _storage;
+  MnemonicService? _mnemonicService;
 
   @override
   Future<List<WalletMetadata>> build() async {
-    _storage = ref.read(walletStorageServiceProvider);
-    _mnemonicService = ref.read(mnemonicServiceProvider);
+    _storage ??= ref.read(walletStorageServiceProvider);
+    _mnemonicService ??= ref.read(mnemonicServiceProvider);
 
     log.i('Loading wallet list from storage');
-    final List<WalletMetadata> wallets = await _storage.loadWallets();
+    final List<WalletMetadata> wallets = await _storage!.loadWallets();
     log.i('Loaded ${wallets.length} wallets');
     return wallets;
   }
@@ -31,11 +31,11 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
       final Profile walletProfile = profile ?? generateProfile();
       log.i('Creating new wallet: ${walletProfile.displayName} on ${network.name}');
 
-      final String mnemonic = _mnemonicService.generateMnemonic();
+      final String mnemonic = _mnemonicService!.generateMnemonic();
       final String walletId = WalletStorageService.generateWalletId(mnemonic);
       final WalletMetadata wallet = WalletMetadata(id: walletId, profile: walletProfile);
 
-      await _storage.addWallet(wallet, mnemonic);
+      await _storage!.addWallet(wallet, mnemonic);
       state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[
         ...state.value ?? <WalletMetadata>[],
         wallet,
@@ -55,8 +55,8 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
       final Profile walletProfile = generateProfile();
       log.i('Importing wallet: ${walletProfile.displayName} on ${network.name}');
 
-      final String normalized = _mnemonicService.normalizeMnemonic(mnemonic);
-      final (bool isValid, String? error) = _mnemonicService.validateMnemonic(normalized);
+      final String normalized = _mnemonicService!.normalizeMnemonic(mnemonic);
+      final (bool isValid, String? error) = _mnemonicService!.validateMnemonic(normalized);
 
       if (!isValid) {
         log.w('Invalid mnemonic: $error');
@@ -73,7 +73,7 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
 
       // Imported wallets are marked as verified (user already has the phrase)
       final WalletMetadata wallet = WalletMetadata(id: walletId, profile: walletProfile, isVerified: true);
-      await _storage.addWallet(wallet, normalized);
+      await _storage!.addWallet(wallet, normalized);
 
       state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[...existingWallets, wallet]);
 
@@ -97,7 +97,7 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
 
       final Profile updatedProfile = wallets[index].profile.copyWith(customName: customName);
       final WalletMetadata updated = wallets[index].copyWith(profile: updatedProfile);
-      await _storage.updateWallet(updated);
+      await _storage!.updateWallet(updated);
 
       state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[...wallets]..[index] = updated);
       log.i('Wallet profile updated: $walletId');
@@ -118,7 +118,7 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
       }
 
       final WalletMetadata updated = wallets[index].copyWith(isVerified: true);
-      await _storage.updateWallet(updated);
+      await _storage!.updateWallet(updated);
 
       state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[...wallets]..[index] = updated);
       log.i('Wallet marked as verified: $walletId');
@@ -131,7 +131,7 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
   Future<void> deleteWallet(String walletId) async {
     try {
       log.w('Deleting wallet: $walletId');
-      await _storage.deleteWallet(walletId);
+      await _storage!.deleteWallet(walletId);
 
       state = AsyncValue<List<WalletMetadata>>.data(
         (state.value ?? <WalletMetadata>[]).where((WalletMetadata w) => w.id != walletId).toList(),
