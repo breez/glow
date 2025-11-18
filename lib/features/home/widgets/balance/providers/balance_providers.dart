@@ -16,20 +16,24 @@ final Provider<BalanceState> balanceStateProvider = Provider<BalanceState>((Ref 
   final HomeStateFactory factory = ref.watch(homeStateFactoryProvider);
   final AsyncValue<BigInt> balanceAsync = ref.watch(balanceProvider);
 
-  final bool shouldWait = ref.watch(shouldWaitForInitialSyncProvider);
+  final AsyncValue<bool> shouldWaitAsync = ref.watch(shouldWaitForInitialSyncProvider);
   final bool hasSynced = ref.watch(hasSyncedProvider);
 
   // TODO(erdemyerebasmaz): Add fiat rate support when available
   // final fiatRate = ref.watch(fiatRateProvider);
 
   return balanceAsync.when(
-    data: (BigInt balance) => factory.createBalanceState(
-      balance: balance,
-      hasSynced: shouldWait ? hasSynced : true,
-      isLoading: false,
-      // exchangeRate: fiatRate?.rate,
-      // currencySymbol: fiatRate?.symbol,
-    ),
+    data: (BigInt balance) {
+      // If balance is loaded, show it immediately
+      // Only check sync status if we're still determining whether to wait
+      final bool shouldWait = shouldWaitAsync.hasValue ? shouldWaitAsync.value! : false;
+      return factory.createBalanceState(
+        balance: balance,
+        hasSynced: shouldWait ? hasSynced : true,
+        // exchangeRate: fiatRate?.rate,
+        // currencySymbol: fiatRate?.symbol,
+      );
+    },
     loading: () => BalanceState.loading(),
     error: (Object error, _) => BalanceState.error(error.toString()),
   );

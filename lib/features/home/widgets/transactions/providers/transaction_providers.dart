@@ -16,15 +16,17 @@ final Provider<TransactionFormatter> transactionFormatterProvider = Provider<Tra
 final Provider<TransactionListState> transactionListStateProvider = Provider<TransactionListState>((Ref ref) {
   final HomeStateFactory factory = ref.watch(homeStateFactoryProvider);
   final AsyncValue<List<Payment>> paymentsAsync = ref.watch(paymentsProvider);
-  final bool shouldWait = ref.watch(shouldWaitForInitialSyncProvider);
+
+  final AsyncValue<bool> shouldWaitAsync = ref.watch(shouldWaitForInitialSyncProvider);
   final bool hasSynced = ref.watch(hasSyncedProvider);
 
   return paymentsAsync.when(
-    data: (List<Payment> payments) => factory.createTransactionListState(
-      payments: payments,
-      hasSynced: shouldWait ? hasSynced : true,
-      isLoading: false,
-    ),
+    data: (List<Payment> payments) {
+      // If payments are loaded, show them immediately
+      // Only check sync status if we're still determining whether to wait
+      final bool shouldWait = shouldWaitAsync.hasValue ? shouldWaitAsync.value! : false;
+      return factory.createTransactionListState(payments: payments, hasSynced: shouldWait ? hasSynced : true);
+    },
     loading: () => TransactionListState.loading(),
     error: (Object error, _) => TransactionListState.error(error.toString()),
   );

@@ -13,14 +13,9 @@ class HomeStateFactory {
   BalanceState createBalanceState({
     required BigInt balance,
     required bool hasSynced,
-    required bool isLoading,
     double? exchangeRate,
     String? currencySymbol,
   }) {
-    if (isLoading || !hasSynced) {
-      return BalanceState.loading();
-    }
-
     final String formattedBalance = transactionFormatter.formatSats(balance);
     final String? formattedFiat = (exchangeRate != null && currencySymbol != null)
         ? transactionFormatter.formatFiat(balance, exchangeRate, currencySymbol)
@@ -54,12 +49,7 @@ class HomeStateFactory {
   TransactionListState createTransactionListState({
     required List<Payment> payments,
     required bool hasSynced,
-    required bool isLoading,
   }) {
-    if (isLoading || !hasSynced) {
-      return TransactionListState.loading();
-    }
-
     if (payments.isEmpty) {
       return TransactionListState.empty();
     }

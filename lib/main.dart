@@ -10,6 +10,7 @@ import 'package:glow/features/home/widgets/transactions/services/transaction_for
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/providers/theme_provider.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
+import 'package:glow/core/providers/sdk_provider.dart';
 import 'package:glow/features/home/home_screen.dart';
 import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';
 import 'package:glow/core/services/config_service.dart';
@@ -174,7 +175,15 @@ class _AppRouter extends ConsumerWidget {
 
     // Has active wallet - show main app
     if (activeWallet.hasValue && activeWallet.value != null) {
-      return const HomeScreen();
+      // Wait for SDK to connect and load initial data before showing HomeScreen
+      final AsyncValue<void> sdkReady = ref.watch(sdkReadyProvider);
+
+      return sdkReady.when(
+        data: (_) => const HomeScreen(),
+        loading: () =>
+            Container(color: Theme.of(context).appBarTheme.systemOverlayStyle?.systemNavigationBarColor),
+        error: (Object error, StackTrace stack) => const HomeScreen(),
+      );
     }
 
     // Fallback: No active wallet but wallets exist - shouldn't happen
