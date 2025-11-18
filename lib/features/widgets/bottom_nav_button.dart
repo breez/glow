@@ -54,7 +54,7 @@ class BottomNavButton extends StatelessWidget {
             constraints: constraints ?? const BoxConstraints(minHeight: 48.0, minWidth: 168.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: backgroundColor ?? theme.primaryColor,
+                backgroundColor: backgroundColor ?? theme.primaryColorLight,
                 elevation: elevation ?? 0.0,
                 disabledBackgroundColor: disabledColor ?? theme.disabledColor,
                 shape: RoundedRectangleBorder(borderRadius: borderRadius ?? BorderRadius.circular(8.0)),
