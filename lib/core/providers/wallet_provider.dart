@@ -4,6 +4,8 @@ import 'package:glow/core/logging/app_logger.dart';
 import 'package:glow/core/models/wallet_metadata.dart';
 import 'package:glow/core/services/mnemonic_service.dart';
 import 'package:glow/core/services/wallet_storage_service.dart';
+import 'package:glow/features/profile/models/profile.dart';
+import 'package:glow/features/profile/provider/profile_provider.dart';
 import 'package:logger/logger.dart';
 
 final Logger log = AppLogger.getLogger('WalletProvider');
@@ -23,17 +25,15 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
     return wallets;
   }
 
-  Future<(WalletMetadata, String)> createWallet({required String name, required Network network}) async {
-    if (name.trim().isEmpty) {
-      throw Exception('Wallet name cannot be empty');
-    }
-
+  Future<(WalletMetadata, String)> createWallet({Profile? profile, Network network = Network.mainnet}) async {
     try {
-      log.i('Creating new wallet: $name on ${network.name}');
+      // Auto-generate profile if not provided
+      final Profile walletProfile = profile ?? generateProfile();
+      log.i('Creating new wallet: ${walletProfile.displayName} on ${network.name}');
 
       final String mnemonic = _mnemonicService.generateMnemonic();
       final String walletId = WalletStorageService.generateWalletId(mnemonic);
-      final WalletMetadata wallet = WalletMetadata(id: walletId, name: name);
+      final WalletMetadata wallet = WalletMetadata(id: walletId, profile: walletProfile);
 
       await _storage.addWallet(wallet, mnemonic);
       state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[
@@ -41,7 +41,7 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
         wallet,
       ]);
 
-      log.i('Created wallet: $walletId ($name)');
+      log.i('Created wallet: $walletId (${walletProfile.displayName})');
       return (wallet, mnemonic);
     } catch (e, stack) {
       log.e('Failed to create wallet', error: e, stackTrace: stack);
@@ -49,13 +49,11 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
     }
   }
 
-  Future<WalletMetadata> importWallet({
-    required String name,
-    required String mnemonic,
-    required Network network,
-  }) async {
+  Future<WalletMetadata> importWallet({required String mnemonic, required Network network}) async {
     try {
-      log.i('Importing wallet: $name on ${network.name}');
+      // Auto-generate profile if not provided
+      final Profile walletProfile = generateProfile();
+      log.i('Importing wallet: ${walletProfile.displayName} on ${network.name}');
 
       final String normalized = _mnemonicService.normalizeMnemonic(mnemonic);
       final (bool isValid, String? error) = _mnemonicService.validateMnemonic(normalized);
@@ -74,12 +72,12 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
       }
 
       // Imported wallets are marked as verified (user already has the phrase)
-      final WalletMetadata wallet = WalletMetadata(id: walletId, name: name, isVerified: true);
+      final WalletMetadata wallet = WalletMetadata(id: walletId, profile: walletProfile, isVerified: true);
       await _storage.addWallet(wallet, normalized);
 
       state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[...existingWallets, wallet]);
 
-      log.i('Imported wallet: $walletId ($name)');
+      log.i('Imported wallet: $walletId (${walletProfile.displayName})');
       return wallet;
     } catch (e, stack) {
       log.e('Failed to import wallet', error: e, stackTrace: stack);
@@ -87,9 +85,9 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
     }
   }
 
-  Future<void> updateWalletName(String walletId, String newName) async {
+  Future<void> updateWalletProfile(String walletId, {String? customName}) async {
     try {
-      log.i('Updating wallet name: $walletId -> $newName');
+      log.i('Updating wallet profile: $walletId');
 
       final List<WalletMetadata> wallets = state.value ?? <WalletMetadata>[];
       final int index = wallets.indexWhere((WalletMetadata w) => w.id == walletId);
@@ -97,13 +95,14 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
         throw Exception('Wallet not found: $walletId');
       }
 
-      final WalletMetadata updated = wallets[index].copyWith(name: newName);
+      final Profile updatedProfile = wallets[index].profile.copyWith(customName: customName);
+      final WalletMetadata updated = wallets[index].copyWith(profile: updatedProfile);
       await _storage.updateWallet(updated);
 
       state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[...wallets]..[index] = updated);
-      log.i('Wallet name updated: $walletId');
+      log.i('Wallet profile updated: $walletId');
     } catch (e, stack) {
-      log.e('Failed to update wallet name', error: e, stackTrace: stack);
+      log.e('Failed to update wallet profile', error: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -174,7 +173,7 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
     final WalletMetadata? wallet = wallets.where((WalletMetadata w) => w.id == _activeWalletId).firstOrNull;
 
     if (wallet != null) {
-      log.i('Active wallet: ${wallet.id} (${wallet.name})');
+      log.i('Active wallet: ${wallet.id} (${wallet.displayName})');
 
       // Listen for wallet list changes to update metadata without rebuilding
       ref.listen(walletListProvider, (
@@ -217,7 +216,7 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
       _activeWalletId = walletId;
       state = AsyncValue<WalletMetadata?>.data(wallet);
 
-      log.i('Switched to wallet: $walletId (${wallet.name})');
+      log.i('Switched to wallet: $walletId (${wallet.displayName})');
     } catch (e, stack) {
       log.e('Failed to switch wallet', error: e, stackTrace: stack);
       rethrow;

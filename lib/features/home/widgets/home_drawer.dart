@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/models/wallet_metadata.dart';
+import 'package:glow/features/profile/models/profile.dart';
+import 'package:glow/features/profile/widgets/profile_avatar.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
 import 'package:glow/core/theme/colors.dart';
-import 'package:glow/features/wallet/widgets/breez_sdk_footer.dart';
+import 'package:glow/features/wallet/onboarding/widgets/breez_sdk_footer.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -91,16 +93,19 @@ class _DrawerHeader extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const SizedBox(height: 12),
-          CircleAvatar(
-            radius: 24,
+          ProfileAvatar(
+            profile: activeWallet.value?.profile ?? Profile.anonymous(),
+            avatarSize: AvatarSize.medium,
             backgroundColor: theme.primaryColor,
-            child: Icon(Icons.person, color: theme.colorScheme.onPrimary, size: 28),
           ),
           const SizedBox(height: 12),
           // Display wallet name from provider
           activeWallet.when(
             data: (WalletMetadata? wallet) => wallet != null && !wallet.isVerified
-                ? Text(wallet.name, style: theme.textTheme.titleMedium?.copyWith(color: BreezColors.grey600))
+                ? Text(
+                    wallet.displayName,
+                    style: theme.textTheme.titleMedium?.copyWith(color: BreezColors.grey600),
+                  )
                 : const SizedBox.shrink(),
             loading: () => const SizedBox.shrink(),
             error: (_, _) => const SizedBox.shrink(),
