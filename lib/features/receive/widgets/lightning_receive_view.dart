@@ -58,7 +58,7 @@ class _LightningAddressContent extends ConsumerWidget {
           children: <Widget>[
             QRCodeCard(data: lnurl),
             const SizedBox(height: 24),
-            CopyAndShareActions(data: address),
+            CopyAndShareActions(copyData: address, shareData: lnurl),
             const SizedBox(height: 24),
             LightningAddressCard(
               address: address,

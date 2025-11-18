@@ -38,7 +38,7 @@ class _BitcoinAddressContent extends ConsumerWidget {
           children: <Widget>[
             QRCodeCard(data: address.address),
             const SizedBox(height: 24),
-            CopyAndShareActions(data: address.address),
+            CopyAndShareActions(copyData: address.address, shareData: address.address),
           ],
         ),
       ),

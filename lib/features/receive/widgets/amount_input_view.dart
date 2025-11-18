@@ -175,7 +175,7 @@ class _LightningPaymentDisplay extends ConsumerWidget {
           children: <Widget>[
             QRCodeCard(data: response!.paymentRequest),
             const SizedBox(height: 24),
-            CopyAndShareActions(data: response!.paymentRequest),
+            CopyAndShareActions(copyData: response!.paymentRequest, shareData: response!.paymentRequest),
             if (response!.fee > BigInt.zero) ...<Widget>[
               const SizedBox(height: 24),
               Container(

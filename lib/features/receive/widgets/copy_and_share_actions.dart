@@ -27,17 +27,17 @@ class DataActionButtonTheme {
 }
 
 class CopyAndShareActions extends ConsumerWidget {
-  final String data;
+  final String copyData;
+  final String shareData;
 
-  const CopyAndShareActions({required this.data, super.key});
-
+  const CopyAndShareActions({required this.copyData, required this.shareData, super.key});
   // TODO(erdemyerebasmaz): Consider moving copy & share methods outside for better SoC
   void _onCopyPressed(WidgetRef ref, BuildContext context) {
-    ref.read(clipboardServiceProvider).copyToClipboard(context, data);
+    ref.read(clipboardServiceProvider).copyToClipboard(context, copyData);
   }
 
   void _onSharePressed() {
-    SharePlus.instance.share(ShareParams(title: data, text: data));
+    SharePlus.instance.share(ShareParams(title: shareData, text: shareData));
   }
 
   @override
