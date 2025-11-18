@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,17 +42,19 @@ class HomeDrawer extends StatelessWidget {
                   _DrawerSection(
                     title: 'Preferences',
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0),
-                        child: _DrawerItem(
-                          title: 'Security & Backup',
-                          icon: Icons.lock_outline,
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, AppRoutes.appSettings);
-                          },
+                      if (kDebugMode) ...<Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: _DrawerItem(
+                            title: 'Security & Backup',
+                            icon: Icons.lock_outline,
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, AppRoutes.appSettings);
+                            },
+                          ),
                         ),
-                      ),
+                      ],
                       Padding(
                         padding: const EdgeInsets.only(left: 16.0),
                         child: _DrawerItem(
