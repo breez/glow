@@ -1,5 +1,6 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:equatable/equatable.dart';
+import 'package:glow/features/profile/models/profile.dart';
 
 /// State representation for a single transaction item
 class TransactionItemState extends Equatable {
@@ -12,6 +13,7 @@ class TransactionItemState extends Equatable {
     required this.formattedMethod,
     required this.description,
     required this.isReceive,
+    this.profile,
   });
 
   final Payment payment;
@@ -22,6 +24,7 @@ class TransactionItemState extends Equatable {
   final String formattedMethod;
   final String description;
   final bool isReceive;
+  final Profile? profile;
 
   @override
   List<Object?> get props => <Object?>[
@@ -33,6 +36,7 @@ class TransactionItemState extends Equatable {
     formattedMethod,
     description,
     isReceive,
+    profile,
   ];
 }
 
