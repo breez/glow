@@ -32,7 +32,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
       backgroundColor: Colors.transparent,
       actions: <Widget>[
-        if (kDebugMode) ...[_SyncIndicator(hasSynced: hasSynced)],
+        if (kDebugMode) ...<Widget>[_SyncIndicator(hasSynced: hasSynced)],
         const _UnclaimedDepositsWarning(),
         _VerificationWarning(activeWallet: activeWallet, ref: ref),
       ],
