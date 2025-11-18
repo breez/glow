@@ -24,4 +24,8 @@ class BreezColors {
   static const Color grey500 = Color(0xFF9E9E9E);
   static const Color grey600 = Color(0xFF757575);
   static const Color grey900 = Color(0xFF212121);
+
+  // Debug colors
+  static const Color debugRed = Color(0xFFFF0000);
+  static const Color debugGreen = Color(0xFF00FF00);
 }
