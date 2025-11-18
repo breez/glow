@@ -49,7 +49,9 @@ class ReceiveScreen extends ConsumerWidget {
       state: state,
       onChangeMethod: notifier.changeMethod,
       onRequest: notifier.startAmountInput,
-      goBackInFlow: notifier.goBackInFlow,
+      goBackInFlow: state.flowStep == AmountInputFlowStep.initial
+          ? () => Navigator.of(context).pop()
+          : notifier.goBackInFlow,
       formControllers: formControllers,
       onPressed: () => handleSubmit(ref),
     );
