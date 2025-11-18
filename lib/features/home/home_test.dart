@@ -90,30 +90,6 @@ void main() {
   group('HomeStateFactory Unit Tests', () {
     const HomeStateFactory factory = HomeStateFactory(transactionFormatter: TransactionFormatter());
 
-    test('creates loading balance state', () {
-      final BalanceState state = factory.createBalanceState(
-        balance: BigInt.zero,
-        hasSynced: false,
-        isLoading: true,
-      );
-
-      expect(state.isLoading, true);
-      expect(state.hasSynced, false);
-    });
-
-    test('creates loaded balance state', () {
-      final BalanceState state = factory.createBalanceState(
-        balance: BigInt.from(1000000),
-        hasSynced: true,
-        isLoading: false,
-      );
-
-      expect(state.isLoading, false);
-      expect(state.hasSynced, true);
-      expect(state.balance, BigInt.from(1000000));
-      expect(state.formattedBalance, '1,000,000');
-    });
-
     test('creates transaction item state', () {
       final Payment payment = Payment(
         id: 'test_001',
@@ -147,7 +123,6 @@ void main() {
       final TransactionListState state = factory.createTransactionListState(
         payments: <Payment>[payment],
         hasSynced: true,
-        isLoading: false,
       );
 
       expect(state.hasTransactions, true);
@@ -159,7 +134,6 @@ void main() {
       final TransactionListState state = factory.createTransactionListState(
         payments: <Payment>[],
         hasSynced: true,
-        isLoading: false,
       );
 
       expect(state.isEmpty, true);
