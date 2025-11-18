@@ -18,7 +18,10 @@ class PhraseVerificationScreen extends ConsumerStatefulWidget {
 class _PhraseVerificationScreenState extends ConsumerState<PhraseVerificationScreen> with LoggerMixin {
   late final List<String> words;
   late final List<int> indices;
-  final List<TextEditingController> controllers = List.generate(3, (_) => TextEditingController());
+  final List<TextEditingController> controllers = List<TextEditingController>.generate(
+    3,
+    (_) => TextEditingController(),
+  );
   bool _isVerifying = false;
 
   @override
@@ -90,7 +93,7 @@ class _PhraseVerificationScreenState extends ConsumerState<PhraseVerificationScr
           children: <Widget>[
             Form(
               child: Column(
-                children: [
+                children: <Widget>[
                   for (int i = 0; i < 3; i++) ...<Widget>[
                     TextFormField(
                       controller: controllers[i],
