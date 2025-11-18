@@ -77,18 +77,6 @@ class _BalanceContentView extends StatelessWidget {
           const SizedBox(height: 12),
           Text(state.formattedFiat!, style: BalanceTextStyles.fiatAmount),
         ],
-        if (!state.hasSynced)
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2)),
-                SizedBox(width: 8),
-                Text('Syncing...', style: TextStyle(fontSize: 12)),
-              ],
-            ),
-          ),
       ],
     );
   }
