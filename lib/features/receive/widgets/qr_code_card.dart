@@ -14,10 +14,24 @@ class QRCodeCard extends ConsumerWidget {
     final ClipboardService clipboardService = ref.read(clipboardServiceProvider);
     return GestureDetector(
       onTap: () => clipboardService.copyToClipboard(context, data),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-        child: PrettyQrView.data(data: data, decoration: const PrettyQrDecoration()),
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: Container(
+          width: 230.0,
+          height: 230.0,
+          clipBehavior: Clip.antiAlias,
+          decoration: const ShapeDecoration(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4))),
+          ),
+          child: PrettyQrView.data(
+            data: data,
+            decoration: const PrettyQrDecoration(
+              quietZone: PrettyQrQuietZone.modules(1),
+              background: Colors.white,
+              shape: PrettyQrSquaresSymbol(),
+            ),
+          ),
+        ),
       ),
     );
   }

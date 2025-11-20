@@ -1,8 +1,10 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/config/breez_config.dart';
 import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:glow/core/theme/colors.dart';
 
 /// Show bottom sheet for editing Lightning Address
 Future<void> showEditLightningAddressSheet(
@@ -161,13 +163,11 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           if (!_showDeleteConfirmation) ...<Widget>[
-            Text('Edit Lightning Address', style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 8),
-            Text(
-              'Change your username or delete your Lightning Address',
-              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            const Text(
+              'Customize Address',
+              style: TextStyle(fontSize: 18.0, letterSpacing: 0.0, height: 1.28, fontWeight: FontWeight.w500),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             TextField(
               controller: _controller,
               autofocus: true,
@@ -182,38 +182,38 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
               onChanged: (_) => setState(() => _errorText = null),
               onSubmitted: (_) => _handleSave(),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 40),
             FilledButton(
               onPressed: _isProcessing ? null : _handleSave,
               child: _isProcessing
                   ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Save Changes'),
+                  : const Text('DONE'),
             ),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: _isProcessing ? null : () => setState(() => _showDeleteConfirmation = true),
-              icon: const Icon(Icons.delete_outline),
-              label: const Text('Delete Lightning Address'),
-            ),
+            if (kDebugMode) ...<Widget>[
+              const SizedBox(height: 8),
+              FilledButton.icon(
+                style: FilledButton.styleFrom(backgroundColor: BreezColors.debugRed),
+                onPressed: _isProcessing ? null : () => setState(() => _showDeleteConfirmation = true),
+                icon: const Icon(Icons.delete_outline),
+                label: _isProcessing
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('DELETE'),
+              ),
+            ],
           ] else ...<Widget>[
             Text('Delete Lightning Address?', style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 8),
-            Text(
-              'This action cannot be undone. Your Lightning Address will be permanently deleted.',
-              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
-            ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: _isProcessing ? null : _handleDelete,
-              style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+              style: FilledButton.styleFrom(backgroundColor: BreezColors.debugRed),
               child: _isProcessing
                   ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text('Yes, Delete', style: TextStyle(color: Theme.of(context).colorScheme.onError)),
+                  : const Text('DELETE'),
             ),
             const SizedBox(height: 8),
-            OutlinedButton(
+            FilledButton(
               onPressed: _isProcessing ? null : () => setState(() => _showDeleteConfirmation = false),
-              child: const Text('Cancel'),
+              child: const Text('CANCEL'),
             ),
           ],
           const SizedBox(height: 24),

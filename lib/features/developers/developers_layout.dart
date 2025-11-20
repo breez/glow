@@ -1,4 +1,5 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:glow/features/developers/widgets/logs_card.dart';
 import 'package:glow/features/developers/widgets/max_deposit_claim_fee_card.dart';
@@ -30,21 +31,23 @@ class DevelopersLayout extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: <Widget>[
-          // Wallet Management Card
-          const WalletCard(),
+          // TODO(erdemyerebasmaz): Move these cards as options to a menu on app bar
+          if (kDebugMode) ...<Widget>[
+            // Wallet Management Card
+            const WalletCard(),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          // Network Switch Card
-          NetworkCard(network: network, onChangeNetwork: onChangeNetwork),
+            // Network Switch Card
+            NetworkCard(network: network, onChangeNetwork: onChangeNetwork),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          // Max Deposit Claim Fee Card
-          MaxDepositClaimFeeCard(currentFee: maxDepositClaimFee, onTapMaxFeeCard: onTapMaxFeeCard),
+            // Max Deposit Claim Fee Card
+            MaxDepositClaimFeeCard(currentFee: maxDepositClaimFee, onTapMaxFeeCard: onTapMaxFeeCard),
 
-          const SizedBox(height: 16),
-
+            const SizedBox(height: 16),
+          ],
           // Logs Card
           LogsCard(onShareCurrentSession: onShareCurrentSession, onShareAllLogs: onShareAllLogs),
         ],

@@ -1,12 +1,12 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
-import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/logging/logger_mixin.dart';
+import 'package:glow/core/models/wallet_metadata.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
 import 'package:glow/features/wallet/widgets/network_selector.dart';
 import 'package:glow/features/wallet/widgets/warning_card.dart';
+import 'package:glow/routing/app_routes.dart';
 
 class WalletCreateScreen extends ConsumerStatefulWidget {
   const WalletCreateScreen({super.key});
@@ -16,16 +16,9 @@ class WalletCreateScreen extends ConsumerStatefulWidget {
 }
 
 class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with LoggerMixin {
-  final TextEditingController _nameController = TextEditingController(text: 'My Wallet');
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Network _selectedNetwork = Network.mainnet;
   bool _isCreating = false;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
 
   Future<void> _createWallet() async {
     if (!_formKey.currentState!.validate()) {
@@ -36,7 +29,7 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
     try {
       final (WalletMetadata wallet, String mnemonic) = await ref
           .read(walletListProvider.notifier)
-          .createWallet(name: _nameController.text.trim(), network: _selectedNetwork);
+          .createWallet(network: _selectedNetwork);
 
       // Set as active wallet
       await ref.read(activeWalletProvider.notifier).setActiveWallet(wallet.id);
@@ -49,7 +42,10 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
         Future<void>.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Wallet "${wallet.name}" created!'), backgroundColor: Colors.green),
+              SnackBar(
+                content: Text('Wallet "${wallet.displayName}" created!'),
+                backgroundColor: Colors.green,
+              ),
             );
           }
         });

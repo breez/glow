@@ -1,11 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/models/wallet_metadata.dart';
+import 'package:glow/features/profile/models/profile.dart';
+import 'package:glow/features/profile/widgets/profile_avatar.dart';
+import 'package:glow/features/profile/widgets/profile_editor_dialog.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
 import 'package:glow/core/theme/colors.dart';
-import 'package:glow/features/wallet/widgets/breez_sdk_footer.dart';
+import 'package:glow/features/wallet/onboarding/widgets/breez_sdk_footer.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -14,9 +18,9 @@ class HomeDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
-        systemNavigationBarColor: themeData.drawerTheme.backgroundColor,
-      ),
+      value: Theme.of(
+        context,
+      ).appBarTheme.systemOverlayStyle!.copyWith(systemNavigationBarColor: themeData.cardTheme.color),
       child: Drawer(
         child: Column(
           children: <Widget>[
@@ -38,17 +42,19 @@ class HomeDrawer extends StatelessWidget {
                   _DrawerSection(
                     title: 'Preferences',
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0),
-                        child: _DrawerItem(
-                          title: 'Security & Backup',
-                          icon: Icons.lock_outline,
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, AppRoutes.appSettings);
-                          },
+                      if (kDebugMode) ...<Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: _DrawerItem(
+                            title: 'Security & Backup',
+                            icon: Icons.lock_outline,
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, AppRoutes.appSettings);
+                            },
+                          ),
                         ),
-                      ),
+                      ],
                       Padding(
                         padding: const EdgeInsets.only(left: 16.0),
                         child: _DrawerItem(
@@ -87,25 +93,39 @@ class _DrawerHeader extends ConsumerWidget {
       height: statusBarHeight + _kBreezDrawerHeaderHeight,
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 16, left: 16, right: 16, bottom: 16),
       color: BreezColors.darkBackground,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(height: 12),
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: theme.primaryColor,
-            child: Icon(Icons.person, color: theme.colorScheme.onPrimary, size: 28),
-          ),
-          const SizedBox(height: 12),
-          // Display wallet name from provider
-          activeWallet.when(
-            data: (WalletMetadata? wallet) => wallet != null && !wallet.isVerified
-                ? Text(wallet.name, style: theme.textTheme.titleMedium?.copyWith(color: BreezColors.grey600))
-                : const SizedBox.shrink(),
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-        ],
+      child: GestureDetector(
+        onTap: () {
+          showDialog<void>(context: context, builder: (BuildContext context) => const ProfileEditorDialog());
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 42),
+            ProfileAvatar(
+              profile: activeWallet.value?.profile ?? Profile.anonymous(),
+              avatarSize: AvatarSize.medium,
+              backgroundColor: theme.primaryColor,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                activeWallet.when(
+                  data: (WalletMetadata? wallet) => wallet != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            wallet.displayName,
+                            style: theme.textTheme.titleMedium?.copyWith(color: BreezColors.grey600),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, _) => const SizedBox.shrink(),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -146,9 +166,8 @@ class _DrawerItem extends StatelessWidget {
 class _DrawerSection extends StatefulWidget {
   final String title;
   final List<Widget> children;
-  final bool initiallyExpanded;
 
-  const _DrawerSection({required this.title, required this.children, this.initiallyExpanded = true});
+  const _DrawerSection({required this.title, required this.children});
 
   @override
   State<_DrawerSection> createState() => _DrawerSectionState();
@@ -160,7 +179,7 @@ class _DrawerSectionState extends State<_DrawerSection> {
   @override
   void initState() {
     super.initState();
-    _isExpanded = widget.initiallyExpanded;
+    _isExpanded = true;
   }
 
   @override

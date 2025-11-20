@@ -76,7 +76,7 @@ class WalletStorageService with LoggerMixin {
       await _saveMnemonic(wallet.id, mnemonic);
       final List<WalletMetadata> wallets = await loadWallets();
       await saveWallets(<WalletMetadata>[...wallets, wallet]);
-      log.i('Added wallet: ${wallet.id} (${wallet.name})');
+      log.i('Added wallet: ${wallet.id} (${wallet.displayName})');
     } catch (e, stack) {
       log.e('Failed to add wallet: ${wallet.id}', error: e, stackTrace: stack);
       rethrow;

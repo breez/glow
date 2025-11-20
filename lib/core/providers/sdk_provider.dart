@@ -153,15 +153,8 @@ class PaymentsNotifier extends AsyncNotifier<List<Payment>> {
 final AsyncNotifierProvider<PaymentsNotifier, List<Payment>> paymentsProvider =
     AsyncNotifierProvider<PaymentsNotifier, List<Payment>>(PaymentsNotifier.new);
 
-/// Balance - derived from node info, waits for payments to be loaded
+/// Balance - derived from node info
 final Provider<AsyncValue<BigInt>> balanceProvider = Provider<AsyncValue<BigInt>>((Ref ref) {
-  // Ensure payments are loaded before showing balance
-  // This prevents showing balance before transaction history is ready
-  final AsyncValue<List<Payment>> payments = ref.watch(paymentsProvider);
-  if (!payments.hasValue) {
-    return const AsyncValue<BigInt>.loading();
-  }
-
   final AsyncValue<GetInfoResponse> nodeInfo = ref.watch(nodeInfoProvider);
   return nodeInfo.when(
     data: (GetInfoResponse info) {
@@ -172,20 +165,6 @@ final Provider<AsyncValue<BigInt>> balanceProvider = Provider<AsyncValue<BigInt>
     error: (Object error, StackTrace stack) => AsyncValue<BigInt>.error(error, stack),
   );
 });
-
-/// Generate payment request
-final FutureProviderFamily<ReceivePaymentResponse, ReceivePaymentRequest> receivePaymentProvider =
-    FutureProvider.autoDispose.family<ReceivePaymentResponse, ReceivePaymentRequest>((
-      Ref ref,
-      ReceivePaymentRequest request,
-    ) async {
-      log.d('receivePaymentProvider called with request: ${request.paymentMethod}');
-      final BreezSdk sdk = await ref.watch(sdkProvider.future);
-      final BreezSdkService service = ref.read(breezSdkServiceProvider);
-      final ReceivePaymentResponse response = await service.receivePayment(sdk, request);
-      log.d('Payment request generated: ${response.paymentRequest}');
-      return response;
-    });
 
 /// Lightning address - with optional auto-registration
 final FutureProviderFamily<LightningAddressInfo?, bool> lightningAddressProvider = FutureProvider.autoDispose
@@ -200,9 +179,15 @@ final FutureProviderFamily<LightningAddressInfo?, bool> lightningAddressProvider
       final bool shouldAutoRegister = autoRegister && !manuallyDeleted;
       log.d('Should auto-register lightning address: $shouldAutoRegister');
 
+      // Get profile name for Lightning Address username - wait for wallet to load
+      final WalletMetadata? wallet = await ref.watch(activeWalletProvider.future);
+      final String? profileName = wallet?.displayName;
+      log.d('Profile display name for LN address: $profileName');
+
       final LightningAddressInfo? info = await service.getLightningAddress(
         sdk,
         autoRegister: shouldAutoRegister,
+        profileName: profileName,
       );
       log.d('Lightning address info fetched: ${info?.lightningAddress}');
       return info;
@@ -302,6 +287,25 @@ final Provider<AsyncValue<int>> unclaimedDepositsCountProvider = Provider<AsyncV
   return ref.watch(unclaimedDepositsProvider).whenData((List<DepositInfo> deposits) => deposits.length);
 });
 
+/// Provider that ensures SDK is connected and initial data is loaded before showing HomeScreen
+/// This prevents showing loading placeholders on subsequent runs
+final FutureProvider<void> sdkReadyProvider = FutureProvider<void>((Ref ref) async {
+  log.d('Waiting for SDK connection and initial data load...');
+
+  // Wait for SDK to connect
+  await ref.watch(sdkProvider.future);
+  log.d('SDK connected');
+
+  // Wait for initial data to load (payments and node info)
+  await ref.watch(paymentsProvider.future);
+  log.d('Payments loaded');
+
+  await ref.watch(nodeInfoProvider.future);
+  log.d('Node info loaded');
+
+  log.i('SDK ready with initial data loaded');
+});
+
 /// Manual deposit claiming provider (for retrying failed claims)
 final FutureProviderFamily<ClaimDepositResponse, DepositInfo> claimDepositProvider = FutureProvider
     .autoDispose
@@ -368,22 +372,22 @@ final NotifierProvider<HasSyncedNotifier, bool> hasSyncedProvider = NotifierProv
 );
 
 /// Whether to wait for initial sync before showing balance/payments
-final Provider<bool> shouldWaitForInitialSyncProvider = Provider<bool>((Ref ref) {
-  final WalletMetadata? wallet = ref.watch(activeWalletProvider).value;
+/// Returns true if this is the first run and we should wait for sync
+/// Returns false if the wallet has already synced before (show cached data immediately)
+final FutureProvider<bool> shouldWaitForInitialSyncProvider = FutureProvider<bool>((Ref ref) async {
+  final WalletMetadata? wallet = await ref.watch(activeWalletProvider.future);
   if (wallet == null) {
+    log.d('No active wallet, not waiting for sync');
     return false;
   }
 
   final WalletStorageService storage = ref.read(walletStorageServiceProvider);
-  final Future<bool> future = storage.hasCompletedFirstSync(wallet.id);
+  final bool hasCompletedFirstSync = await storage.hasCompletedFirstSync(wallet.id);
 
-  // Trigger async check but return false immediately
-  future.then((bool synced) {
-    if (synced) {
-      return;
-    }
-    ref.invalidateSelf(); // refresh once result available
-  });
+  // If wallet has already synced before, don't wait (return false)
+  // If this is first time, wait for sync (return true)
+  final bool shouldWait = !hasCompletedFirstSync;
+  log.d('Wallet ${wallet.id} hasCompletedFirstSync=$hasCompletedFirstSync, shouldWait=$shouldWait');
 
-  return false;
+  return shouldWait;
 });

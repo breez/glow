@@ -69,7 +69,11 @@ class BreezSdkService with LoggerMixin {
   }
 
   /// Get lightning address, with automatic registration if none exists
-  Future<LightningAddressInfo?> getLightningAddress(BreezSdk sdk, {bool autoRegister = false}) async {
+  Future<LightningAddressInfo?> getLightningAddress(
+    BreezSdk sdk, {
+    bool autoRegister = false,
+    String? profileName,
+  }) async {
     final LightningAddressInfo? existing = await sdk.getLightningAddress();
 
     if (existing != null || !autoRegister) {
@@ -80,7 +84,7 @@ class BreezSdkService with LoggerMixin {
     log.i('No Lightning Address found, attempting auto-registration');
 
     try {
-      final bool registered = await _autoRegisterLightningAddress(sdk);
+      final bool registered = await _autoRegisterLightningAddress(sdk, profileName: profileName);
       if (registered) {
         return await sdk.getLightningAddress();
       }
@@ -91,9 +95,12 @@ class BreezSdkService with LoggerMixin {
     return null;
   }
 
-  /// Automatically register a Lightning Address with a base name and 4-digit suffix if needed
-  Future<bool> _autoRegisterLightningAddress(BreezSdk sdk, {String baseName = 'glow'}) async {
-    // First try the base name without suffix
+  /// Automatically register a Lightning Address with profile name as base
+  Future<bool> _autoRegisterLightningAddress(BreezSdk sdk, {String? profileName}) async {
+    // Normalize profile name to valid username format (lowercase, no spaces)
+    final String baseName = _normalizeUsername(profileName ?? 'glow');
+
+    // First try the normalized base name
     String username = baseName;
     bool available = await checkLightningAddressAvailable(sdk, username);
 
@@ -126,6 +133,18 @@ class BreezSdkService with LoggerMixin {
 
     log.e('Failed to find available Lightning Address after $maxAttempts attempts');
     return false;
+  }
+
+  /// Normalize profile name to valid Lightning Address username
+  /// - Lowercase
+  /// - Replace spaces with empty string or hyphen
+  /// - Remove special characters
+  /// - Max length enforcement if needed
+  String _normalizeUsername(String profileName) {
+    return profileName
+        .toLowerCase()
+        .replaceAll(' ', '') // Remove spaces: "Blue Fox" -> "bluefox"
+        .replaceAll(RegExp(r'[^a-z0-9]'), ''); // Remove non-alphanumeric
   }
 
   /// Check if a Lightning Address username is available

@@ -25,11 +25,16 @@ class SendForm extends StatelessWidget {
         focusNode: focusNode,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
+          prefixIconConstraints: BoxConstraints.tight(const Size(16, 56)),
+          prefixIcon: const SizedBox.shrink(),
+          contentPadding: EdgeInsets.zero,
           hintText: 'Invoice | Lightning Address | BTC Address | LNURL',
+          hintStyle: const TextStyle(fontSize: 14.3, color: Color(0x99ffffff), letterSpacing: 0.4),
           helperText: 'Paste or scan payee information',
           errorText: errorMessage.isNotEmpty ? errorMessage : null,
         ),
-        maxLines: 3,
+        style: const TextStyle(fontSize: 18.0, color: Colors.white, letterSpacing: 0.15, height: 1.234),
+        validator: (String? value) => errorMessage.isNotEmpty ? errorMessage : null,
         onFieldSubmitted: onSubmit,
       ),
     );

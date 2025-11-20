@@ -1,12 +1,12 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
-import 'package:glow/routing/app_routes.dart';
 import 'package:glow/core/logging/logger_mixin.dart';
-import 'package:glow/core/services/mnemonic_service.dart';
+import 'package:glow/core/models/wallet_metadata.dart';
 import 'package:glow/core/providers/wallet_provider.dart';
+import 'package:glow/core/services/mnemonic_service.dart';
 import 'package:glow/features/wallet/widgets/warning_card.dart';
+import 'package:glow/routing/app_routes.dart';
 
 class WalletImportScreen extends ConsumerStatefulWidget {
   const WalletImportScreen({super.key});
@@ -60,7 +60,7 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
     try {
       final WalletMetadata wallet = await ref
           .read(walletListProvider.notifier)
-          .importWallet(name: _nameController.text.trim(), mnemonic: normalized, network: _selectedNetwork);
+          .importWallet(mnemonic: normalized, network: _selectedNetwork);
 
       await ref.read(activeWalletProvider.notifier).setActiveWallet(wallet.id);
 
@@ -69,7 +69,10 @@ class _WalletImportScreenState extends ConsumerState<WalletImportScreen> with Lo
         Future<void>.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Wallet "${wallet.name}" imported!'), backgroundColor: Colors.green),
+              SnackBar(
+                content: Text('Wallet "${wallet.displayName}" imported!'),
+                backgroundColor: Colors.green,
+              ),
             );
           }
         });

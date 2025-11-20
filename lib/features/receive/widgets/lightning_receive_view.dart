@@ -2,13 +2,14 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:glow/features/receive/widgets/copy_and_share_actions.dart';
 import 'package:glow/features/receive/widgets/error_view.dart';
-import 'package:glow/features/receive/widgets/info_card.dart';
 import 'package:glow/features/receive/widgets/lightning_address_card.dart';
 import 'package:glow/features/receive/widgets/no_lightning_address_view.dart';
 import 'package:glow/features/receive/widgets/qr_code_card.dart';
 import 'package:glow/features/receive/widgets/edit_lightning_address_sheet.dart';
 import 'package:glow/features/receive/widgets/register_lightning_address_sheet.dart';
+import 'package:glow/features/widgets/card_wrapper.dart';
 
 /// Lightning receive view - displays Lightning Address with QR code
 class LightningReceiveView extends ConsumerWidget {
@@ -21,7 +22,11 @@ class LightningReceiveView extends ConsumerWidget {
 
     return lightningAddress.when(
       data: (LightningAddressInfo? address) => address != null
-          ? _LightningAddressContent(address: address.lightningAddress, sdk: sdkAsync.value!)
+          ? _LightningAddressContent(
+              address: address.lightningAddress,
+              lnurl: address.lnurl,
+              sdk: sdkAsync.value!,
+            )
           : NoLightningAddressView(
               onRegister: () async {
                 final BreezSdk? sdk = sdkAsync.value;
@@ -38,30 +43,29 @@ class LightningReceiveView extends ConsumerWidget {
 
 /// Content displayed when Lightning Address exists
 class _LightningAddressContent extends ConsumerWidget {
-  final String address;
   final BreezSdk sdk;
+  final String address;
+  final String lnurl;
 
-  const _LightningAddressContent({required this.address, required this.sdk});
+  const _LightningAddressContent({required this.sdk, required this.address, required this.lnurl});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      child: Column(
-        children: <Widget>[
-          const SizedBox(height: 16),
-          QRCodeCard(data: address),
-          const SizedBox(height: 32),
-          LightningAddressCard(
-            address: address,
-            onEdit: () => showEditLightningAddressSheet(context, ref, sdk, address),
-          ),
-          const SizedBox(height: 16),
-          const InfoCard(
-            icon: Icons.info_outline,
-            text: 'Anyone can send you sats using this Lightning Address',
-          ),
-        ],
+      child: CardWrapper(
+        child: Column(
+          children: <Widget>[
+            QRCodeCard(data: lnurl),
+            const SizedBox(height: 24),
+            CopyAndShareActions(copyData: address, shareData: lnurl),
+            const SizedBox(height: 24),
+            LightningAddressCard(
+              address: address,
+              onEdit: () => showEditLightningAddressSheet(context, ref, sdk, address),
+            ),
+          ],
+        ),
       ),
     );
   }

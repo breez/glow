@@ -29,7 +29,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
   void _startEditing(WalletMetadata wallet) {
     setState(() {
       _editingWalletId = wallet.id;
-      _editControllers[wallet.id] = TextEditingController(text: wallet.name);
+      _editControllers[wallet.id] = TextEditingController(text: wallet.displayName);
     });
   }
 
@@ -49,13 +49,13 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
       return;
     }
 
-    if (newName == wallet.name) {
+    if (newName == wallet.displayName) {
       _cancelEditing();
       return;
     }
 
     try {
-      await ref.read(walletListProvider.notifier).updateWalletName(wallet.id, newName);
+      await ref.read(walletListProvider.notifier).updateWalletProfile(wallet.id, customName: newName);
       _cancelEditing();
       if (mounted) {
         _showSnackBar('Renamed to "$newName"', Colors.green);
@@ -94,7 +94,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
         Navigator.pushNamedAndRemoveUntil(context, AppRoutes.homeScreen, (_) => false);
         Future<void>.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
-            _showSnackBar('Switched to ${wallet.name}', Colors.green);
+            _showSnackBar('Switched to ${wallet.displayName}', Colors.green);
           }
         });
       }
@@ -110,7 +110,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text('Remove ${wallet.name}?'),
+        title: Text('Remove ${wallet.displayName}?'),
         content: const Text(
           'This will remove the wallet from the app. You can re-import it later using your recovery phrase.',
         ),
@@ -143,7 +143,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
       }
 
       if (mounted) {
-        _showSnackBar('Removed ${wallet.name}', Colors.orange);
+        _showSnackBar('Removed ${wallet.displayName}', Colors.orange);
       }
 
       // Reroute if no wallets remain
@@ -229,7 +229,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
                   children: <Widget>[
                     Flexible(
                       child: Text(
-                        wallet.name,
+                        wallet.displayName,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: isActive ? FontWeight.bold : FontWeight.w500,

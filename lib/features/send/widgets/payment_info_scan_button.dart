@@ -14,21 +14,28 @@ class PaymentInfoScanButton extends StatelessWidget {
 
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 48.0, minWidth: 138.0),
-      child: OutlinedButton.icon(
-        style: OutlinedButton.styleFrom(
-          side: BorderSide(color: themeData.colorScheme.outline),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Tooltip(
+        message: 'Scan Invoice or Lightning Address',
+        child: OutlinedButton.icon(
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: Colors.white),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          icon: Icon(Icons.qr_code, size: 24.0, color: themeData.colorScheme.primary),
+          label: AutoSizeText(
+            'SCAN',
+            style: const TextStyle(
+              fontSize: 16,
+              letterSpacing: 0.2,
+              fontWeight: FontWeight.w500,
+              height: 1.24,
+            ),
+            maxLines: 1,
+            group: textGroup,
+            stepGranularity: 0.1,
+          ),
+          onPressed: onPressed,
         ),
-        icon: Icon(Icons.qr_code_scanner, size: 20.0, color: themeData.colorScheme.primary),
-        label: AutoSizeText(
-          'SCAN',
-          style: themeData.textTheme.labelLarge,
-          maxLines: 1,
-          group: textGroup,
-          stepGranularity: 0.1,
-        ),
-        onPressed: onPressed,
       ),
     );
   }

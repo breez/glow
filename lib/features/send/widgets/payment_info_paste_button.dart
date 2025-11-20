@@ -12,21 +12,28 @@ class PaymentInfoPasteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 48.0, minWidth: 138.0),
-      child: OutlinedButton.icon(
-        style: OutlinedButton.styleFrom(
-          side: BorderSide(color: Theme.of(context).colorScheme.outline),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Tooltip(
+        message: 'Paste Invoice or Lightning Address',
+        child: OutlinedButton.icon(
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: Colors.white),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          icon: const Icon(Icons.content_paste, size: 20.0),
+          label: AutoSizeText(
+            'PASTE',
+            style: const TextStyle(
+              fontSize: 16,
+              letterSpacing: 0.2,
+              fontWeight: FontWeight.w500,
+              height: 1.24,
+            ),
+            maxLines: 1,
+            group: textGroup,
+            stepGranularity: 0.1,
+          ),
+          onPressed: onPressed,
         ),
-        icon: const Icon(Icons.content_paste, size: 20.0),
-        label: AutoSizeText(
-          'PASTE',
-          style: Theme.of(context).textTheme.labelLarge,
-          maxLines: 1,
-          group: textGroup,
-          stepGranularity: 0.1,
-        ),
-        onPressed: onPressed,
       ),
     );
   }

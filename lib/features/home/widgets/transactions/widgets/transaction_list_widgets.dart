@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
 import 'package:glow/features/home/widgets/transactions/theme/transaction_list_text_styles.dart';
 import 'package:glow/features/home/widgets/transactions/widgets/transaction_list_shimmer.dart';
+import 'package:glow/features/profile/widgets/profile_avatar.dart';
 
 /// Individual transaction list item widget
 class TransactionListItem extends StatelessWidget {
@@ -18,7 +19,7 @@ class TransactionListItem extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: Container(
-          color: Theme.of(context).drawerTheme.backgroundColor,
+          color: Theme.of(context).cardTheme.color,
           child: ListTile(
             onTap: onTap,
             leading: _buildAvatarContainer(context),
@@ -45,7 +46,10 @@ class TransactionListItem extends StatelessWidget {
           ),
         ],
       ),
-      child: CircleAvatar(radius: 16, backgroundColor: Colors.white, child: _buildIcon(context)),
+      // Show profile avatar for incoming payments with profile
+      child: transaction.profile != null
+          ? ProfileAvatar(profile: transaction.profile!)
+          : CircleAvatar(radius: 16, backgroundColor: Colors.white, child: _buildIcon(context)),
     );
   }
 
@@ -80,8 +84,15 @@ class TransactionListItem extends StatelessWidget {
   }
 
   Widget _buildTitle() {
+    // For incoming payments without description, show profile name
+    final String title = transaction.profile != null
+        ? transaction.profile!.displayName
+        : transaction.description.isEmpty
+        ? transaction.formattedMethod
+        : transaction.description;
+
     return Text(
-      transaction.description.isEmpty ? transaction.formattedMethod : transaction.description,
+      title,
       style: const TextStyle(fontSize: 12.25, fontWeight: FontWeight.w400, height: 1.2, letterSpacing: 0.25),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
