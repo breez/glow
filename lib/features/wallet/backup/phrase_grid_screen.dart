@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:glow/features/wallet/widgets/recovery_phrase_grid.dart';
+import 'package:glow/features/wallet/widgets/backup_phrase_grid.dart';
 import 'package:glow/features/widgets/bottom_nav_button.dart';
 
 class PhraseGridScreen extends StatelessWidget {
