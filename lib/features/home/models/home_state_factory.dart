@@ -34,7 +34,7 @@ class HomeStateFactory {
   TransactionItemState createTransactionItemState(Payment payment, {Profile? profile}) {
     final bool isReceive = payment.paymentType == PaymentType.receive;
     final String description = transactionFormatter.getShortDescription(payment.details);
-    
+
     // Show profile for incoming payments without custom description
     final bool hasCustomDescription = _hasCustomDescription(payment.details);
 
@@ -50,19 +50,19 @@ class HomeStateFactory {
       profile: (isReceive && !hasCustomDescription) ? profile : null,
     );
   }
-  
+
   /// Checks if payment has a custom user-provided description
   bool _hasCustomDescription(PaymentDetails? details) {
     if (details == null) {
       return false;
     }
-    
+
     return switch (details) {
-      PaymentDetails_Lightning(:final String? description) => 
+      PaymentDetails_Lightning(:final String? description) =>
         description != null && description.isNotEmpty && description != 'Payment',
       PaymentDetails_Token() => true, // Token name is meaningful
       PaymentDetails_Deposit() => false, // Generic deposit
-      PaymentDetails_Withdraw() => false, // Generic withdrawal  
+      PaymentDetails_Withdraw() => false, // Generic withdrawal
       PaymentDetails_Spark() => false, // Generic spark payment
     };
   }

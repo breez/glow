@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:glow/core/logging/app_logger.dart';
@@ -133,16 +134,12 @@ class PaymentsNotifier extends AsyncNotifier<List<Payment>> {
     final BreezSdkService service = ref.read(breezSdkServiceProvider);
     final List<Payment> newPayments = await service.listPayments(sdk, const ListPaymentsRequest());
 
-    // Only update if payment list actually changed (compare by length and latest payment ID)
+    // Check if payment list actually changed using deep equality
     final List<Payment> currentPayments = state.requireValue;
-    final bool hasChanged =
-        newPayments.length != currentPayments.length ||
-        (newPayments.isNotEmpty &&
-            currentPayments.isNotEmpty &&
-            newPayments.first.id != currentPayments.first.id);
+    const ListEquality<Payment> listEquality = ListEquality<Payment>();
 
-    if (hasChanged) {
-      log.d('Payments changed: ${currentPayments.length} -> ${newPayments.length}');
+    if (!listEquality.equals(currentPayments, newPayments)) {
+      log.d('Payments changed');
       state = AsyncValue<List<Payment>>.data(newPayments);
     } else {
       log.t('Payments unchanged, skipping update');
@@ -297,10 +294,11 @@ final FutureProvider<void> sdkReadyProvider = FutureProvider<void>((Ref ref) asy
   log.d('SDK connected');
 
   // Wait for initial data to load (payments and node info)
-  await ref.watch(paymentsProvider.future);
+  // Use read() instead of watch() to avoid rebuilding when payments/nodeInfo update
+  await ref.read(paymentsProvider.future);
   log.d('Payments loaded');
 
-  await ref.watch(nodeInfoProvider.future);
+  await ref.read(nodeInfoProvider.future);
   log.d('Node info loaded');
 
   log.i('SDK ready with initial data loaded');
@@ -354,11 +352,13 @@ class HasSyncedNotifier extends Notifier<bool> {
 
           if (!alreadyMarked) {
             await storage.markFirstSyncDone(wallet.id);
-            log.d('First sync completed and marked for wallet: ${wallet.id}');
-          } else {
-            log.d('First sync completed after SDK connection for wallet: ${wallet.id}');
+            log.i('First sync completed and marked for wallet: ${wallet.id}');
+            state = true;
+          } else if (!state) {
+            // Only log once when state transitions from false to true
+            log.d('Sync completed after SDK connection for wallet: ${wallet.id}');
+            state = true;
           }
-          state = true;
         }
       });
     });
