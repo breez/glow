@@ -228,7 +228,7 @@ void main() {
         final Card card = tester.widget<Card>(find.byType(Card));
         final RoundedRectangleBorder shape = card.shape as RoundedRectangleBorder;
         // Error border should have some alpha (not fully transparent)
-        expect(shape.side.color.alpha, greaterThan(0));
+        expect((shape.side.color.a * 255.0).round().clamp(0, 255), greaterThan(0));
       });
 
       testWidgets('does not show error banner when no error', (WidgetTester tester) async {
