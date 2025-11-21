@@ -29,5 +29,5 @@ final Provider<ThemeMode> themeModeProvider = Provider<ThemeMode>((Ref ref) {
   if (hasWalletsAsync.value == true) {
     return ThemeMode.dark;
   }
-  return ThemeMode.light;
+  return ThemeMode.dark;
 });
