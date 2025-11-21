@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/core/services/clipboard_service.dart';
 
-class RecoveryPhraseGrid extends ConsumerWidget {
+class BackupPhraseGrid extends ConsumerWidget {
   final String mnemonic;
   final bool showCopyButton;
 
-  const RecoveryPhraseGrid({required this.mnemonic, super.key, this.showCopyButton = true});
+  const BackupPhraseGrid({required this.mnemonic, super.key, this.showCopyButton = true});
 
   List<String> get _words => mnemonic.split(' ');
 
@@ -20,8 +20,9 @@ class RecoveryPhraseGrid extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Expanded(child: Text('Recovery Phrase', style: Theme.of(context).textTheme.titleMedium)),
+                Expanded(child: Text('Backup Phrase', style: Theme.of(context).textTheme.titleMedium)),
                 if (showCopyButton)
                   IconButton(
                     icon: const Icon(Icons.copy, size: 20),

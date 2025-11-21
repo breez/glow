@@ -7,7 +7,7 @@ import 'package:glow/features/payment_details/payment_details_screen.dart';
 import 'package:glow/features/send/send_screen.dart';
 import 'package:glow/features/deposits/unclaimed_deposits_screen.dart';
 import 'package:glow/features/wallet/create_screen.dart';
-import 'package:glow/features/wallet/restore/import_screen.dart';
+import 'package:glow/features/wallet/restore/restore_screen.dart';
 import 'package:glow/features/wallet/list_screen.dart';
 import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';
 import 'package:glow/features/wallet/backup/verify_screen.dart';
@@ -94,7 +94,7 @@ class AppRoutes {
         return MaterialPageRoute<String>(builder: (_) => const WalletCreateScreen());
 
       case walletImport:
-        return MaterialPageRoute<String>(builder: (_) => const WalletImportScreen());
+        return MaterialPageRoute<String>(builder: (_) => const RestoreScreen());
 
       case walletList:
         return MaterialPageRoute<String>(builder: (_) => const WalletListScreen());
