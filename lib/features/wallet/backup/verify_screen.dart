@@ -28,7 +28,7 @@ class _WalletVerifyScreenState extends ConsumerState<WalletVerifyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Extract steps into a proper state machine or PageView for better maintainability
+    // TODO(erdemyerebasmaz): Extract steps into a proper state machine or PageView for better maintainability
     // If wallet is already verified, just show the backup phrase with close button
     if (widget.wallet.isVerified) {
       return Scaffold(
