@@ -24,7 +24,7 @@ dependencies:
   # Wallet & Cryptography
   bip39: ^1.0.6
   crypto: ^3.0.6
-  flutter_secure_storage: ^10.0.0-beta.4
+  flutter_secure_storage: ^9.2.4
   
   # Storage & Data
   path_provider: ^2.1.5

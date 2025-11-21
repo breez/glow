@@ -20,7 +20,11 @@ class WalletStorageService with LoggerMixin {
   static const KeychainAccessibility _keychainAccessibility = KeychainAccessibility.first_unlock;
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(sharedPreferencesName: 'glow_prefs', preferencesKeyPrefix: 'glow_'),
+    aOptions: AndroidOptions(
+      sharedPreferencesName: 'glow_prefs',
+      preferencesKeyPrefix: 'glow_',
+      resetOnError: true,
+    ),
     iOptions: IOSOptions(accountName: _accountName, accessibility: _keychainAccessibility),
     mOptions: MacOsOptions(accountName: _accountName, accessibility: _keychainAccessibility),
   );
