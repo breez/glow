@@ -15,7 +15,7 @@ class PhraseGridScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[RecoveryPhraseGrid(mnemonic: mnemonic)],
+          children: <Widget>[BackupPhraseGrid(mnemonic: mnemonic)],
         ),
       ),
       bottomNavigationBar: BottomNavButton(text: 'NEXT', onPressed: onNext),

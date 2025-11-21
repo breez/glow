@@ -49,11 +49,11 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
     }
   }
 
-  Future<WalletMetadata> importWallet({required String mnemonic, required Network network}) async {
+  Future<WalletMetadata> restoreWallet({required String mnemonic, required Network network}) async {
     try {
       // Auto-generate profile if not provided
       final Profile walletProfile = generateProfile();
-      log.i('Importing wallet: ${walletProfile.displayName} on ${network.name}');
+      log.i('Restoring wallet: ${walletProfile.displayName} on ${network.name}');
 
       final String normalized = _mnemonicService!.normalizeMnemonic(mnemonic);
       final (bool isValid, String? error) = _mnemonicService!.validateMnemonic(normalized);
@@ -71,16 +71,15 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
         throw Exception('This wallet already exists');
       }
 
-      // Imported wallets are marked as verified (user already has the phrase)
+      // Restored wallets are marked as verified (user already has the phrase)
       final WalletMetadata wallet = WalletMetadata(id: walletId, profile: walletProfile, isVerified: true);
       await _storage!.addWallet(wallet, normalized);
 
       state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[...existingWallets, wallet]);
 
-      log.i('Imported wallet: $walletId (${walletProfile.displayName})');
+      log.i('Restored wallet: $walletId (${walletProfile.displayName})');
       return wallet;
-    } catch (e, stack) {
-      log.e('Failed to import wallet', error: e, stackTrace: stack);
+    } catch (e) {
       rethrow;
     }
   }
