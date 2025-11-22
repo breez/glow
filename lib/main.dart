@@ -13,6 +13,7 @@ import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';
 import 'package:glow/features/wallet/providers/wallet_provider.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/routing/app_lock_manager.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/services/config_service.dart';
 import 'package:glow/theme/theme_provider.dart';
@@ -86,6 +87,9 @@ class MainApp extends ConsumerWidget {
         theme: themeData,
         darkTheme: themeData,
         themeMode: themeMode,
+        builder: (BuildContext context, Widget? child) {
+          return AppLockManager(child: child!);
+        },
       ),
     );
   }
@@ -120,29 +124,31 @@ class _AppRouter extends ConsumerWidget {
     // Error loading wallet list
     if (hasWalletsAsync.hasError) {
       return Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
-                const SizedBox(height: 16),
-                Text('Failed to load wallets', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 8),
-                Text(
-                  hasWalletsAsync.error.toString(),
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: () {
-                    ref.invalidate(walletListProvider);
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
+                  const SizedBox(height: 16),
+                  Text('Failed to load wallets', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 8),
+                  Text(
+                    hasWalletsAsync.error.toString(),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: () {
+                      ref.invalidate(walletListProvider);
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -164,29 +170,31 @@ class _AppRouter extends ConsumerWidget {
     // Wallet load error
     if (activeWallet.hasError) {
       return Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
-                const SizedBox(height: 16),
-                Text('Failed to load wallet', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 8),
-                Text(
-                  activeWallet.error.toString(),
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: () {
-                    ref.invalidate(activeWalletProvider);
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
+                  const SizedBox(height: 16),
+                  Text('Failed to load wallet', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 8),
+                  Text(
+                    activeWallet.error.toString(),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: () {
+                      ref.invalidate(activeWalletProvider);
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

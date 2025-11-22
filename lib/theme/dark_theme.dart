@@ -8,6 +8,7 @@ const ColorScheme darkColorScheme = ColorScheme.dark(
   secondary: Colors.white,
   onSecondary: Colors.white,
   surface: BreezColors.darkBackground,
+  surfaceContainer: BreezColors.darkSurface,
   error: BreezColors.warningDark,
 );
 

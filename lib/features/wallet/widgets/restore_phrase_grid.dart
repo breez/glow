@@ -133,7 +133,7 @@ class _RestorePhraseGridState extends State<RestorePhraseGrid> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SizedBox(
-                      width: 24,
+                      width: 26,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 12, right: 8),
                         child: Text(

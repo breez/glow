@@ -172,11 +172,13 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
         title: const Text('My Wallets'),
         actions: <Widget>[IconButton(icon: const Icon(Icons.add), onPressed: () => _showAddWalletSheet())],
       ),
-      body: wallets.when(
-        data: (List<WalletMetadata> list) =>
-            list.isEmpty ? _buildEmptyState() : _buildWalletList(list, activeWallet.value),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object err, _) => _buildErrorState(err),
+      body: SafeArea(
+        child: wallets.when(
+          data: (List<WalletMetadata> list) =>
+              list.isEmpty ? _buildEmptyState() : _buildWalletList(list, activeWallet.value),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (Object err, _) => _buildErrorState(err),
+        ),
       ),
     );
   }
@@ -184,28 +186,26 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
   void _showAddWalletSheet() {
     showModalBottomSheet(
       context: context,
-      builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.add_circle_outline),
-              title: const Text('Create New Wallet'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, AppRoutes.walletCreate);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.download),
-              title: const Text('Import Wallet'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, AppRoutes.walletImport);
-              },
-            ),
-          ],
-        ),
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            leading: const Icon(Icons.add_circle_outline),
+            title: const Text('Create New Wallet'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AppRoutes.walletCreate);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.download),
+            title: const Text('Import Wallet'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AppRoutes.walletImport);
+            },
+          ),
+        ],
       ),
     );
   }

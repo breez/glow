@@ -1,8 +1,13 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/receive/receive_screen.dart';
 import 'package:glow/features/developers/developers_screen.dart';
 import 'package:glow/features/qr_scan/qr_scan_view.dart';
+import 'package:glow/features/settings/providers/pin_provider.dart';
+import 'package:glow/features/settings/security_backup_screen.dart';
+import 'package:glow/features/settings/widgets/pin_lock_screen.dart';
+import 'package:glow/features/settings/widgets/pin_setup_screen.dart';
 import 'package:glow/features/payment_details/payment_details_screen.dart';
 import 'package:glow/features/send/send_screen.dart';
 import 'package:glow/features/deposits/unclaimed_deposits_screen.dart';
@@ -64,6 +69,7 @@ class AppRoutes {
 
   // Settings routes
   static const String appSettings = '/settings';
+  static const String pinSetup = '/settings/pin_setup';
   static const String walletSettings = '/settings/wallet';
 
   // Developers routes
@@ -252,15 +258,35 @@ class AppRoutes {
           settings: settings,
         );
 
-      // App Settings routes
+      // Security & Backup routes
       case appSettings:
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => const _PlaceholderScreen(
-            title: 'Settings',
-            content: _InfoField(label: 'Status', value: 'App configuration coming soon'),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) {
+            return Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                final bool isPinEnabled = ref.watch(pinStatusProvider).value ?? false;
+
+                if (isPinEnabled) {
+                  return PinLockScreen(
+                    popOnSuccess: false,
+                    onUnlocked: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute<SecurityBackupScreen>(builder: (_) => const SecurityBackupScreen()),
+                      );
+                    },
+                  );
+                }
+
+                return const SecurityBackupScreen();
+              },
+            );
+          },
           settings: settings,
         );
+
+      case pinSetup:
+        return MaterialPageRoute<PinSetupScreen>(builder: (_) => const PinSetupScreen(), settings: settings);
 
       case walletSettings:
         return MaterialPageRoute<_PlaceholderScreen>(
@@ -636,46 +662,48 @@ class _PlaceholderScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Center(
-              child: Column(
-                children: <Widget>[
-                  Icon(Icons.construction, size: 64, color: Theme.of(context).colorScheme.primary),
-                  const SizedBox(height: 16),
-                  Text('Coming Soon', style: Theme.of(context).textTheme.headlineMedium),
-                  const SizedBox(height: 8),
-                  Text(
-                    'This screen is under development.\nShowing any available metadata.',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Center(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      'Payment Details',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                    ),
+                    Icon(Icons.construction, size: 64, color: Theme.of(context).colorScheme.primary),
                     const SizedBox(height: 16),
-                    content,
+                    Text('Coming Soon', style: Theme.of(context).textTheme.headlineMedium),
+                    const SizedBox(height: 8),
+                    Text(
+                      'This screen is under development.\nShowing any available metadata.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 32),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Payment Details',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      content,
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavButton(
@@ -769,28 +797,30 @@ class _RouteNotFoundScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Route Not Found')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
-              const SizedBox(height: 16),
-              Text('Route Not Found', style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 8),
-              Text(
-                'No route defined for: $routeName',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 24),
-              FilledButton.icon(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.home),
-                label: const Text('Go Home'),
-              ),
-            ],
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
+                const SizedBox(height: 16),
+                Text('Route Not Found', style: Theme.of(context).textTheme.headlineMedium),
+                const SizedBox(height: 8),
+                Text(
+                  'No route defined for: $routeName',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.home),
+                  label: const Text('Go Home'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
