@@ -1,9 +1,9 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/logging/app_logger.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
-import 'package:glow/core/services/mnemonic_service.dart';
-import 'package:glow/core/services/wallet_storage_service.dart';
+import 'package:glow/logging/app_logger.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
+import 'package:glow/features/wallet/services/mnemonic_service.dart';
+import 'package:glow/features/wallet/services/wallet_storage_service.dart';
 import 'package:glow/features/profile/models/profile.dart';
 import 'package:glow/features/profile/provider/profile_provider.dart';
 import 'package:logger/logger.dart';

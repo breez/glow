@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:glow/core/theme/colors.dart';
+import 'package:glow/theme/colors.dart';
 
 ThemeData buildDarkTheme() {
   return ThemeData(

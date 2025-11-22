@@ -1,8 +1,8 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
-import 'package:glow/core/providers/sdk_provider.dart';
-import 'package:glow/core/services/breez_sdk_service.dart';
+import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/services/breez_sdk_service.dart';
 import 'package:glow/features/developers/providers/max_deposit_fee_provider.dart';
 
 /// Provider to list unclaimed deposits

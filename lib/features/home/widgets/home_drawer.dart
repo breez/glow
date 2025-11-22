@@ -2,13 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/profile/models/profile.dart';
 import 'package:glow/features/profile/widgets/profile_avatar.dart';
 import 'package:glow/features/profile/widgets/profile_editor_dialog.dart';
 import 'package:glow/routing/app_routes.dart';
-import 'package:glow/core/providers/wallet_provider.dart';
-import 'package:glow/core/theme/colors.dart';
+import 'package:glow/features/wallet/providers/wallet_provider.dart';
+import 'package:glow/theme/colors.dart';
 import 'package:glow/features/wallet/onboarding/widgets/breez_sdk_footer.dart';
 
 class HomeDrawer extends StatelessWidget {

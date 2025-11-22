@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/logging/app_logger.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
-import 'package:glow/core/providers/wallet_provider.dart';
+import 'package:glow/logging/app_logger.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
+import 'package:glow/features/wallet/providers/wallet_provider.dart';
 import 'package:glow/features/wallet/phrase/models/phrase_verification_form_state.dart';
 import 'package:logger/logger.dart';
 

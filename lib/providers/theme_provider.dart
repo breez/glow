@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/providers/wallet_provider.dart';
-import 'package:glow/core/services/config_service.dart';
+import 'package:glow/features/wallet/providers/wallet_provider.dart';
+import 'package:glow/services/config_service.dart';
 
 // TODO(erdemyerebasmaz): This will be used for theme management in the future
 class ThemeModeNotifier extends Notifier<ThemeMode> {

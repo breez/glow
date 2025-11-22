@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/services/clipboard_service.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:glow/services/clipboard_service.dart';
 
 final AutoSizeGroup textGroup = AutoSizeGroup();
 

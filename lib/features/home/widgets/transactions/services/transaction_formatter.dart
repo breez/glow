@@ -2,7 +2,7 @@ import 'dart:io' show Platform;
 import 'dart:ui';
 
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
-import 'package:glow/core/config/app_config.dart';
+import 'package:glow/config/app_config.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

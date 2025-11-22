@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
 
 /// Represents the different steps in the phrase verification flow
 enum PhraseVerificationStep {

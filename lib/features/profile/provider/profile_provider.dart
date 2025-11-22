@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
-import 'package:glow/core/providers/wallet_provider.dart';
-import 'package:glow/core/services/wallet_storage_service.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
+import 'package:glow/features/wallet/providers/wallet_provider.dart';
+import 'package:glow/features/wallet/services/wallet_storage_service.dart';
 import 'package:glow/features/profile/models/profile.dart';
 import 'package:glow/features/profile/models/profile_animal.dart';
 import 'package:glow/features/profile/models/profile_color.dart';

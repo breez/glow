@@ -7,8 +7,8 @@ import 'package:glow/features/developers/developers_layout.dart';
 import 'package:glow/features/developers/providers/max_deposit_fee_provider.dart';
 import 'package:glow/features/developers/providers/network_provider.dart';
 import 'package:glow/features/developers/widgets/max_fee_bottom_sheet.dart';
-import 'package:glow/core/logging/app_logger.dart';
-import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:glow/logging/app_logger.dart';
+import 'package:glow/providers/sdk_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class DevelopersScreen extends ConsumerWidget {

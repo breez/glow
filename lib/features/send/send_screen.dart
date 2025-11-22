@@ -1,11 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/services/clipboard_service.dart';
+import 'package:glow/services/clipboard_service.dart';
 import 'package:glow/features/qr_scan/services/qr_scan_service.dart';
 import 'package:glow/features/send/send_layout.dart';
 import 'package:glow/routing/input_handlers.dart';
-import 'package:glow/core/logging/app_logger.dart';
+import 'package:glow/logging/app_logger.dart';
 import 'package:glow/features/send/providers/send_input_validator.dart';
 import 'package:logger/logger.dart';
 

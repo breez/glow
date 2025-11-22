@@ -4,9 +4,9 @@ import 'dart:math' show Random;
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart' as breez_sdk_spark show connect;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/config/breez_config.dart';
-import 'package:glow/core/logging/breez_sdk_logger.dart';
-import 'package:glow/core/logging/logger_mixin.dart';
+import 'package:glow/config/breez_config.dart';
+import 'package:glow/logging/breez_sdk_logger.dart';
+import 'package:glow/logging/logger_mixin.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// SDK connection and lifecycle management

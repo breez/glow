@@ -1,8 +1,8 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
-import 'package:glow/core/logging/app_logger.dart';
-import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:glow/logging/app_logger.dart';
+import 'package:glow/providers/sdk_provider.dart';
 import 'package:logger/logger.dart';
 
 final Logger log = AppLogger.getLogger('BitcoinAddressProvider');

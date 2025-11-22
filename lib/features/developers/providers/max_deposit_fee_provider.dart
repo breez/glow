@@ -1,6 +1,6 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/services/config_service.dart';
+import 'package:glow/services/config_service.dart';
 
 /// Notifier for max deposit claim fee
 class MaxDepositClaimFeeNotifier extends Notifier<Fee> {

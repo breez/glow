@@ -1,5 +1,5 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
-import 'package:glow/core/logging/app_logger.dart';
+import 'package:glow/logging/app_logger.dart';
 import 'package:logger/logger.dart';
 
 /// Bridges Breez SDK logs to AppLogger

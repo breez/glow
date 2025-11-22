@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/services/clipboard_service.dart';
+import 'package:glow/services/clipboard_service.dart';
 
 /// Generic card widget for displaying copyable content (e.g., invoices, addresses)
 class CopyableCard extends ConsumerWidget {

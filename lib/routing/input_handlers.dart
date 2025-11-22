@@ -2,8 +2,8 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/routing/app_routes.dart';
-import 'package:glow/core/logging/app_logger.dart';
-import 'package:glow/core/providers/input_parser_provider.dart';
+import 'package:glow/logging/app_logger.dart';
+import 'package:glow/providers/input_parser_provider.dart';
 import 'package:logger/logger.dart';
 
 final Logger _log = AppLogger.getLogger('InputHandler');

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/wallet/phrase/models/phrase_verification_state.dart';
 import 'package:glow/features/wallet/phrase/phrase_layout.dart';
 

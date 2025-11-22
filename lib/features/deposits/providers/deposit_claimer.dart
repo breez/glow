@@ -1,6 +1,6 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:glow/providers/sdk_provider.dart';
 
 /// Service for handling deposit claim operations
 class DepositClaimer {

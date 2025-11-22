@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/routing/app_routes.dart';
-import 'package:glow/core/providers/sdk_provider.dart';
-import 'package:glow/core/providers/wallet_provider.dart';
-import 'package:glow/core/services/wallet_storage_service.dart';
+import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/features/wallet/providers/wallet_provider.dart';
+import 'package:glow/features/wallet/services/wallet_storage_service.dart';
 
 class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key});

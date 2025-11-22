@@ -1,11 +1,11 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/providers/sdk_provider.dart';
-import 'package:glow/core/services/clipboard_service.dart';
+import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/services/clipboard_service.dart';
 import 'package:glow/features/deposits/providers/deposit_claimer.dart';
 import 'package:glow/features/deposits/unclaimed_deposits_layout.dart';
-import 'package:glow/core/logging/app_logger.dart';
+import 'package:glow/logging/app_logger.dart';
 import 'package:glow/features/deposits/widgets/deposit_card.dart';
 import 'package:glow/features/deposits/models/unclaimed_deposits_state.dart';
 import 'package:logger/logger.dart';

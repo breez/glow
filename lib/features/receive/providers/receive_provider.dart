@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/misc.dart';
-import 'package:glow/core/services/breez_sdk_service.dart';
+import 'package:glow/services/breez_sdk_service.dart';
 import 'package:glow/features/receive/models/receive_method.dart';
 import 'package:glow/features/receive/models/receive_state.dart';
-import 'package:glow/core/providers/sdk_provider.dart';
+import 'package:glow/providers/sdk_provider.dart';
 
 class ReceiveNotifier extends Notifier<ReceiveState> {
   @override

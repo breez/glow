@@ -2,9 +2,9 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/config/breez_config.dart';
-import 'package:glow/core/providers/sdk_provider.dart';
-import 'package:glow/core/theme/colors.dart';
+import 'package:glow/config/breez_config.dart';
+import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/theme/colors.dart';
 
 /// Show bottom sheet for editing Lightning Address
 Future<void> showEditLightningAddressSheet(

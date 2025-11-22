@@ -1,9 +1,9 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/core/logging/logger_mixin.dart';
-import 'package:glow/core/models/wallet_metadata.dart';
-import 'package:glow/core/providers/wallet_provider.dart';
-import 'package:glow/core/services/mnemonic_service.dart';
+import 'package:glow/logging/logger_mixin.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
+import 'package:glow/features/wallet/providers/wallet_provider.dart';
+import 'package:glow/features/wallet/services/mnemonic_service.dart';
 import 'package:glow/features/wallet/restore/models/restore_state.dart';
 
 class RestoreNotifier extends Notifier<RestoreState> with LoggerMixin {
