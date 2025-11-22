@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glow/features/wallet/widgets/restore_phrase_grid.dart';
-import 'package:glow/features/wallet/widgets/warning_card.dart';
+import 'package:glow/widgets/warning_card.dart';
 import 'package:glow/widgets/bottom_nav_button.dart';
 
 class RestoreLayout extends StatelessWidget {
