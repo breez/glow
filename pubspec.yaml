@@ -73,8 +73,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/svg/
     - assets/icon/
+    - assets/image/
+    - assets/svg/
   fonts:
     - family: IBMPlexSans
       fonts:
