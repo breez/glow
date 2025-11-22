@@ -18,39 +18,41 @@ class PaymentDetailsDemoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Payment Details Demos')),
-      body: ListView(
-        children: <Widget>[
-          ListTile(
-            title: const Text('Completed Lightning Send'),
-            subtitle: const Text('Demo: Successful Lightning payment'),
-            onTap: () => _openDemo(context, _createCompletedLightningState()),
-          ),
-          ListTile(
-            title: const Text('Pending Lightning Receive'),
-            subtitle: const Text('Demo: Pending incoming payment'),
-            onTap: () => _openDemo(context, _createPendingLightningState()),
-          ),
-          ListTile(
-            title: const Text('Failed Lightning Payment'),
-            subtitle: const Text('Demo: Failed payment attempt'),
-            onTap: () => _openDemo(context, _createFailedLightningState()),
-          ),
-          ListTile(
-            title: const Text('Token Payment'),
-            subtitle: const Text('Demo: Token transfer'),
-            onTap: () => _openDemo(context, _createTokenPaymentState()),
-          ),
-          ListTile(
-            title: const Text('Deposit'),
-            subtitle: const Text('Demo: On-chain deposit'),
-            onTap: () => _openDemo(context, _createDepositState()),
-          ),
-          ListTile(
-            title: const Text('Withdraw'),
-            subtitle: const Text('Demo: On-chain withdrawal'),
-            onTap: () => _openDemo(context, _createWithdrawState()),
-          ),
-        ],
+      body: SafeArea(
+        child: ListView(
+          children: <Widget>[
+            ListTile(
+              title: const Text('Completed Lightning Send'),
+              subtitle: const Text('Demo: Successful Lightning payment'),
+              onTap: () => _openDemo(context, _createCompletedLightningState()),
+            ),
+            ListTile(
+              title: const Text('Pending Lightning Receive'),
+              subtitle: const Text('Demo: Pending incoming payment'),
+              onTap: () => _openDemo(context, _createPendingLightningState()),
+            ),
+            ListTile(
+              title: const Text('Failed Lightning Payment'),
+              subtitle: const Text('Demo: Failed payment attempt'),
+              onTap: () => _openDemo(context, _createFailedLightningState()),
+            ),
+            ListTile(
+              title: const Text('Token Payment'),
+              subtitle: const Text('Demo: Token transfer'),
+              onTap: () => _openDemo(context, _createTokenPaymentState()),
+            ),
+            ListTile(
+              title: const Text('Deposit'),
+              subtitle: const Text('Demo: On-chain deposit'),
+              onTap: () => _openDemo(context, _createDepositState()),
+            ),
+            ListTile(
+              title: const Text('Withdraw'),
+              subtitle: const Text('Demo: On-chain withdrawal'),
+              onTap: () => _openDemo(context, _createWithdrawState()),
+            ),
+          ],
+        ),
       ),
     );
   }

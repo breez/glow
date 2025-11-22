@@ -19,10 +19,12 @@ class TransactionList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Get formatted state from provider
     final TransactionListState state = ref.watch(transactionListStateProvider);
+    final bool hasSynced = ref.watch(hasSyncedProvider);
 
     // Return pure presentation widget
     return TransactionListLayout(
       state: state,
+      hasSynced: hasSynced,
       onTransactionTap: (Payment payment) => _onTransactionTap(context, payment),
       onRetry: () {
         // Invalidate providers to retry

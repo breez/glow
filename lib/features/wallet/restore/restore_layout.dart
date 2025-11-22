@@ -31,24 +31,26 @@ class RestoreLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Enter your backup phrase')),
-      body: Form(
-        key: formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: <Widget>[
-            RestorePhraseGrid(
-              controllers: mnemonicControllers,
-              focusNodes: focusNodes,
-              getSuggestions: getSuggestions,
-              onWordSelected: onWordSelected,
-              onPaste: onPaste,
-            ),
-            if (mnemonicError != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: WarningCard(message: mnemonicError!, textColor: Theme.of(context).colorScheme.error),
+      body: SafeArea(
+        child: Form(
+          key: formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: <Widget>[
+              RestorePhraseGrid(
+                controllers: mnemonicControllers,
+                focusNodes: focusNodes,
+                getSuggestions: getSuggestions,
+                onWordSelected: onWordSelected,
+                onPaste: onPaste,
               ),
-          ],
+              if (mnemonicError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: WarningCard(message: mnemonicError!, textColor: Theme.of(context).colorScheme.error),
+                ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavButton(text: 'RESTORE', onPressed: onRestore, loading: isRestoring),

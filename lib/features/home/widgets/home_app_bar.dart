@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -17,7 +16,6 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<WalletMetadata?> activeWallet = ref.watch(activeWalletProvider);
-    final bool hasSynced = ref.watch(hasSyncedProvider);
     final ThemeData themeData = Theme.of(context);
 
     return AppBar(
@@ -32,37 +30,9 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
       backgroundColor: Colors.transparent,
       actions: <Widget>[
-        if (kDebugMode) ...<Widget>[_SyncIndicator(hasSynced: hasSynced)],
         const _UnclaimedDepositsWarning(),
         _VerificationWarning(activeWallet: activeWallet, ref: ref),
       ],
-    );
-  }
-}
-
-class _SyncIndicator extends StatelessWidget {
-  final bool hasSynced;
-
-  const _SyncIndicator({required this.hasSynced});
-
-  @override
-  Widget build(BuildContext context) {
-    if (hasSynced) {
-      return const SizedBox.shrink();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: Center(
-        child: SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).appBarTheme.iconTheme!.color!),
-          ),
-        ),
-      ),
     );
   }
 }

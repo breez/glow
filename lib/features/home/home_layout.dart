@@ -22,17 +22,11 @@ class HomeLayout extends StatelessWidget {
       drawer: const HomeDrawer(),
       floatingActionButton: const QrScanButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: SingleChildScrollView(
+      body: const SafeArea(
         child: Column(
           children: <Widget>[
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.3 - kToolbarHeight,
-              child: const BalanceDisplay(),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.7 - kToolbarHeight - kBottomNavigationBarHeight,
-              child: const TransactionList(),
-            ),
+            Flexible(flex: 3, child: BalanceDisplay()),
+            Flexible(flex: 7, child: TransactionList()),
           ],
         ),
       ),

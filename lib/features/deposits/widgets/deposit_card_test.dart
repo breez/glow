@@ -70,7 +70,9 @@ void main() {
     // Helper to wrap widget with MaterialApp and ProviderScope
     Widget makeTestable(Widget child) {
       return ProviderScope(
-        child: MaterialApp(home: Scaffold(body: child)),
+        child: MaterialApp(
+          home: Scaffold(body: SafeArea(child: child)),
+        ),
       );
     }
 

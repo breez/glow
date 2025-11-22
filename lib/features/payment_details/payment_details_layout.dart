@@ -15,31 +15,33 @@ class PaymentDetailsLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Payment Details')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: <Widget>[
-          // Amount Section
-          PaymentAmountDisplay(formattedAmount: state.formattedAmount),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: <Widget>[
+            // Amount Section
+            PaymentAmountDisplay(formattedAmount: state.formattedAmount),
 
-          // Basic Details
-          PaymentDetailRow(label: 'Status', value: state.formattedStatus),
-          PaymentDetailRow(label: 'Type', value: state.formattedType),
-          PaymentDetailRow(label: 'Method', value: state.formattedMethod),
+            // Basic Details
+            PaymentDetailRow(label: 'Status', value: state.formattedStatus),
+            PaymentDetailRow(label: 'Type', value: state.formattedType),
+            PaymentDetailRow(label: 'Method', value: state.formattedMethod),
 
-          if (state.shouldShowFees) PaymentDetailRow(label: 'Fee', value: '${state.formattedFees} sats'),
+            if (state.shouldShowFees) PaymentDetailRow(label: 'Fee', value: '${state.formattedFees} sats'),
 
-          PaymentDetailRow(label: 'Date', value: state.formattedDate),
+            PaymentDetailRow(label: 'Date', value: state.formattedDate),
 
-          const Divider(height: 32),
-
-          PaymentDetailRow(label: 'Payment ID', value: state.payment.id, copyable: true),
-
-          // Payment-specific details
-          if (state.payment.details != null) ...<Widget>[
             const Divider(height: 32),
-            _buildPaymentSpecificDetails(state.payment.details!),
+
+            PaymentDetailRow(label: 'Payment ID', value: state.payment.id, copyable: true),
+
+            // Payment-specific details
+            if (state.payment.details != null) ...<Widget>[
+              const Divider(height: 32),
+              _buildPaymentSpecificDetails(state.payment.details!),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

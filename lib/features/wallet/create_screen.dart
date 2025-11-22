@@ -65,29 +65,31 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Create Wallet')),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: <Widget>[
-            NetworkSelector(
-              selectedNetwork: _selectedNetwork,
-              onChanged: (Network v) => setState(() => _selectedNetwork = v),
-            ),
-            const SizedBox(height: 32),
-            const WarningCard(
-              message:
-                  'You will see a 12-word backup phrase after creating your wallet. Write it down securely. '
-                  'Anyone with this phrase can access your funds.',
-            ),
-            const SizedBox(height: 32),
-            FilledButton(
-              onPressed: _isCreating ? null : _createWallet,
-              child: _isCreating
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Create Wallet'),
-            ),
-          ],
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(24),
+            children: <Widget>[
+              NetworkSelector(
+                selectedNetwork: _selectedNetwork,
+                onChanged: (Network v) => setState(() => _selectedNetwork = v),
+              ),
+              const SizedBox(height: 32),
+              const WarningCard(
+                message:
+                    'You will see a 12-word backup phrase after creating your wallet. Write it down securely. '
+                    'Anyone with this phrase can access your funds.',
+              ),
+              const SizedBox(height: 32),
+              FilledButton(
+                onPressed: _isCreating ? null : _createWallet,
+                child: _isCreating
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Create Wallet'),
+              ),
+            ],
+          ),
         ),
       ),
     );

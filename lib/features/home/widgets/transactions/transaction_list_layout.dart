@@ -5,15 +5,22 @@ import 'package:glow/features/home/widgets/transactions/widgets/transaction_list
 
 /// Pure presentation widget for transaction list
 class TransactionListLayout extends StatelessWidget {
-  const TransactionListLayout({required this.state, super.key, this.onTransactionTap, this.onRetry});
+  const TransactionListLayout({
+    required this.state,
+    super.key,
+    this.onTransactionTap,
+    this.onRetry,
+    this.hasSynced,
+  });
 
   final TransactionListState state;
   final Function(Payment payment)? onTransactionTap;
   final VoidCallback? onRetry;
+  final bool? hasSynced;
 
   @override
   Widget build(BuildContext context) {
-    if (state.isLoading) {
+    if (state.isLoading || (hasSynced != null && !hasSynced! && state.isEmpty)) {
       return const TransactionListLoading();
     }
 
@@ -30,6 +37,7 @@ class TransactionListLayout extends StatelessWidget {
 
   Widget _buildTransactionList(BuildContext context) {
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 16.0),
       itemCount: state.transactions.length,
       itemBuilder: (BuildContext context, int index) {
         final TransactionItemState transaction = state.transactions[index];

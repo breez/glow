@@ -95,7 +95,9 @@ void main() {
     testWidgets('displays formatted amount correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(body: PaymentAmountDisplay(formattedAmount: '1,234,567')),
+          home: Scaffold(
+            body: SafeArea(child: PaymentAmountDisplay(formattedAmount: '1,234,567')),
+          ),
         ),
       );
 
@@ -109,7 +111,9 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: PaymentDetailRow(label: 'Status', value: 'Completed'),
+            body: SafeArea(
+              child: PaymentDetailRow(label: 'Status', value: 'Completed'),
+            ),
           ),
         ),
       );
@@ -122,7 +126,9 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: PaymentDetailRow(label: 'Invoice', value: 'lnbc123...', copyable: true),
+            body: SafeArea(
+              child: PaymentDetailRow(label: 'Invoice', value: 'lnbc123...', copyable: true),
+            ),
           ),
         ),
       );
@@ -134,7 +140,9 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: PaymentDetailRow(label: 'Status', value: 'Completed'),
+            body: SafeArea(
+              child: PaymentDetailRow(label: 'Status', value: 'Completed'),
+            ),
           ),
         ),
       );

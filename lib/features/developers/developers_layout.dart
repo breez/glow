@@ -28,29 +28,31 @@ class DevelopersLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Debug')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: <Widget>[
-          // TODO(erdemyerebasmaz): Move these cards as options to a menu on app bar
-          if (kDebugMode) ...<Widget>[
-            // Wallet Management Card
-            const WalletCard(),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: <Widget>[
+            // TODO(erdemyerebasmaz): Move these cards as options to a menu on app bar
+            if (kDebugMode) ...<Widget>[
+              // Wallet Management Card
+              const WalletCard(),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Network Switch Card
-            NetworkCard(network: network, onChangeNetwork: onChangeNetwork),
+              // Network Switch Card
+              NetworkCard(network: network, onChangeNetwork: onChangeNetwork),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Max Deposit Claim Fee Card
-            MaxDepositClaimFeeCard(currentFee: maxDepositClaimFee, onTapMaxFeeCard: onTapMaxFeeCard),
+              // Max Deposit Claim Fee Card
+              MaxDepositClaimFeeCard(currentFee: maxDepositClaimFee, onTapMaxFeeCard: onTapMaxFeeCard),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
+            ],
+            // Logs Card
+            LogsCard(onShareCurrentSession: onShareCurrentSession, onShareAllLogs: onShareAllLogs),
           ],
-          // Logs Card
-          LogsCard(onShareCurrentSession: onShareCurrentSession, onShareAllLogs: onShareAllLogs),
-        ],
+        ),
       ),
     );
   }

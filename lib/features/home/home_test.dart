@@ -147,7 +147,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: BalanceDisplayLayout(state: state)),
+          home: Scaffold(
+            body: SafeArea(child: BalanceDisplayLayout(state: state)),
+          ),
         ),
       );
 
@@ -163,7 +165,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: BalanceDisplayLayout(state: state)),
+          home: Scaffold(
+            body: SafeArea(child: BalanceDisplayLayout(state: state)),
+          ),
         ),
       );
 
@@ -178,7 +182,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: BalanceDisplayLayout(state: state)),
+          home: Scaffold(
+            body: SafeArea(child: BalanceDisplayLayout(state: state)),
+          ),
         ),
       );
 
@@ -193,7 +199,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: TransactionListLayout(state: state)),
+          home: Scaffold(
+            body: SafeArea(child: TransactionListLayout(state: state)),
+          ),
         ),
       );
 
@@ -205,7 +213,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: TransactionListLayout(state: state)),
+          home: Scaffold(
+            body: SafeArea(child: TransactionListLayout(state: state)),
+          ),
         ),
       );
 
@@ -248,7 +258,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: TransactionListLayout(state: state)),
+          home: Scaffold(
+            body: SafeArea(child: TransactionListLayout(state: state)),
+          ),
         ),
       );
 
