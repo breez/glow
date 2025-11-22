@@ -8,7 +8,7 @@ import 'package:glow/config/app_config.dart';
 import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
 import 'package:glow/routing/app_routes.dart';
-import 'package:glow/providers/theme_provider.dart';
+import 'package:glow/theme/theme_provider.dart';
 import 'package:glow/features/wallet/providers/wallet_provider.dart';
 import 'package:glow/providers/sdk_provider.dart';
 import 'package:glow/features/home/home_screen.dart';
