@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:glow/features/widgets/bottom_nav_button.dart';
+import 'package:glow/widgets/bottom_nav_button.dart';
 
 class SendApproveButton extends StatelessWidget {
   final TextEditingController controller;

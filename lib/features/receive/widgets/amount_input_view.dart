@@ -12,7 +12,7 @@ import 'package:glow/features/receive/widgets/copy_and_share_actions.dart';
 import 'package:glow/features/receive/widgets/qr_code_card.dart';
 import 'package:glow/features/receive/widgets/copyable_card.dart';
 import 'package:glow/features/receive/widgets/error_view.dart';
-import 'package:glow/features/widgets/card_wrapper.dart';
+import 'package:glow/widgets/card_wrapper.dart';
 
 class AmountInputView extends ConsumerStatefulWidget {
   final ReceiveMethod method;

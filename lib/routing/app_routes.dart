@@ -11,7 +11,7 @@ import 'package:glow/features/wallet/restore/restore_screen.dart';
 import 'package:glow/features/wallet/list_screen.dart';
 import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';
 import 'package:glow/features/wallet/phrase/phrase_screen.dart';
-import 'package:glow/features/widgets/bottom_nav_button.dart';
+import 'package:glow/widgets/bottom_nav_button.dart';
 
 // Import your payment screens here when they're created
 // import 'package:glow/screens/send/bitcoin_address_screen.dart';

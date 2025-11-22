@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glow/features/wallet/widgets/backup_phrase_grid.dart';
-import 'package:glow/features/widgets/bottom_nav_button.dart';
+import 'package:glow/widgets/bottom_nav_button.dart';
 
 /// View for displaying the backup phrase
 class PhraseDisplayView extends StatelessWidget {

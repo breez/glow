@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:glow/features/send/widgets/paste_and_scan_actions.dart';
 import 'package:glow/features/send/widgets/send_approve_button.dart';
 import 'package:glow/features/send/widgets/send_form.dart';
-import 'package:glow/features/widgets/card_wrapper.dart';
+import 'package:glow/widgets/card_wrapper.dart';
 
 class SendLayout extends StatelessWidget {
   final GlobalKey<FormState> formKey;
