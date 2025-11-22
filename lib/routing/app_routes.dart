@@ -10,7 +10,7 @@ import 'package:glow/features/wallet/create_screen.dart';
 import 'package:glow/features/wallet/restore/restore_screen.dart';
 import 'package:glow/features/wallet/list_screen.dart';
 import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';
-import 'package:glow/features/wallet/backup/verify_screen.dart';
+import 'package:glow/features/wallet/phrase/phrase_screen.dart';
 import 'package:glow/features/widgets/bottom_nav_button.dart';
 
 // Import your payment screens here when they're created
@@ -36,7 +36,7 @@ class AppRoutes {
   static const String walletCreate = '/wallet/create';
   static const String walletImport = '/wallet/import';
   static const String walletList = '/wallet/list';
-  static const String walletVerify = '/wallet/verify';
+  static const String walletPhrase = '/wallet/phrase';
 
   // Send payment routes
   static const String sendScreen = '/send';
@@ -99,10 +99,10 @@ class AppRoutes {
       case walletList:
         return MaterialPageRoute<String>(builder: (_) => const WalletListScreen());
 
-      case walletVerify:
+      case walletPhrase:
         final Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute<WalletVerifyScreen>(
-          builder: (_) => WalletVerifyScreen(wallet: args['wallet'], mnemonic: args['mnemonic']),
+        return MaterialPageRoute<PhraseScreen>(
+          builder: (_) => PhraseScreen(wallet: args['wallet'], mnemonic: args['mnemonic']),
           settings: settings,
         );
 

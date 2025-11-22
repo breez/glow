@@ -81,7 +81,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
     if (mounted) {
       Navigator.pushNamed(
         context,
-        AppRoutes.walletVerify,
+        AppRoutes.walletPhrase,
         arguments: <String, Object>{'wallet': wallet, 'mnemonic': mnemonic},
       );
     }
@@ -112,7 +112,7 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
       builder: (BuildContext context) => AlertDialog(
         title: Text('Remove ${wallet.displayName}?'),
         content: const Text(
-          'This will remove the wallet from the app. You can re-import it later using your recovery phrase.',
+          'This will remove the wallet from the app. You can re-import it later using your backup phrase.',
         ),
         actions: <Widget>[
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),

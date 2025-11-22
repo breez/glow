@@ -110,7 +110,7 @@ class _VerificationWarning extends StatelessWidget {
           ? IconButton(
               onPressed: () => _handleVerification(context, wallet),
               icon: Icon(Icons.warning_amber_rounded, color: Theme.of(context).appBarTheme.iconTheme?.color),
-              tooltip: 'Verify recovery phrase',
+              tooltip: 'Verify backup phrase',
             )
           : const SizedBox.shrink(),
       loading: () => const SizedBox.shrink(),
@@ -124,7 +124,7 @@ class _VerificationWarning extends StatelessWidget {
     if (mnemonic != null && context.mounted) {
       Navigator.pushNamed(
         context,
-        AppRoutes.walletVerify,
+        AppRoutes.walletPhrase,
         arguments: <String, dynamic>{'wallet': wallet, 'mnemonic': mnemonic},
       );
     }

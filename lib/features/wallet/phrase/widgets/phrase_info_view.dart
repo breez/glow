@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:glow/features/widgets/bottom_nav_button.dart';
 
-class BackupPhraseInfoScreen extends StatefulWidget {
+/// View for displaying information about the backup phrase importance
+class PhraseInfoView extends StatefulWidget {
   final VoidCallback onNext;
-  const BackupPhraseInfoScreen({required this.onNext, super.key});
+
+  const PhraseInfoView({required this.onNext, super.key});
 
   @override
-  State<BackupPhraseInfoScreen> createState() => _BackupPhraseInfoScreenState();
+  State<PhraseInfoView> createState() => _PhraseInfoViewState();
 }
 
-class _BackupPhraseInfoScreenState extends State<BackupPhraseInfoScreen> {
+class _PhraseInfoViewState extends State<PhraseInfoView> {
   bool _checked = false;
 
   @override
@@ -20,7 +22,10 @@ class _BackupPhraseInfoScreenState extends State<BackupPhraseInfoScreen> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: <Widget>[
-            const Expanded(flex: 2, child: Icon(Icons.info_outline, size: 100, color: Colors.blue)),
+            const Expanded(
+              flex: 2,
+              child: Image(image: AssetImage('assets/images/phrase_info.png'), height: 100, width: 100),
+            ),
             ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 96),
               child: const Text(

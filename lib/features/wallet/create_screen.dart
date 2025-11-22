@@ -77,7 +77,7 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
             const SizedBox(height: 32),
             const WarningCard(
               message:
-                  'You will see a 12-word recovery phrase after creating your wallet. Write it down securely. '
+                  'You will see a 12-word backup phrase after creating your wallet. Write it down securely. '
                   'Anyone with this phrase can access your funds.',
             ),
             const SizedBox(height: 32),
