@@ -7,12 +7,50 @@ import 'package:glow/features/developers/developers_layout.dart';
 import 'package:glow/features/developers/providers/max_deposit_fee_provider.dart';
 import 'package:glow/features/developers/providers/network_provider.dart';
 import 'package:glow/features/developers/widgets/max_fee_bottom_sheet.dart';
+import 'package:glow/features/developers/widgets/network_bottom_sheet.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/routing/app_routes.dart';
 import 'package:share_plus/share_plus.dart';
 
 class DevelopersScreen extends ConsumerWidget {
   const DevelopersScreen({super.key});
+
+  void _showNetworkBottomSheet(BuildContext context, WidgetRef ref, Network currentNetwork) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) => NetworkBottomSheet(
+        currentNetwork: currentNetwork,
+        onNetworkChanged: (Network network) async {
+          try {
+            ref.read(networkProvider.notifier).setNetwork(network);
+
+            // Invalidate SDK to reconnect with new network
+            ref.invalidate(sdkProvider);
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Network changed to ${network == Network.mainnet ? 'Mainnet' : 'Regtest'}'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            }
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to change network: $e'),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            }
+          }
+        },
+      ),
+    );
+  }
 
   void _showMaxFeeBottomSheet(BuildContext context, WidgetRef ref, Fee currentFee) {
     showModalBottomSheet(
@@ -122,9 +160,9 @@ class DevelopersScreen extends ConsumerWidget {
 
     return DevelopersLayout(
       network: network,
-      maxDepositClaimFee: maxDepositClaimFee,
-      onTapMaxFeeCard: () => _showMaxFeeBottomSheet(context, ref, maxDepositClaimFee),
-      onChangeNetwork: (Network network) => ref.read(networkProvider.notifier).setNetwork(network),
+      onManageWallets: () => Navigator.pushNamed(context, AppRoutes.walletList),
+      onShowNetworkSelector: () => _showNetworkBottomSheet(context, ref, network),
+      onShowMaxFee: () => _showMaxFeeBottomSheet(context, ref, maxDepositClaimFee),
       onShareCurrentSession: () => _shareCurrentSession(context),
       onShareAllLogs: () => _shareAllLogs(context),
     );
