@@ -5,7 +5,7 @@ import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/wallet/providers/wallet_provider.dart';
 import 'package:glow/features/wallet/widgets/network_selector.dart';
-import 'package:glow/features/wallet/widgets/warning_card.dart';
+import 'package:glow/widgets/warning_card.dart';
 import 'package:glow/routing/app_routes.dart';
 
 class WalletCreateScreen extends ConsumerStatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glow/features/receive/models/receive_state.dart';
-import 'package:glow/features/widgets/bottom_nav_button.dart';
+import 'package:glow/widgets/bottom_nav_button.dart';
 
 class ReceiveBottomNavButton extends StatelessWidget {
   final ReceiveState state;

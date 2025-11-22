@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/receive/providers/bitcoin_address_provider.dart';
 import 'package:glow/features/receive/widgets/copy_and_share_actions.dart';
-import 'package:glow/features/receive/widgets/qr_code_card.dart';
+import 'package:glow/widgets/qr_code_card.dart';
 import 'package:glow/features/receive/widgets/error_view.dart';
-import 'package:glow/features/widgets/card_wrapper.dart';
+import 'package:glow/widgets/card_wrapper.dart';
 
 /// Bitcoin receive view - displays on-chain Bitcoin address with QR code
 class BitcoinReceiveView extends ConsumerWidget {

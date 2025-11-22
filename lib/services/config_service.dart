@@ -1,5 +1,4 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/config/breez_config.dart';
 import 'package:glow/logging/app_logger.dart';
@@ -12,7 +11,6 @@ final Logger log = AppLogger.getLogger('ConfigService');
 class ConfigService {
   static const String _maxDepositClaimFeeTypeKey = 'max_deposit_claim_fee_type';
   static const String _maxDepositClaimFeeValueKey = 'max_deposit_claim_fee_value';
-  static const String _themeModeKey = 'theme_mode';
 
   final SharedPreferences _prefs;
 
@@ -67,35 +65,6 @@ class ConfigService {
     await _prefs.remove(_maxDepositClaimFeeTypeKey);
     await _prefs.remove(_maxDepositClaimFeeValueKey);
     log.i('Reset max deposit claim fee to default');
-  }
-
-  // TODO(erdemyerebasmaz): This will be used for theme management in the future
-  /// Get the current theme mode
-  /// Returns the persisted value or system default if not set
-  ThemeMode getThemeMode() {
-    final String? saved = _prefs.getString(_themeModeKey);
-    if (saved != null) {
-      final ThemeMode mode = ThemeMode.values.firstWhere(
-        (ThemeMode e) => e.name == saved,
-        orElse: () => ThemeMode.dark,
-      );
-      log.d('Loaded theme mode: $mode');
-      return mode;
-    }
-    log.d('No persisted theme mode, using dark as default');
-    return ThemeMode.dark;
-  }
-
-  /// Set the theme mode and persist it
-  Future<void> setThemeMode(ThemeMode mode) async {
-    await _prefs.setString(_themeModeKey, mode.name);
-    log.i('Saved theme mode: $mode');
-  }
-
-  /// Reset to system default theme
-  Future<void> resetThemeMode() async {
-    await _prefs.remove(_themeModeKey);
-    log.i('Reset theme mode to system default');
   }
 }
 

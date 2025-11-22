@@ -5,22 +5,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:glow/config/app_config.dart';
-import 'package:glow/features/wallet/models/wallet_metadata.dart';
-import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
-import 'package:glow/routing/app_routes.dart';
-import 'package:glow/providers/theme_provider.dart';
-import 'package:glow/features/wallet/providers/wallet_provider.dart';
-import 'package:glow/providers/sdk_provider.dart';
 import 'package:glow/features/home/home_screen.dart';
+import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
+import 'package:glow/features/profile/services/profile_image_cache.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';
+import 'package:glow/features/wallet/providers/wallet_provider.dart';
+import 'package:glow/logging/app_logger.dart';
+import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/routing/app_routes.dart';
 import 'package:glow/services/config_service.dart';
-import 'package:glow/theme/theme.dart';
+import 'package:glow/theme/theme_provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:glow/logging/app_logger.dart';
-import 'package:glow/features/profile/services/profile_image_cache.dart';
 import 'package:path/path.dart' as path;
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> _precacheSvgImages() async {
   final AssetManifest assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
@@ -75,7 +74,7 @@ class MainApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ThemeMode themeMode = ref.watch(themeModeProvider);
-    final ThemeData themeData = themeMode == ThemeMode.dark ? buildDarkTheme() : buildLightTheme();
+    final ThemeData themeData = ref.watch(appThemeProvider);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: themeData.appBarTheme.systemOverlayStyle!,
@@ -84,8 +83,8 @@ class MainApp extends ConsumerWidget {
         initialRoute: AppRoutes.homeScreen,
         routes: <String, WidgetBuilder>{AppRoutes.homeScreen: (BuildContext context) => const _AppRouter()},
         onGenerateRoute: AppRoutes.generateRoute,
-        theme: buildLightTheme(),
-        darkTheme: buildDarkTheme(),
+        theme: themeData,
+        darkTheme: themeData,
         themeMode: themeMode,
       ),
     );

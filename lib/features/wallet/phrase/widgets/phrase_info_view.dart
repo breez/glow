@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:glow/features/widgets/bottom_nav_button.dart';
+import 'package:glow/widgets/bottom_nav_button.dart';
 
 /// View for displaying information about the backup phrase importance
 class PhraseInfoView extends StatefulWidget {

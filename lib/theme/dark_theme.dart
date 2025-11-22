@@ -2,45 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:glow/theme/colors.dart';
 
-ThemeData buildDarkTheme() {
-  return ThemeData(
-    useMaterial3: false,
-    brightness: Brightness.dark,
-    fontFamily: 'IBMPlexSans',
-    colorScheme: _darkColorScheme,
-
-    // Base colors
-    scaffoldBackgroundColor: BreezColors.darkBackground,
-    canvasColor: BreezColors.darkBackground,
-    primaryColor: BreezColors.primary,
-    primaryColorDark: BreezColors.darkBackground,
-    primaryColorLight: BreezColors.primaryLight,
-    cardColor: const Color(0xFF121212),
-    highlightColor: BreezColors.primary,
-    dividerColor: const Color(0x337aa5eb),
-
-    // Components
-    appBarTheme: _darkAppBarTheme,
-    bottomAppBarTheme: _darkBottomAppBarTheme,
-    filledButtonTheme: _darkFilledButtonTheme,
-    floatingActionButtonTheme: _darkFabTheme,
-    dialogTheme: _darkDialogTheme,
-    cardTheme: _darkCardTheme,
-    chipTheme: const ChipThemeData(backgroundColor: BreezColors.primary),
-    drawerTheme: _darkDrawerTheme,
-    datePickerTheme: _darkDatePickerTheme,
-    snackBarTheme: _darkSnackBarTheme,
-
-    // Text / icons
-    primaryIconTheme: const IconThemeData(color: Colors.white),
-    textSelectionTheme: TextSelectionThemeData(
-      selectionColor: Colors.white.withValues(alpha: .5),
-      selectionHandleColor: BreezColors.primary,
-    ),
-  );
-}
-
-const ColorScheme _darkColorScheme = ColorScheme.dark(
+const ColorScheme darkColorScheme = ColorScheme.dark(
   primary: Colors.white,
   onPrimary: Colors.white,
   secondary: Colors.white,
@@ -49,7 +11,7 @@ const ColorScheme _darkColorScheme = ColorScheme.dark(
   error: BreezColors.warningDark,
 );
 
-const AppBarTheme _darkAppBarTheme = AppBarTheme(
+const AppBarTheme darkAppBarTheme = AppBarTheme(
   centerTitle: false,
   elevation: 0,
   scrolledUnderElevation: 0,
@@ -66,13 +28,13 @@ const AppBarTheme _darkAppBarTheme = AppBarTheme(
   ),
 );
 
-const BottomAppBarThemeData _darkBottomAppBarTheme = BottomAppBarThemeData(
+const BottomAppBarThemeData darkBottomAppBarTheme = BottomAppBarThemeData(
   height: 60,
   elevation: 0,
   color: BreezColors.primaryLight,
 );
 
-final FilledButtonThemeData _darkFilledButtonTheme = FilledButtonThemeData(
+final FilledButtonThemeData darkFilledButtonTheme = FilledButtonThemeData(
   style: FilledButton.styleFrom(
     backgroundColor: BreezColors.primaryLight,
     foregroundColor: Colors.white,
@@ -81,13 +43,13 @@ final FilledButtonThemeData _darkFilledButtonTheme = FilledButtonThemeData(
   ),
 );
 
-const FloatingActionButtonThemeData _darkFabTheme = FloatingActionButtonThemeData(
+const FloatingActionButtonThemeData darkFabTheme = FloatingActionButtonThemeData(
   backgroundColor: BreezColors.primaryLight,
   foregroundColor: Colors.white,
   sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
 );
 
-const DialogThemeData _darkDialogTheme = DialogThemeData(
+const DialogThemeData darkDialogTheme = DialogThemeData(
   backgroundColor: BreezColors.darkSurface,
   titleTextStyle: TextStyle(
     color: Colors.white,
@@ -99,18 +61,18 @@ const DialogThemeData _darkDialogTheme = DialogThemeData(
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
 );
 
-const CardThemeData _darkCardTheme = CardThemeData(
+const CardThemeData darkCardTheme = CardThemeData(
   color: BreezColors.darkSurface,
   elevation: 0,
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
 );
 
-const DrawerThemeData _darkDrawerTheme = DrawerThemeData(
+const DrawerThemeData darkDrawerTheme = DrawerThemeData(
   backgroundColor: BreezColors.darkSurface,
   scrimColor: Colors.black54,
 );
 
-final DatePickerThemeData _darkDatePickerTheme = DatePickerThemeData(
+final DatePickerThemeData darkDatePickerTheme = DatePickerThemeData(
   backgroundColor: BreezColors.darkSurface,
   headerBackgroundColor: BreezColors.primary,
   headerForegroundColor: Colors.white,
@@ -139,8 +101,41 @@ final DatePickerThemeData _darkDatePickerTheme = DatePickerThemeData(
   }),
 );
 
-const SnackBarThemeData _darkSnackBarTheme = SnackBarThemeData(
+const SnackBarThemeData darkSnackBarTheme = SnackBarThemeData(
   backgroundColor: Color(0xFF334560),
   actionTextColor: BreezColors.warningDark,
   contentTextStyle: TextStyle(color: Colors.white, fontSize: 14.0, letterSpacing: 0.25, height: 1.2),
 );
+
+/// Builds the dark theme by composing all theme components
+ThemeData buildDarkTheme() {
+  return ThemeData(
+    useMaterial3: false,
+    brightness: Brightness.dark,
+    fontFamily: 'IBMPlexSans',
+    colorScheme: darkColorScheme,
+    scaffoldBackgroundColor: BreezColors.darkBackground,
+    canvasColor: BreezColors.darkBackground,
+    primaryColor: BreezColors.primary,
+    primaryColorDark: BreezColors.darkBackground,
+    primaryColorLight: BreezColors.primaryLight,
+    cardColor: const Color(0xFF121212),
+    highlightColor: BreezColors.primary,
+    dividerColor: const Color(0x337aa5eb),
+    appBarTheme: darkAppBarTheme,
+    bottomAppBarTheme: darkBottomAppBarTheme,
+    filledButtonTheme: darkFilledButtonTheme,
+    floatingActionButtonTheme: darkFabTheme,
+    dialogTheme: darkDialogTheme,
+    cardTheme: darkCardTheme,
+    chipTheme: const ChipThemeData(backgroundColor: BreezColors.primary),
+    drawerTheme: darkDrawerTheme,
+    datePickerTheme: darkDatePickerTheme,
+    snackBarTheme: darkSnackBarTheme,
+    primaryIconTheme: const IconThemeData(color: Colors.white),
+    textSelectionTheme: TextSelectionThemeData(
+      selectionColor: Colors.white.withValues(alpha: .5),
+      selectionHandleColor: BreezColors.primary,
+    ),
+  );
+}

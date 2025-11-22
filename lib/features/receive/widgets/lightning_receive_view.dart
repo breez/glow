@@ -6,10 +6,10 @@ import 'package:glow/features/receive/widgets/copy_and_share_actions.dart';
 import 'package:glow/features/receive/widgets/error_view.dart';
 import 'package:glow/features/receive/widgets/lightning_address_card.dart';
 import 'package:glow/features/receive/widgets/no_lightning_address_view.dart';
-import 'package:glow/features/receive/widgets/qr_code_card.dart';
+import 'package:glow/widgets/qr_code_card.dart';
 import 'package:glow/features/receive/widgets/edit_lightning_address_sheet.dart';
 import 'package:glow/features/receive/widgets/register_lightning_address_sheet.dart';
-import 'package:glow/features/widgets/card_wrapper.dart';
+import 'package:glow/widgets/card_wrapper.dart';
 
 /// Lightning receive view - displays Lightning Address with QR code
 class LightningReceiveView extends ConsumerWidget {
