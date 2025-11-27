@@ -1,4 +1,3 @@
-import 'package:glow/features/home/widgets/balance/theme/balance_text_styles.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 
@@ -23,9 +22,14 @@ class BalanceDisplayShimmer extends StatelessWidget {
         onPressed: () {},
         child: RichText(
           text: TextSpan(
-            style: BalanceTextStyles.amount,
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w600, height: 1.56),
             text: 0.toString(),
-            children: <InlineSpan>[const TextSpan(text: ' sats', style: BalanceTextStyles.unit)],
+            children: const <InlineSpan>[
+              TextSpan(
+                text: ' sats',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, height: 1.52),
+              ),
+            ],
           ),
         ),
       ),

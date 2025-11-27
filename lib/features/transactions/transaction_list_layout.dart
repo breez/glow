@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
-import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
-import 'package:glow/features/home/widgets/transactions/widgets/transaction_list_widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:glow/features/transactions/models/transaction_list_state.dart';
+import 'package:glow/features/transactions/widgets/transaction_list_widgets.dart';
 
 /// Pure presentation widget for transaction list
 class TransactionListLayout extends StatelessWidget {
@@ -11,12 +11,14 @@ class TransactionListLayout extends StatelessWidget {
     this.onTransactionTap,
     this.onRetry,
     this.hasSynced,
+    this.scrollController,
   });
 
   final TransactionListState state;
   final Function(Payment payment)? onTransactionTap;
   final VoidCallback? onRetry;
   final bool? hasSynced;
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,11 @@ class TransactionListLayout extends StatelessWidget {
     }
 
     if (state.isEmpty) {
-      return const TransactionListEmpty();
+      if (state.hasActiveFilter) {
+        return const Center(child: Text('No transactions match your filter'));
+      } else {
+        return const TransactionListEmpty();
+      }
     }
 
     return _buildTransactionList(context);
@@ -37,6 +43,7 @@ class TransactionListLayout extends StatelessWidget {
 
   Widget _buildTransactionList(BuildContext context) {
     return ListView.builder(
+      controller: scrollController,
       padding: const EdgeInsets.only(bottom: 16.0),
       itemCount: state.transactions.length,
       itemBuilder: (BuildContext context, int index) {

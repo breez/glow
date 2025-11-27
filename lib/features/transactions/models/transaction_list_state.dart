@@ -42,11 +42,17 @@ class TransactionItemState extends Equatable {
 
 /// State representation for transaction list
 class TransactionListState extends Equatable {
-  const TransactionListState({required this.transactions, required this.hasSynced, this.error});
+  const TransactionListState({
+    required this.transactions,
+    required this.hasSynced,
+    this.error,
+    this.hasActiveFilter = false,
+  });
 
   final List<TransactionItemState> transactions;
   final bool hasSynced;
   final String? error;
+  final bool hasActiveFilter;
 
   /// Factory for loading state
   factory TransactionListState.loading() {
@@ -57,8 +63,13 @@ class TransactionListState extends Equatable {
   factory TransactionListState.loaded({
     required List<TransactionItemState> transactions,
     required bool hasSynced,
+    bool hasActiveFilter = false,
   }) {
-    return TransactionListState(transactions: transactions, hasSynced: hasSynced);
+    return TransactionListState(
+      transactions: transactions,
+      hasSynced: hasSynced,
+      hasActiveFilter: hasActiveFilter,
+    );
   }
 
   /// Factory for error state
@@ -67,8 +78,12 @@ class TransactionListState extends Equatable {
   }
 
   /// Factory for empty state (synced but no transactions)
-  factory TransactionListState.empty() {
-    return const TransactionListState(transactions: <TransactionItemState>[], hasSynced: true);
+  factory TransactionListState.empty({bool hasActiveFilter = false}) {
+    return TransactionListState(
+      transactions: <TransactionItemState>[],
+      hasSynced: true,
+      hasActiveFilter: hasActiveFilter,
+    );
   }
 
   bool get hasTransactions => transactions.isNotEmpty;
@@ -76,14 +91,20 @@ class TransactionListState extends Equatable {
   bool get isLoading => transactions.isEmpty && !hasSynced && error == null;
   bool get isEmpty => !hasTransactions && hasSynced;
 
-  TransactionListState copyWith({List<TransactionItemState>? transactions, bool? hasSynced, String? error}) {
+  TransactionListState copyWith({
+    List<TransactionItemState>? transactions,
+    bool? hasSynced,
+    String? error,
+    bool? hasActiveFilter,
+  }) {
     return TransactionListState(
       transactions: transactions ?? this.transactions,
       hasSynced: hasSynced ?? this.hasSynced,
       error: error ?? this.error,
+      hasActiveFilter: hasActiveFilter ?? this.hasActiveFilter,
     );
   }
 
   @override
-  List<Object?> get props => <Object?>[transactions, hasSynced, error];
+  List<Object?> get props => <Object?>[transactions, hasSynced, error, hasActiveFilter];
 }

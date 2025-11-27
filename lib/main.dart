@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:glow/config/app_config.dart';
 import 'package:glow/features/home/home_screen.dart';
-import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
+import 'package:glow/core/services/transaction_formatter.dart';
 import 'package:glow/features/profile/services/profile_image_cache.dart';
 import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';

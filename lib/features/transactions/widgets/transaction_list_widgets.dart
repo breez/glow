@@ -1,8 +1,7 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
-import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
-import 'package:glow/features/home/widgets/transactions/theme/transaction_list_text_styles.dart';
-import 'package:glow/features/home/widgets/transactions/widgets/transaction_list_shimmer.dart';
+import 'package:glow/features/transactions/models/transaction_list_state.dart';
+import 'package:glow/features/transactions/widgets/transaction_list_shimmer.dart';
 import 'package:glow/features/profile/widgets/profile_avatar.dart';
 
 /// Individual transaction list item widget
@@ -19,7 +18,7 @@ class TransactionListItem extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: Container(
-          color: Theme.of(context).cardTheme.color,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           child: ListTile(
             onTap: onTap,
             leading: _buildAvatarContainer(context),
@@ -191,7 +190,14 @@ class TransactionListEmpty extends StatelessWidget {
     return const Center(
       child: Padding(
         padding: EdgeInsets.all(32),
-        child: Text('Glow is ready to receive funds.', style: TransactionListTextStyles.emptyState),
+        child: Text(
+          'Glow is ready to receive funds.',
+          style: TextStyle(
+            fontSize: 16.4,
+            letterSpacing: 0.15,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
     );
   }

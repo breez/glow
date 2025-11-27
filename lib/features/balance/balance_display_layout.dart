@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:glow/features/home/widgets/balance/theme/balance_text_styles.dart';
-import 'package:glow/features/home/widgets/balance/widgets/balance_display_shimmer.dart';
-import 'package:glow/features/home/widgets/balance/models/balance_state.dart';
+import 'package:glow/features/balance/models/balance_state.dart';
+import 'package:glow/features/balance/widgets/balance_display_shimmer.dart';
 
 /// Pure presentation widget for balance display
 class BalanceDisplayLayout extends StatelessWidget {
@@ -67,15 +66,28 @@ class _BalanceContentView extends StatelessWidget {
           onPressed: onBalanceTap,
           child: RichText(
             text: TextSpan(
-              style: BalanceTextStyles.amount,
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w600, height: 1.56),
               text: state.formattedBalance,
-              children: <InlineSpan>[const TextSpan(text: ' sats', style: BalanceTextStyles.unit)],
+              children: const <InlineSpan>[
+                TextSpan(
+                  text: ' sats',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, height: 1.52),
+                ),
+              ],
             ),
           ),
         ),
         if (state.formattedFiat != null) ...<Widget>[
           const SizedBox(height: 12),
-          Text(state.formattedFiat!, style: BalanceTextStyles.fiatAmount),
+          Text(
+            state.formattedFiat!,
+            style: const TextStyle(
+              fontSize: 16,
+              letterSpacing: 0.2,
+              fontWeight: FontWeight.w500,
+              height: 1.24,
+            ),
+          ),
         ],
       ],
     );

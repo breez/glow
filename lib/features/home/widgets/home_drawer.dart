@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/profile/models/profile.dart';
 import 'package:glow/features/profile/widgets/profile_avatar.dart';
 import 'package:glow/features/profile/widgets/profile_editor_dialog.dart';
-import 'package:glow/routing/app_routes.dart';
-import 'package:glow/features/wallet/providers/wallet_provider.dart';
-import 'package:glow/theme/colors.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/wallet/onboarding/widgets/breez_sdk_footer.dart';
+import 'package:glow/features/wallet/providers/wallet_provider.dart';
+import 'package:glow/routing/app_routes.dart';
+import 'package:glow/theme/colors.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -17,9 +17,9 @@ class HomeDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: Theme.of(
-        context,
-      ).appBarTheme.systemOverlayStyle!.copyWith(systemNavigationBarColor: themeData.cardTheme.color),
+      value: Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
+        systemNavigationBarColor: themeData.colorScheme.surfaceContainer,
+      ),
       child: Drawer(
         child: Column(
           children: <Widget>[

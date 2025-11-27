@@ -1,9 +1,9 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
-import 'package:glow/features/home/widgets/balance/models/balance_state.dart';
-import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
-import 'package:glow/features/home/widgets/balance/balance_display_layout.dart';
-import 'package:glow/features/home/widgets/transactions/transaction_list_layout.dart';
+import 'package:glow/features/balance/balance_display_layout.dart';
+import 'package:glow/features/balance/models/balance_state.dart';
+import 'package:glow/features/transactions/models/transaction_list_state.dart';
+import 'package:glow/features/transactions/transaction_list_layout.dart';
 
 /// Demo catalog for Home feature components
 /// Demonstrates the power of SoC - easy to create demos with any state
@@ -14,62 +14,67 @@ class HomeDemoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home Demos')),
-      body: ListView(
-        children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('Balance Display Demos', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          ),
-          ListTile(
-            title: const Text('Balance - Loaded'),
-            subtitle: const Text('Normal state with balance'),
-            onTap: () => _openBalanceDemo(context, _createLoadedBalanceState()),
-          ),
-          ListTile(
-            title: const Text('Balance - Loading'),
-            subtitle: const Text('Loading/syncing state'),
-            onTap: () => _openBalanceDemo(context, BalanceState.loading()),
-          ),
-          ListTile(
-            title: const Text('Balance - With Fiat'),
-            subtitle: const Text('Balance with fiat conversion'),
-            onTap: () => _openBalanceDemo(context, _createBalanceWithFiatState()),
-          ),
-          ListTile(
-            title: const Text('Balance - Large Amount'),
-            subtitle: const Text('Test with large balance'),
-            onTap: () => _openBalanceDemo(context, _createLargeBalanceState()),
-          ),
-          const Divider(height: 32),
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text(
-              'Transaction List Demos',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      body: SafeArea(
+        child: ListView(
+          children: <Widget>[
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Balance Display Demos',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-          ListTile(
-            title: const Text('Transactions - With Data'),
-            subtitle: const Text('List with multiple transactions'),
-            onTap: () => _openTransactionDemo(context, _createLoadedTransactionState()),
-          ),
-          ListTile(
-            title: const Text('Transactions - Empty'),
-            subtitle: const Text('Glow is ready to receive funds.'),
-            onTap: () => _openTransactionDemo(context, TransactionListState.empty()),
-          ),
-          ListTile(
-            title: const Text('Transactions - Loading'),
-            subtitle: const Text('Loading state'),
-            onTap: () => _openTransactionDemo(context, TransactionListState.loading()),
-          ),
-          ListTile(
-            title: const Text('Transactions - Error'),
-            subtitle: const Text('Error state'),
-            onTap: () =>
-                _openTransactionDemo(context, TransactionListState.error('Failed to load transactions')),
-          ),
-        ],
+            ListTile(
+              title: const Text('Balance - Loaded'),
+              subtitle: const Text('Normal state with balance'),
+              onTap: () => _openBalanceDemo(context, _createLoadedBalanceState()),
+            ),
+            ListTile(
+              title: const Text('Balance - Loading'),
+              subtitle: const Text('Loading/syncing state'),
+              onTap: () => _openBalanceDemo(context, BalanceState.loading()),
+            ),
+            ListTile(
+              title: const Text('Balance - With Fiat'),
+              subtitle: const Text('Balance with fiat conversion'),
+              onTap: () => _openBalanceDemo(context, _createBalanceWithFiatState()),
+            ),
+            ListTile(
+              title: const Text('Balance - Large Amount'),
+              subtitle: const Text('Test with large balance'),
+              onTap: () => _openBalanceDemo(context, _createLargeBalanceState()),
+            ),
+            const Divider(height: 32),
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Transaction List Demos',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              title: const Text('Transactions - With Data'),
+              subtitle: const Text('List with multiple transactions'),
+              onTap: () => _openTransactionDemo(context, _createLoadedTransactionState()),
+            ),
+            ListTile(
+              title: const Text('Transactions - Empty'),
+              subtitle: const Text('Glow is ready to receive funds.'),
+              onTap: () => _openTransactionDemo(context, TransactionListState.empty()),
+            ),
+            ListTile(
+              title: const Text('Transactions - Loading'),
+              subtitle: const Text('Loading state'),
+              onTap: () => _openTransactionDemo(context, TransactionListState.loading()),
+            ),
+            ListTile(
+              title: const Text('Transactions - Error'),
+              subtitle: const Text('Error state'),
+              onTap: () =>
+                  _openTransactionDemo(context, TransactionListState.error('Failed to load transactions')),
+            ),
+          ],
+        ),
       ),
     );
   }

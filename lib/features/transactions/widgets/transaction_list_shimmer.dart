@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:glow/features/home/widgets/transactions/theme/transaction_list_text_styles.dart';
 import 'package:shimmer/shimmer.dart';
 
 class TransactionListShimmer extends StatelessWidget {
@@ -60,25 +59,36 @@ class _TransactionItemShimmer extends StatelessWidget {
                   offset: const Offset(-8, 0),
                   child: const Text(
                     '',
-                    style: TransactionItemTextStyles.title,
+                    style: TextStyle(fontSize: 12.25, fontWeight: FontWeight.w400, height: 1.2, letterSpacing: 0.25),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 subtitle: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[Text('', style: TransactionItemTextStyles.subtitle)],
+                    children: <Widget>[
+                      Text(
+                        '',
+                        style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w400, height: 1.16, letterSpacing: 0.39),
+                      ),
+                    ],
                   ),
                 ),
-                trailing: SizedBox(
+                trailing: const SizedBox(
                   height: 44,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      const Text('', style: TransactionItemTextStyles.amount),
-                      Text('', style: TransactionItemTextStyles.fee),
+                      Text(
+                        '',
+                        style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500, height: 1.28, letterSpacing: 0.5),
+                      ),
+                      Text(
+                        '',
+                        style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w400, height: 1.16, letterSpacing: 0.39),
+                      ),
                     ],
                   ),
                 ),

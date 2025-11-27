@@ -106,7 +106,7 @@ class _NetworkOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isSelected = network == selectedNetwork;
-    
+
     return InkWell(
       onTap: onTap,
       child: Padding(

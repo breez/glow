@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/features/home/widgets/balance/balance_display_layout.dart';
-import 'package:glow/features/home/widgets/balance/models/balance_state.dart';
-import 'package:glow/features/home/widgets/balance/providers/balance_providers.dart';
+import 'package:glow/features/balance/balance_display_layout.dart';
+import 'package:glow/features/balance/models/balance_state.dart';
+import 'package:glow/features/balance/providers/balance_providers.dart';
 
 /// BalanceDisplay widget - handles setup and dependency injection
 /// - BalanceDisplay: handles setup
