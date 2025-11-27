@@ -72,15 +72,20 @@ class HomeStateFactory {
     required List<Payment> payments,
     required bool hasSynced,
     Profile? profile,
+    bool hasActiveFilter = false,
   }) {
     if (payments.isEmpty) {
-      return TransactionListState.empty();
+      return TransactionListState.empty(hasActiveFilter: hasActiveFilter);
     }
 
     final List<TransactionItemState> transactionItems = payments
         .map((Payment payment) => createTransactionItemState(payment, profile: profile))
         .toList();
 
-    return TransactionListState.loaded(transactions: transactionItems, hasSynced: hasSynced);
+    return TransactionListState.loaded(
+      transactions: transactionItems,
+      hasSynced: hasSynced,
+      hasActiveFilter: hasActiveFilter,
+    );
   }
 }
