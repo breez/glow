@@ -2,30 +2,52 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "glow (debug)",
+            "name": "glow (dev debug)",
             "request": "launch",
             "type": "dart",
             "args": [
-                "--dart-define-from-file=secrets.json",
+                "--flavor",
+                "dev",
+                "--dart-define=ENV=dev"
             ]
         },
         {
-            "name": "glow (release)",
+            "name": "glow (dev release)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",
             "args": [
-                "--dart-define-from-file=secrets.json",
+                "--flavor",
+                "dev",
+                "--dart-define=ENV=dev"
+            ]
+        },
+        {
+            "name": "glow (prod debug)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--flavor",
+                "prod",
+                "--dart-define=ENV=prod"
+            ]
+        },
+        {
+            "name": "glow (prod release)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "prod",
+                "--dart-define=ENV=prod"
             ]
         },
         {
             "name": "build_tool",
             "cwd": "build/breez_sdk_spark_flutter/build/build_tool",
             "request": "launch",
-            "type": "dart",
-            "args": [
-                "--dart-define-from-file=secrets.json",
-            ]
+            "type": "dart"
         }
     ]
 }

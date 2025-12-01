@@ -1,0 +1,6 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.prod.xcconfig"
+#include "Generated.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = com.breez.spark.glow
+PRODUCT_NAME = Glow
+FLUTTER_DART_DEFINE = ENV=prod
