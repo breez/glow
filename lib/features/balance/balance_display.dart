@@ -8,7 +8,9 @@ import 'package:glow/features/balance/providers/balance_providers.dart';
 /// - BalanceDisplay: handles setup
 /// - BalanceDisplayLayout: pure presentation widget
 class BalanceDisplay extends ConsumerWidget {
-  const BalanceDisplay({super.key});
+  const BalanceDisplay({super.key, this.scrollOffsetFactor = 0.0});
+
+  final double scrollOffsetFactor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,6 +22,7 @@ class BalanceDisplay extends ConsumerWidget {
       state: state,
       onBalanceTap: _onBalanceTap,
       onFiatBalanceTap: _onFiatBalanceTap,
+      scrollOffsetFactor: scrollOffsetFactor,
     );
   }
 

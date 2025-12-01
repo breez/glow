@@ -62,14 +62,17 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
       builder: (BuildContext context, Widget? child) {
         final double balanceHeight;
         final double filterHeight;
+        final double scrollOffsetFactor;
 
         if (!hasTransactions) {
           balanceHeight = balanceMaxHeight;
           filterHeight = 0.0;
+          scrollOffsetFactor = 0.0;
         } else if (hasActiveFilter) {
           // When a filter is active, the balance shrinks and filter controls are locked open.
           balanceHeight = balanceMinHeight;
           filterHeight = filterMaxHeight;
+          scrollOffsetFactor = 1.0;
         } else {
           // Otherwise, animate based on scroll position.
           final double offset = _scrollController.hasClients ? _scrollController.offset : 0.0;
@@ -78,6 +81,9 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
             (balanceMaxHeight - offset).clamp(balanceMinHeight, balanceMaxHeight),
           );
           filterHeight = offset.clamp(0.0, filterMaxHeight);
+          // Calculate scroll offset factor: 0.0 at top, 1.0 when fully scrolled
+          final double maxScroll = balanceMaxHeight - balanceMinHeight;
+          scrollOffsetFactor = (offset / maxScroll).clamp(0.0, 1.0);
         }
 
         return Scaffold(
@@ -91,7 +97,10 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
           body: SafeArea(
             child: Column(
               children: <Widget>[
-                SizedBox(height: balanceHeight, child: const BalanceDisplay()),
+                SizedBox(
+                  height: balanceHeight,
+                  child: BalanceDisplay(scrollOffsetFactor: scrollOffsetFactor),
+                ),
                 SizedBox(height: filterHeight, child: const TransactionFilterView()),
                 const ActiveFiltersView(),
                 Expanded(child: TransactionList(scrollController: _scrollController)),
