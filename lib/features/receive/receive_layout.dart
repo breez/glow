@@ -33,7 +33,9 @@ class ReceiveLayout extends StatelessWidget {
         onChangeMethod: onChangeMethod,
         goBackInFlow: goBackInFlow,
       ),
-      body: ReceiveViewSwitcher(state: state, formControllers: formControllers),
+      body: SafeArea(
+        child: ReceiveViewSwitcher(state: state, formControllers: formControllers),
+      ),
       bottomNavigationBar: ReceiveBottomNavButton(state: state, onPressed: onPressed),
     );
   }

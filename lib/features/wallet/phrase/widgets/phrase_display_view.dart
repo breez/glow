@@ -34,7 +34,7 @@ class PhraseDisplayView extends StatelessWidget {
     return PhraseDisplayView(
       mnemonic: mnemonic,
       title: 'Your backup phrase',
-      buttonText: 'CLOSE',
+      buttonText: 'OK',
       onButtonPressed: onClose,
       showCloseButton: true,
     );
@@ -49,11 +49,13 @@ class PhraseDisplayView extends StatelessWidget {
             ? IconButton(icon: const Icon(Icons.close), onPressed: onButtonPressed)
             : null,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[BackupPhraseGrid(mnemonic: mnemonic)],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[BackupPhraseGrid(mnemonic: mnemonic)],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavButton(text: buttonText, onPressed: onButtonPressed),

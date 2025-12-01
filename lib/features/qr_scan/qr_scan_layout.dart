@@ -21,22 +21,22 @@ class QRScanLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: MobileScanner(key: qrKey, controller: cameraController),
-          ),
-          const ScanOverlay(),
-          SafeArea(
-            child: Stack(
+      body: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            Positioned.fill(
+              child: MobileScanner(key: qrKey, controller: cameraController),
+            ),
+            const ScanOverlay(),
+            Stack(
               children: <Widget>[
                 Positioned(right: 10, top: 5, child: _ImagePickerIcon(onImagePickerTap: onImagePickerTap)),
                 if (defaultTargetPlatform == TargetPlatform.iOS)
                   Positioned(bottom: 30.0, right: 0, left: 0, child: _CancelButton(onCancel: onCancel)),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

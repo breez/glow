@@ -35,12 +35,14 @@ class DevelopersLayout extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: <Widget>[
-          // Logs Card
-          LogsCard(onShareCurrentSession: onShareCurrentSession, onShareAllLogs: onShareAllLogs),
-        ],
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: <Widget>[
+            // Logs Card
+            LogsCard(onShareCurrentSession: onShareCurrentSession, onShareAllLogs: onShareAllLogs),
+          ],
+        ),
       ),
     );
   }

@@ -35,23 +35,25 @@ class SendLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(leading: const BackButton(), title: const Text('Payee Information')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: CardWrapper(
-            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-            child: Column(
-              children: <Widget>[
-                SendForm(
-                  formKey: formKey,
-                  controller: controller,
-                  focusNode: focusNode,
-                  errorMessage: errorMessage,
-                  onSubmit: onSubmit,
-                ),
-                const SizedBox(height: 36),
-                PasteAndScanActions(onPaste: onPaste, onScan: onScan, textGroup: textGroup),
-              ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: CardWrapper(
+              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+              child: Column(
+                children: <Widget>[
+                  SendForm(
+                    formKey: formKey,
+                    controller: controller,
+                    focusNode: focusNode,
+                    errorMessage: errorMessage,
+                    onSubmit: onSubmit,
+                  ),
+                  const SizedBox(height: 36),
+                  PasteAndScanActions(onPaste: onPaste, onScan: onScan, textGroup: textGroup),
+                ],
+              ),
             ),
           ),
         ),

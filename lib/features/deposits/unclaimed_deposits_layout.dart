@@ -24,14 +24,16 @@ class UnclaimedDepositsLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Pending Deposits')),
-      body: switch (depositsAsync) {
-        AsyncData<List<DepositCardData>>(:final List<DepositCardData> value) => _DepositsListView(
-          deposits: value,
-          depositCardBuilder: depositCardBuilder,
-        ),
-        AsyncLoading<List<DepositCardData>>() => const _LoadingView(),
-        AsyncError<List<DepositCardData>>(:final Object error) => _ErrorView(error: error),
-      },
+      body: SafeArea(
+        child: switch (depositsAsync) {
+          AsyncData<List<DepositCardData>>(:final List<DepositCardData> value) => _DepositsListView(
+            deposits: value,
+            depositCardBuilder: depositCardBuilder,
+          ),
+          AsyncLoading<List<DepositCardData>>() => const _LoadingView(),
+          AsyncError<List<DepositCardData>>(:final Object error) => _ErrorView(error: error),
+        },
+      ),
     );
   }
 }
