@@ -17,13 +17,20 @@ dart run build_runner build --delete-conflicting-outputs
 Create `secrets.json` in project root (gitignored):
 ```json
 {
-  "BREEZ_API_KEY": "your_api_key",
+  "BREEZ_API_KEY": "your_api_key"
 }
 ```
 
 ## Running
+
+Development build:
 ```bash
-flutter run --dart-define-from-file=secrets.json
+flutter run --flavor dev --dart-define=ENV=dev --dart-define-from-file=secrets.json
+```
+
+Production build:
+```bash
+flutter run --flavor prod --dart-define=ENV=prod --dart-define-from-file=secrets.json
 ```
 
 ## Testing
@@ -39,7 +46,23 @@ flutter test integration_test
 ```
 
 ## Building
+
+Development:
 ```bash
-flutter build apk --dart-define-from-file=secrets.json
-flutter build ios --dart-define-from-file=secrets.json
+flutter build apk --flavor dev --dart-define=ENV=dev --dart-define-from-file=secrets.json --release
+flutter build ios --flavor dev --dart-define=ENV=dev --dart-define-from-file=secrets.json --release
 ```
+
+Production:
+```bash
+flutter build apk --flavor prod --dart-define=ENV=prod --dart-define-from-file=secrets.json --release
+flutter build ios --flavor prod --dart-define=ENV=prod --dart-define-from-file=secrets.json --release
+```
+
+## Flavors
+
+The app uses two flavors with isolated secure storage:
+- **dev** - Development builds (`com.breez.spark.glow.dev`)
+- **prod** - Production builds (`com.breez.spark.glow`)
+
+This prevents data conflicts between debug and release builds.

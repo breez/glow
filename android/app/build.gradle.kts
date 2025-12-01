@@ -19,6 +19,10 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.breez.spark.glow"
@@ -28,6 +32,22 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            resValue("string", "app_name", "Glow Dev")
+            buildConfigField("String", "ENV", "\"dev\"")
+        }
+        create("prod") {
+            dimension = "environment"
+            resValue("string", "app_name", "Glow")
+            buildConfigField("String", "ENV", "\"prod\"")
+        }
     }
 
     buildTypes {

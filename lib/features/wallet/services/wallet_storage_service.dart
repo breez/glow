@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:glow/config/environment.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/features/wallet/models/wallet_metadata.dart';
 
@@ -19,15 +20,29 @@ class WalletStorageService with LoggerMixin {
   static const String _accountName = 'Glow';
   static const KeychainAccessibility _keychainAccessibility = KeychainAccessibility.first_unlock;
 
-  final FlutterSecureStorage _storage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      sharedPreferencesName: 'glow_prefs',
-      preferencesKeyPrefix: 'glow_',
-      resetOnError: true,
-    ),
-    iOptions: IOSOptions(accountName: _accountName, accessibility: _keychainAccessibility),
-    mOptions: MacOsOptions(accountName: _accountName, accessibility: _keychainAccessibility),
-  );
+  /// Get environment-aware storage configuration
+  static FlutterSecureStorage _createStorage() {
+    final Environment env = Environment.current;
+    final String suffix = env.storageSuffix;
+
+    return FlutterSecureStorage(
+      aOptions: AndroidOptions(
+        sharedPreferencesName: 'glow_prefs$suffix',
+        preferencesKeyPrefix: 'glow${suffix}_',
+        resetOnError: true,
+      ),
+      iOptions: IOSOptions(
+        accountName: '$_accountName$suffix',
+        accessibility: _keychainAccessibility,
+      ),
+      mOptions: MacOsOptions(
+        accountName: '$_accountName$suffix',
+        accessibility: _keychainAccessibility,
+      ),
+    );
+  }
+
+  final FlutterSecureStorage _storage = _createStorage();
 
   // ============================================================================
   // Wallet List Management
