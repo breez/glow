@@ -34,7 +34,7 @@ class NetworkBottomSheet extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 // Title
-                Text('Network', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                Text('Switch Network', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text(
                   'Switch between mainnet and regtest',
@@ -106,7 +106,7 @@ class _NetworkOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isSelected = network == selectedNetwork;
-    
+
     return InkWell(
       onTap: onTap,
       child: Padding(

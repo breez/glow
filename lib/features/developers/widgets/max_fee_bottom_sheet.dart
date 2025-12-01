@@ -284,27 +284,26 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                 const SizedBox(height: 24),
 
                 // Buttons
-                Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          widget.onReset();
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Reset'),
-                      ),
+                    FilledButton(
+                      onPressed: () {
+                        widget.onSave(_currentFee);
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Save'),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 2,
-                      child: FilledButton(
-                        onPressed: () {
-                          widget.onSave(_currentFee);
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Save'),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: () {
+                        widget.onReset();
+                        Navigator.pop(context);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
                       ),
+                      child: const Text('Reset'),
                     ),
                   ],
                 ),

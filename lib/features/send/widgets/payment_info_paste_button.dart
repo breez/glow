@@ -17,7 +17,6 @@ class PaymentInfoPasteButton extends StatelessWidget {
         child: OutlinedButton.icon(
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Colors.white),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           icon: const Icon(Icons.content_paste, size: 20.0),
           label: AutoSizeText(

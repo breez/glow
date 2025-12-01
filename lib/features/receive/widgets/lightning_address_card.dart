@@ -22,7 +22,7 @@ class LightningAddressCard extends ConsumerWidget {
 
         showMenu(
           context: context,
-          color: themeData.cardTheme.color,
+          color: themeData.colorScheme.surfaceContainer,
           position: RelativeRect.fromRect(Rect.fromPoints(offset, offset), Offset.zero & overlay.size),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
           items: const <PopupMenuItem<String>>[

@@ -1,14 +1,13 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glow/features/home/models/home_state_factory.dart';
-import 'package:glow/features/home/widgets/balance/balance_display_layout.dart';
-import 'package:glow/features/home/widgets/balance/models/balance_state.dart';
-import 'package:glow/features/home/widgets/balance/widgets/balance_display_shimmer.dart';
-import 'package:glow/features/home/widgets/transactions/models/transaction_list_state.dart';
-import 'package:glow/features/home/widgets/transactions/services/transaction_formatter.dart';
-import 'package:glow/features/home/widgets/transactions/transaction_list_layout.dart';
-import 'package:glow/features/home/widgets/transactions/widgets/transaction_list_shimmer.dart';
+import 'package:glow/core/services/transaction_formatter.dart';
+import 'package:glow/features/balance/balance_display_layout.dart';
+import 'package:glow/features/balance/models/balance_state.dart';
+import 'package:glow/features/balance/widgets/balance_display_shimmer.dart';
+import 'package:glow/features/transactions/models/transaction_list_state.dart';
+import 'package:glow/features/transactions/transaction_list_layout.dart';
+import 'package:glow/features/transactions/widgets/transaction_list_shimmer.dart';
 
 void main() {
   group('BalanceFormatter Unit Tests', () {
@@ -87,10 +86,10 @@ void main() {
     });
   });
 
-  group('HomeStateFactory Unit Tests', () {
-    const HomeStateFactory factory = HomeStateFactory(transactionFormatter: TransactionFormatter());
+  group('TransactionItemState Unit Tests', () {
+    const TransactionFormatter formatter = TransactionFormatter();
 
-    test('creates transaction item state', () {
+    test('creates transaction item state with formatted values', () {
       final Payment payment = Payment(
         id: 'test_001',
         amount: BigInt.from(50000),
@@ -101,15 +100,26 @@ void main() {
         timestamp: BigInt.from(DateTime.now().millisecondsSinceEpoch ~/ 1000),
       );
 
-      final TransactionItemState state = factory.createTransactionItemState(payment);
+      final TransactionItemState state = TransactionItemState(
+        payment: payment,
+        formattedAmount: formatter.formatSats(payment.amount),
+        formattedAmountWithSign: formatter.formatAmountWithSign(payment.amount, payment.paymentType),
+        formattedTime: formatter.formatRelativeTime(payment.timestamp),
+        formattedStatus: formatter.formatStatus(payment.status),
+        formattedMethod: formatter.formatMethod(payment.method),
+        description: '',
+        isReceive: payment.paymentType == PaymentType.receive,
+      );
 
       expect(state.formattedAmount, '50,000');
       expect(state.formattedAmountWithSign, '+50,000');
       expect(state.isReceive, true);
       expect(state.formattedStatus, 'Completed');
     });
+  });
 
-    test('creates transaction list state', () {
+  group('TransactionListState Unit Tests', () {
+    test('creates loaded transaction list state', () {
       final Payment payment = Payment(
         id: 'test_001',
         amount: BigInt.from(50000),
@@ -120,8 +130,19 @@ void main() {
         timestamp: BigInt.from(DateTime.now().millisecondsSinceEpoch ~/ 1000),
       );
 
-      final TransactionListState state = factory.createTransactionListState(
-        payments: <Payment>[payment],
+      final TransactionItemState item = TransactionItemState(
+        payment: payment,
+        formattedAmount: '50,000',
+        formattedAmountWithSign: '+50,000',
+        formattedTime: 'Just now',
+        formattedStatus: 'Completed',
+        formattedMethod: 'Lightning',
+        description: '',
+        isReceive: true,
+      );
+
+      final TransactionListState state = TransactionListState.loaded(
+        transactions: <TransactionItemState>[item],
         hasSynced: true,
       );
 
@@ -131,10 +152,7 @@ void main() {
     });
 
     test('creates empty transaction list state', () {
-      final TransactionListState state = factory.createTransactionListState(
-        payments: <Payment>[],
-        hasSynced: true,
-      );
+      final TransactionListState state = TransactionListState.empty();
 
       expect(state.isEmpty, true);
       expect(state.hasTransactions, false);

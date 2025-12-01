@@ -19,7 +19,6 @@ class PaymentInfoScanButton extends StatelessWidget {
         child: OutlinedButton.icon(
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Colors.white),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           icon: Icon(Icons.qr_code, size: 24.0, color: themeData.colorScheme.primary),
           label: AutoSizeText(
