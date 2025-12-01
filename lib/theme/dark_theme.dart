@@ -44,6 +44,16 @@ final FilledButtonThemeData darkFilledButtonTheme = FilledButtonThemeData(
   ),
 );
 
+final OutlinedButtonThemeData darkOutlinedButtonTheme = OutlinedButtonThemeData(
+  style: OutlinedButton.styleFrom(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  ),
+);
+
+const SliderThemeData darkSliderTheme = SliderThemeData(
+  valueIndicatorColor: BreezColors.primaryLight,
+);
+
 const FloatingActionButtonThemeData darkFabTheme = FloatingActionButtonThemeData(
   backgroundColor: BreezColors.primaryLight,
   foregroundColor: Colors.white,
@@ -108,6 +118,17 @@ const SnackBarThemeData darkSnackBarTheme = SnackBarThemeData(
   contentTextStyle: TextStyle(color: Colors.white, fontSize: 14.0, letterSpacing: 0.25, height: 1.2),
 );
 
+const PopupMenuThemeData darkPopupMenuTheme = PopupMenuThemeData(
+  color: BreezColors.darkSurface,
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+);
+
+const DropdownMenuThemeData darkDropdownMenuTheme = DropdownMenuThemeData();
+
+const BottomSheetThemeData darkBottomSheetTheme = BottomSheetThemeData(
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+);
+
 /// Builds the dark theme by composing all theme components
 ThemeData buildDarkTheme() {
   return ThemeData(
@@ -126,6 +147,8 @@ ThemeData buildDarkTheme() {
     appBarTheme: darkAppBarTheme,
     bottomAppBarTheme: darkBottomAppBarTheme,
     filledButtonTheme: darkFilledButtonTheme,
+    outlinedButtonTheme: darkOutlinedButtonTheme,
+    sliderTheme: darkSliderTheme,
     floatingActionButtonTheme: darkFabTheme,
     dialogTheme: darkDialogTheme,
     cardTheme: darkCardTheme,
@@ -133,6 +156,9 @@ ThemeData buildDarkTheme() {
     drawerTheme: darkDrawerTheme,
     datePickerTheme: darkDatePickerTheme,
     snackBarTheme: darkSnackBarTheme,
+    popupMenuTheme: darkPopupMenuTheme,
+    dropdownMenuTheme: darkDropdownMenuTheme,
+    bottomSheetTheme: darkBottomSheetTheme,
     primaryIconTheme: const IconThemeData(color: Colors.white),
     textSelectionTheme: TextSelectionThemeData(
       selectionColor: Colors.white.withValues(alpha: .5),

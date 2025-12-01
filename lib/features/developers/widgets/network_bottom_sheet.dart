@@ -34,7 +34,7 @@ class NetworkBottomSheet extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 // Title
-                Text('Network', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                Text('Switch Network', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text(
                   'Switch between mainnet and regtest',

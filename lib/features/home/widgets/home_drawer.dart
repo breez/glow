@@ -5,7 +5,7 @@ import 'package:glow/features/profile/models/profile.dart';
 import 'package:glow/features/profile/widgets/profile_avatar.dart';
 import 'package:glow/features/profile/widgets/profile_editor_dialog.dart';
 import 'package:glow/features/wallet/models/wallet_metadata.dart';
-import 'package:glow/features/wallet/onboarding/widgets/breez_sdk_footer.dart';
+import 'package:glow/features/wallet_onboarding/widgets/breez_sdk_footer.dart';
 import 'package:glow/features/wallet/providers/wallet_provider.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/theme/colors.dart';

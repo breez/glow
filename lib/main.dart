@@ -9,7 +9,7 @@ import 'package:glow/features/home/home_screen.dart';
 import 'package:glow/core/services/transaction_formatter.dart';
 import 'package:glow/features/profile/services/profile_image_cache.dart';
 import 'package:glow/features/wallet/models/wallet_metadata.dart';
-import 'package:glow/features/wallet/onboarding/onboarding_screen.dart';
+import 'package:glow/features/wallet_onboarding/onboarding_screen.dart';
 import 'package:glow/features/wallet/providers/wallet_provider.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/sdk_provider.dart';

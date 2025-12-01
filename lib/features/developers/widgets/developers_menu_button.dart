@@ -39,7 +39,7 @@ class DevelopersMenuButton extends StatelessWidget {
         const PopupMenuItem<String>(
           value: 'network',
           child: Row(
-            children: <Widget>[Icon(Icons.swap_horiz, size: 20), SizedBox(width: 12), Text('Network')],
+            children: <Widget>[Icon(Icons.swap_horiz, size: 20), SizedBox(width: 12), Text('Switch Network')],
           ),
         ),
       );
