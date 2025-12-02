@@ -22,11 +22,12 @@ class DepositClaimer {
   /// Formats deposit claim error for user-friendly display
   String formatError(DepositClaimError error) {
     return error.when(
-      depositClaimFeeExceeded: (String tx, int vout, Fee? maxFee, BigInt actualFee) {
-        final String maxFeeStr = (maxFee != null) ? ' (your max: ${formatMaxFee(maxFee)}). ' : '';
-        return 'Fee exceeds limit: $actualFee sats needed$maxFeeStr'
-            'Tap "Retry Claim" after increasing your maximum deposit claim fee rate(sat/vByte).';
-      },
+      maxDepositClaimFeeExceeded:
+          (String tx, int vout, Fee? maxFee, BigInt requiredFeeSats, BigInt requiredFeeRateSatPerVbyte) {
+            final String maxFeeStr = (maxFee != null) ? ' (your max: ${formatMaxFee(maxFee)}). ' : '';
+            return 'Fee exceeds limit: $requiredFeeSats sats needed$maxFeeStr'
+                'Tap "Retry Claim" after increasing your maximum deposit claim fee rate(sat/vByte) to at least $requiredFeeRateSatPerVbyte sat/vBye.';
+          },
       missingUtxo: (String tx, int vout) => 'Transaction output not found on chain',
       generic: (String message) => message,
     );

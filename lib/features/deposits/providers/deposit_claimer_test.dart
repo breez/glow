@@ -50,11 +50,12 @@ void main() {
 
   group('formatError', () {
     test('depositClaimFeeExceeded with fixed max fee', () {
-      final DepositClaimError error = DepositClaimError.depositClaimFeeExceeded(
+      final DepositClaimError error = DepositClaimError.maxDepositClaimFeeExceeded(
         tx: 'test',
         vout: 0,
         maxFee: Fee.fixed(amount: BigInt.from(1000)),
-        actualFee: BigInt.from(1500),
+        requiredFeeSats: BigInt.from(1500),
+        requiredFeeRateSatPerVbyte: BigInt.from(15),
       );
       final String result = claimer.formatError(error);
       expect(result, contains('1500 sats needed'));
@@ -62,11 +63,12 @@ void main() {
       expect(result, contains('Retry Claim'));
     });
     test('depositClaimFeeExceeded with rate max fee', () {
-      final DepositClaimError error = DepositClaimError.depositClaimFeeExceeded(
+      final DepositClaimError error = DepositClaimError.maxDepositClaimFeeExceeded(
         tx: 'test',
         vout: 0,
         maxFee: Fee.rate(satPerVbyte: BigInt.from(10)),
-        actualFee: BigInt.from(1500),
+        requiredFeeSats: BigInt.from(1500),
+        requiredFeeRateSatPerVbyte: BigInt.from(15),
       );
       final String result = claimer.formatError(error);
       expect(result, contains('1500 sats needed'));
