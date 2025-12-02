@@ -300,9 +300,7 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                         widget.onReset();
                         Navigator.pop(context);
                       },
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(48),
-                      ),
+                      style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
                       child: const Text('Reset'),
                     ),
                   ],

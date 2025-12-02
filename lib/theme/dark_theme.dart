@@ -45,14 +45,10 @@ final FilledButtonThemeData darkFilledButtonTheme = FilledButtonThemeData(
 );
 
 final OutlinedButtonThemeData darkOutlinedButtonTheme = OutlinedButtonThemeData(
-  style: OutlinedButton.styleFrom(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-  ),
+  style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
 );
 
-const SliderThemeData darkSliderTheme = SliderThemeData(
-  valueIndicatorColor: BreezColors.primaryLight,
-);
+const SliderThemeData darkSliderTheme = SliderThemeData(valueIndicatorColor: BreezColors.primaryLight);
 
 const FloatingActionButtonThemeData darkFabTheme = FloatingActionButtonThemeData(
   backgroundColor: BreezColors.primaryLight,

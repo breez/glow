@@ -11,21 +11,21 @@ enum Environment {
 
   /// Get environment suffix for storage keys
   String get storageSuffix => switch (this) {
-        Environment.dev => '_dev',
-        Environment.prod => '',
-      };
+    Environment.dev => '_dev',
+    Environment.prod => '',
+  };
 
   /// Get application ID suffix
   String get appIdSuffix => switch (this) {
-        Environment.dev => '.dev',
-        Environment.prod => '',
-      };
+    Environment.dev => '.dev',
+    Environment.prod => '',
+  };
 
   /// Get display name for the environment
   String get displayName => switch (this) {
-        Environment.dev => 'Development',
-        Environment.prod => 'Production',
-      };
+    Environment.dev => 'Development',
+    Environment.prod => 'Production',
+  };
 
   /// Check if this is a development build
   bool get isDev => this == Environment.dev;

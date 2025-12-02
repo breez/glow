@@ -192,11 +192,7 @@ class TransactionListEmpty extends StatelessWidget {
         padding: EdgeInsets.all(32),
         child: Text(
           'Glow is ready to receive funds.',
-          style: TextStyle(
-            fontSize: 16.4,
-            letterSpacing: 0.15,
-            fontWeight: FontWeight.w500,
-          ),
+          style: TextStyle(fontSize: 16.4, letterSpacing: 0.15, fontWeight: FontWeight.w500),
         ),
       ),
     );

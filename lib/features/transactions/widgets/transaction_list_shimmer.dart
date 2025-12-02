@@ -59,7 +59,12 @@ class _TransactionItemShimmer extends StatelessWidget {
                   offset: const Offset(-8, 0),
                   child: const Text(
                     '',
-                    style: TextStyle(fontSize: 12.25, fontWeight: FontWeight.w400, height: 1.2, letterSpacing: 0.25),
+                    style: TextStyle(
+                      fontSize: 12.25,
+                      fontWeight: FontWeight.w400,
+                      height: 1.2,
+                      letterSpacing: 0.25,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -70,7 +75,12 @@ class _TransactionItemShimmer extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         '',
-                        style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w400, height: 1.16, letterSpacing: 0.39),
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w400,
+                          height: 1.16,
+                          letterSpacing: 0.39,
+                        ),
                       ),
                     ],
                   ),
@@ -83,11 +93,21 @@ class _TransactionItemShimmer extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         '',
-                        style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500, height: 1.28, letterSpacing: 0.5),
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w500,
+                          height: 1.28,
+                          letterSpacing: 0.5,
+                        ),
                       ),
                       Text(
                         '',
-                        style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w400, height: 1.16, letterSpacing: 0.39),
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w400,
+                          height: 1.16,
+                          letterSpacing: 0.39,
+                        ),
                       ),
                     ],
                   ),

@@ -15,9 +15,7 @@ class PaymentInfoPasteButton extends StatelessWidget {
       child: Tooltip(
         message: 'Paste Invoice or Lightning Address',
         child: OutlinedButton.icon(
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Colors.white),
-          ),
+          style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.white)),
           icon: const Icon(Icons.content_paste, size: 20.0),
           label: AutoSizeText(
             'PASTE',

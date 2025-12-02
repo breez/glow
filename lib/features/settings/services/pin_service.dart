@@ -24,14 +24,8 @@ class PinService with LoggerMixin {
         preferencesKeyPrefix: 'glow${suffix}_',
         resetOnError: true,
       ),
-      iOptions: IOSOptions(
-        accountName: '$_accountName$suffix',
-        accessibility: _keychainAccessibility,
-      ),
-      mOptions: MacOsOptions(
-        accountName: '$_accountName$suffix',
-        accessibility: _keychainAccessibility,
-      ),
+      iOptions: IOSOptions(accountName: '$_accountName$suffix', accessibility: _keychainAccessibility),
+      mOptions: MacOsOptions(accountName: '$_accountName$suffix', accessibility: _keychainAccessibility),
     );
   }
 

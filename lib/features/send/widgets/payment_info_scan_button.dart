@@ -17,9 +17,7 @@ class PaymentInfoScanButton extends StatelessWidget {
       child: Tooltip(
         message: 'Scan Invoice or Lightning Address',
         child: OutlinedButton.icon(
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Colors.white),
-          ),
+          style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.white)),
           icon: Icon(Icons.qr_code, size: 24.0, color: themeData.colorScheme.primary),
           label: AutoSizeText(
             'SCAN',
