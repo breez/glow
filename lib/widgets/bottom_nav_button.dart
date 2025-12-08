@@ -46,7 +46,7 @@ class BottomNavButton extends StatelessWidget {
     return Padding(
       padding:
           padding ??
-          EdgeInsets.only(bottom: stickToBottom ? MediaQuery.of(context).viewInsets.bottom + 40.0 : 40.0),
+          EdgeInsets.only(bottom: !stickToBottom ? MediaQuery.of(context).viewInsets.bottom + 40.0 : 40.0),
       child: Column(
         mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
         children: <Widget>[
@@ -67,7 +67,6 @@ class BottomNavButton extends StatelessWidget {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                            strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
