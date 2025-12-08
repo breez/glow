@@ -25,12 +25,12 @@ Create `secrets.json` in project root (gitignored):
 
 Development build:
 ```bash
-flutter run --flavor dev --dart-define=ENV=dev --dart-define-from-file=secrets.json
+flutter run --dart-define-from-file=secrets.json
 ```
 
 Production build:
 ```bash
-flutter run --flavor prod --dart-define=ENV=prod --dart-define-from-file=secrets.json
+flutter run --dart-define-from-file=secrets.json --release
 ```
 
 ## Testing
@@ -49,20 +49,12 @@ flutter test integration_test
 
 Development:
 ```bash
-flutter build apk --flavor dev --dart-define=ENV=dev --dart-define-from-file=secrets.json --release
-flutter build ios --flavor dev --dart-define=ENV=dev --dart-define-from-file=secrets.json --release
+flutter build apk --dart-define-from-file=secrets.json
+flutter build ios --dart-define-from-file=secrets.json
 ```
 
 Production:
 ```bash
-flutter build apk --flavor prod --dart-define=ENV=prod --dart-define-from-file=secrets.json --release
-flutter build ios --flavor prod --dart-define=ENV=prod --dart-define-from-file=secrets.json --release
+flutter build apk --dart-define-from-file=secrets.json --release
+flutter build ios --dart-define-from-file=secrets.json --release
 ```
-
-## Flavors
-
-The app uses two flavors with isolated secure storage:
-- **dev** - Development builds (`com.breez.spark.glow.dev`)
-- **prod** - Production builds (`com.breez.spark.glow`)
-
-This prevents data conflicts between debug and release builds.
