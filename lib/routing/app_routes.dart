@@ -13,6 +13,7 @@ import 'package:glow/features/send/send_screen.dart';
 import 'package:glow/features/send_payment/screens/bip21_screen.dart';
 import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
 import 'package:glow/features/send_payment/screens/bolt12_invoice_request_screen.dart';
+import 'package:glow/features/send_payment/screens/spark_invoice_screen.dart';
 import 'package:glow/features/settings/providers/pin_provider.dart';
 import 'package:glow/features/settings/security_backup_screen.dart';
 import 'package:glow/features/settings/widgets/pin_lock_screen.dart';
@@ -204,11 +205,8 @@ class AppRoutes {
 
       case sendSparkInvoice:
         final SparkInvoiceDetails args = settings.arguments as SparkInvoiceDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'Spark Invoice Payment',
-            content: _SparkInvoiceWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => SparkInvoiceScreen(invoiceDetails: args),
           settings: settings,
         );
 
@@ -408,35 +406,6 @@ class _SparkAddressWidget extends StatelessWidget {
           _InfoField(label: 'BIP21 URI', value: details.source.bip21Uri!, monospace: true),
         if (details.source.bip353Address != null)
           _InfoField(label: 'BIP353 Address', value: details.source.bip353Address!),
-      ],
-    );
-  }
-}
-
-class _SparkInvoiceWidget extends StatelessWidget {
-  final SparkInvoiceDetails details;
-
-  const _SparkInvoiceWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    final DateTime? expiry = details.expiryTime != null
-        ? DateTime.fromMillisecondsSinceEpoch(details.expiryTime!.toInt() * 1000)
-        : null;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Invoice', value: details.invoice, monospace: true),
-        _InfoField(label: 'Identity Key', value: details.identityPublicKey, monospace: true),
-        _InfoField(label: 'Network', value: details.network.name),
-        if (details.amount != null) _InfoField(label: 'Amount', value: _formatAmount(details.amount)),
-        if (details.description != null) _InfoField(label: 'Description', value: details.description!),
-        if (details.tokenIdentifier != null)
-          _InfoField(label: 'Token ID', value: details.tokenIdentifier!, monospace: true),
-        if (details.senderPublicKey != null)
-          _InfoField(label: 'Sender Key', value: details.senderPublicKey!, monospace: true),
-        if (expiry != null) _InfoField(label: 'Expires', value: expiry.toLocal().toString()),
       ],
     );
   }
