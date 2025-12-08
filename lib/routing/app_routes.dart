@@ -14,6 +14,7 @@ import 'package:glow/features/send_payment/screens/bip21_screen.dart';
 import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
 import 'package:glow/features/send_payment/screens/bolt11_payment_screen.dart';
 import 'package:glow/features/send_payment/screens/bolt12_invoice_request_screen.dart';
+import 'package:glow/features/send_payment/screens/bolt12_invoice_screen.dart';
 import 'package:glow/features/send_payment/screens/bolt12_offer_screen.dart';
 import 'package:glow/features/send_payment/screens/silent_payment_screen.dart';
 import 'package:glow/features/send_payment/screens/spark_address_screen.dart';
@@ -26,7 +27,6 @@ import 'package:glow/features/wallet/create_screen.dart';
 import 'package:glow/features/wallet/list_screen.dart';
 import 'package:glow/features/wallet_onboarding/onboarding_screen.dart';
 import 'package:glow/features/wallet_phrase/phrase_screen.dart';
-import 'package:glow/widgets/bottom_nav_button.dart';
 import 'package:glow/features/wallet_restore/restore_screen.dart';
 
 /// Handles navigation for payment flows and feature screens
@@ -137,11 +137,8 @@ class AppRoutes {
 
       case sendBolt12Invoice:
         final Bolt12InvoiceDetails args = settings.arguments as Bolt12InvoiceDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'BOLT12 Invoice',
-            content: _Bolt12InvoiceWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => Bolt12InvoiceScreen(invoiceDetails: args),
           settings: settings,
         );
 
@@ -273,148 +270,6 @@ class AppRoutes {
         );
     }
   }
-}
-
-// ============================================================================
-// Payment Detail Widgets
-// ============================================================================
-
-class _Bolt12InvoiceWidget extends StatelessWidget {
-  final Bolt12InvoiceDetails details;
-
-  const _Bolt12InvoiceWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Amount', value: _formatAmount(details.amountMsat)),
-        const Divider(height: 24),
-        _InfoField(label: 'Invoice', value: details.invoice.invoice, monospace: true),
-      ],
-    );
-  }
-}
-
-// ============================================================================
-// Helper Widgets and Functions
-// ============================================================================
-
-/// Placeholder screen for UI flows that haven't been implemented yet
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  final Widget content;
-
-  const _PlaceholderScreen({required this.title, required this.content});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Center(
-                child: Column(
-                  children: <Widget>[
-                    Icon(Icons.construction, size: 64, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(height: 16),
-                    Text('Coming Soon', style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 8),
-                    Text(
-                      'This screen is under development.\nShowing any available metadata.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Payment Details',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 16),
-                      content,
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomNavButton(
-        stickToBottom: true,
-        text: 'CLOSE',
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-    );
-  }
-}
-
-/// Helper widget to display a labeled field
-class _InfoField extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool monospace;
-
-  const _InfoField({required this.label, required this.value, this.monospace = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .7),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
-          SelectableText(
-            value,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontFamily: monospace ? 'monospace' : null),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Format amounts from millisatoshis
-String _formatAmount(BigInt? amountMsat) {
-  if (amountMsat == null) {
-    return 'Any amount';
-  }
-  final String sats = (amountMsat ~/ BigInt.from(1000)).toString();
-  return '$sats sats';
-}
-
-/// Format Amount type (handles both Bitcoin and Currency)
-String _formatAmountType(Amount amount) {
-  return amount.when(
-    bitcoin: (BigInt amountMsat) => _formatAmount(amountMsat),
-    currency: (String iso4217Code, BigInt fractionalAmount) => '$iso4217Code $fractionalAmount',
-  );
 }
 
 /// Screen shown when route is not found
