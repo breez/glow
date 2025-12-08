@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/features/wallet/models/wallet_metadata.dart';
-import 'package:glow/features/wallet/providers/wallet_provider.dart';
-import 'package:glow/features/wallet/services/wallet_storage_service.dart';
 import 'package:glow/features/profile/models/profile.dart';
 import 'package:glow/features/profile/models/profile_animal.dart';
 import 'package:glow/features/profile/models/profile_color.dart';
 import 'package:glow/features/profile/services/profile_image_service.dart';
+import 'package:glow/features/wallet/models/wallet_metadata.dart';
+import 'package:glow/features/wallet/providers/wallet_provider.dart';
+import 'package:glow/features/wallet/services/wallet_storage_service.dart';
 
 /// Generates a random profile with color and animal
 Profile generateProfile() {

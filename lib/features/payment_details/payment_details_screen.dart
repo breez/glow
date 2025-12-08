@@ -2,11 +2,11 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
+import 'package:glow/features/payment_details/models/payment_details_state.dart';
+import 'package:glow/features/payment_details/payment_details_layout.dart';
+import 'package:glow/features/payment_details/services/payment_formatter.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/sdk_provider.dart';
-import 'package:glow/features/payment_details/payment_details_layout.dart';
-import 'package:glow/features/payment_details/models/payment_details_state.dart';
-import 'package:glow/features/payment_details/services/payment_formatter.dart';
 import 'package:logger/logger.dart';
 
 final Logger log = AppLogger.getLogger('PaymentDetailsScreen');
