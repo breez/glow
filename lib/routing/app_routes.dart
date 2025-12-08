@@ -1,25 +1,33 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/features/receive/receive_screen.dart';
+import 'package:glow/features/deposits/unclaimed_deposits_screen.dart';
 import 'package:glow/features/developers/developers_screen.dart';
+import 'package:glow/features/lnurl/screens/lnurl_auth_screen.dart';
+import 'package:glow/features/lnurl/screens/lnurl_pay_screen.dart';
+import 'package:glow/features/lnurl/screens/lnurl_withdraw_screen.dart';
+import 'package:glow/features/payment_details/payment_details_screen.dart';
 import 'package:glow/features/qr_scan/qr_scan_view.dart';
+import 'package:glow/features/receive/receive_screen.dart';
+import 'package:glow/features/send/send_screen.dart';
+import 'package:glow/features/send_payment/screens/bip21_screen.dart';
+import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
+import 'package:glow/features/send_payment/screens/bolt11_payment_screen.dart';
+import 'package:glow/features/send_payment/screens/bolt12_invoice_request_screen.dart';
+import 'package:glow/features/send_payment/screens/bolt12_invoice_screen.dart';
+import 'package:glow/features/send_payment/screens/bolt12_offer_screen.dart';
+import 'package:glow/features/send_payment/screens/silent_payment_screen.dart';
+import 'package:glow/features/send_payment/screens/spark_address_screen.dart';
+import 'package:glow/features/send_payment/screens/spark_invoice_screen.dart';
 import 'package:glow/features/settings/providers/pin_provider.dart';
 import 'package:glow/features/settings/security_backup_screen.dart';
 import 'package:glow/features/settings/widgets/pin_lock_screen.dart';
 import 'package:glow/features/settings/widgets/pin_setup_screen.dart';
-import 'package:glow/features/payment_details/payment_details_screen.dart';
-import 'package:glow/features/send/send_screen.dart';
-import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
-import 'package:glow/features/send_payment/screens/bip21_screen.dart';
-import 'package:glow/features/lnurl/screens/lnurl_pay_screen.dart';
-import 'package:glow/features/deposits/unclaimed_deposits_screen.dart';
 import 'package:glow/features/wallet/create_screen.dart';
-import 'package:glow/features/wallet_restore/restore_screen.dart';
 import 'package:glow/features/wallet/list_screen.dart';
 import 'package:glow/features/wallet_onboarding/onboarding_screen.dart';
 import 'package:glow/features/wallet_phrase/phrase_screen.dart';
-import 'package:glow/widgets/bottom_nav_button.dart';
+import 'package:glow/features/wallet_restore/restore_screen.dart';
 
 /// Handles navigation for payment flows and feature screens
 ///
@@ -122,31 +130,22 @@ class AppRoutes {
 
       case sendBolt11:
         final Bolt11InvoiceDetails args = settings.arguments as Bolt11InvoiceDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'BOLT11 Invoice',
-            content: _Bolt11Widget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => Bolt11PaymentScreen(invoiceDetails: args),
           settings: settings,
         );
 
       case sendBolt12Invoice:
         final Bolt12InvoiceDetails args = settings.arguments as Bolt12InvoiceDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'BOLT12 Invoice',
-            content: _Bolt12InvoiceWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => Bolt12InvoiceScreen(invoiceDetails: args),
           settings: settings,
         );
 
       case sendBolt12Offer:
         final Bolt12OfferDetails args = settings.arguments as Bolt12OfferDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'BOLT12 Offer',
-            content: _Bolt12OfferWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => Bolt12OfferScreen(offerDetails: args),
           settings: settings,
         );
 
@@ -167,11 +166,8 @@ class AppRoutes {
 
       case sendSilentPayment:
         final SilentPaymentAddressDetails args = settings.arguments as SilentPaymentAddressDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'Silent Payment',
-            content: _SilentPaymentWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => SilentPaymentScreen(addressDetails: args),
           settings: settings,
         );
 
@@ -183,32 +179,23 @@ class AppRoutes {
         );
 
       case sendBolt12InvoiceRequest:
-        // final args = settings.arguments as Bolt12InvoiceRequestDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => const _PlaceholderScreen(
-            title: 'BOLT12 Invoice Request',
-            content: _Bolt12InvoiceRequestWidget(),
-          ),
+        final Bolt12InvoiceRequestDetails args = settings.arguments as Bolt12InvoiceRequestDetails;
+        return MaterialPageRoute<Widget>(
+          builder: (_) => Bolt12InvoiceRequestScreen(requestDetails: args),
           settings: settings,
         );
 
       case sendSparkAddress:
         final SparkAddressDetails args = settings.arguments as SparkAddressDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'Spark Address Payment',
-            content: _SparkAddressWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => SparkAddressScreen(addressDetails: args),
           settings: settings,
         );
 
       case sendSparkInvoice:
         final SparkInvoiceDetails args = settings.arguments as SparkInvoiceDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'Spark Invoice Payment',
-            content: _SparkInvoiceWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => SparkInvoiceScreen(invoiceDetails: args),
           settings: settings,
         );
 
@@ -222,11 +209,8 @@ class AppRoutes {
       // Receive routes
       case receiveLnurlWithdraw:
         final LnurlWithdrawRequestDetails args = settings.arguments as LnurlWithdrawRequestDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'LNURL Withdraw',
-            content: _LnurlWithdrawWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => LnurlWithdrawScreen(withdrawDetails: args),
           settings: settings,
         );
 
@@ -236,11 +220,8 @@ class AppRoutes {
       // Auth routes
       case lnurlAuth:
         final LnurlAuthRequestDetails args = settings.arguments as LnurlAuthRequestDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'LNURL Auth',
-            content: _LnurlAuthWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => LnurlAuthScreen(authDetails: args),
           settings: settings,
         );
 
@@ -289,341 +270,6 @@ class AppRoutes {
         );
     }
   }
-}
-
-// ============================================================================
-// Payment Detail Widgets
-// ============================================================================
-
-class _Bolt11Widget extends StatelessWidget {
-  final Bolt11InvoiceDetails details;
-
-  const _Bolt11Widget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    final DateTime expiry = DateTime.fromMillisecondsSinceEpoch(
-      (details.timestamp + details.expiry).toInt() * 1000,
-    );
-    final DateTime created = DateTime.fromMillisecondsSinceEpoch(details.timestamp.toInt() * 1000);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Amount', value: _formatAmount(details.amountMsat)),
-        if (details.description != null) _InfoField(label: 'Description', value: details.description!),
-        _InfoField(label: 'Payment Hash', value: details.paymentHash, monospace: true),
-        _InfoField(label: 'Payee', value: details.payeePubkey, monospace: true),
-        _InfoField(label: 'Network', value: details.network.name),
-        _InfoField(label: 'Created', value: created.toLocal().toString()),
-        _InfoField(label: 'Expires', value: expiry.toLocal().toString()),
-        if (details.routingHints.isNotEmpty)
-          _InfoField(label: 'Routing Hints', value: '${details.routingHints.length} hint(s)'),
-        const Divider(height: 24),
-        _InfoField(label: 'Invoice', value: details.invoice.bolt11, monospace: true),
-      ],
-    );
-  }
-}
-
-class _Bolt12InvoiceWidget extends StatelessWidget {
-  final Bolt12InvoiceDetails details;
-
-  const _Bolt12InvoiceWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Amount', value: _formatAmount(details.amountMsat)),
-        const Divider(height: 24),
-        _InfoField(label: 'Invoice', value: details.invoice.invoice, monospace: true),
-      ],
-    );
-  }
-}
-
-class _Bolt12OfferWidget extends StatelessWidget {
-  final Bolt12OfferDetails details;
-
-  const _Bolt12OfferWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        if (details.description != null) _InfoField(label: 'Description', value: details.description!),
-        if (details.issuer != null) _InfoField(label: 'Issuer', value: details.issuer!),
-        if (details.minAmount != null)
-          _InfoField(label: 'Minimum Amount', value: _formatAmountType(details.minAmount!)),
-        _InfoField(label: 'Chains', value: details.chains.join(', ')),
-        _InfoField(label: 'Paths', value: '${details.paths.length} blinded path(s)'),
-        if (details.signingPubkey != null)
-          _InfoField(label: 'Signing Key', value: details.signingPubkey!, monospace: true),
-        if (details.absoluteExpiry != null)
-          _InfoField(
-            label: 'Expires',
-            value: DateTime.fromMillisecondsSinceEpoch(
-              details.absoluteExpiry!.toInt() * 1000,
-            ).toLocal().toString(),
-          ),
-        const Divider(height: 24),
-        _InfoField(label: 'Offer', value: details.offer.offer, monospace: true),
-      ],
-    );
-  }
-}
-
-class _SilentPaymentWidget extends StatelessWidget {
-  final SilentPaymentAddressDetails details;
-
-  const _SilentPaymentWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Address', value: details.address, monospace: true),
-        _InfoField(label: 'Network', value: details.network.name),
-        if (details.source.bip21Uri != null)
-          _InfoField(label: 'BIP21 URI', value: details.source.bip21Uri!, monospace: true),
-        if (details.source.bip353Address != null)
-          _InfoField(label: 'BIP353 Address', value: details.source.bip353Address!),
-      ],
-    );
-  }
-}
-
-class _Bolt12InvoiceRequestWidget extends StatelessWidget {
-  const _Bolt12InvoiceRequestWidget();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Status', value: 'Ready to create invoice from BOLT12 offer'),
-        _InfoField(label: 'Description', value: 'This flow will fetch an invoice from a BOLT12 offer'),
-      ],
-    );
-  }
-}
-
-class _SparkAddressWidget extends StatelessWidget {
-  final SparkAddressDetails details;
-
-  const _SparkAddressWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Spark Address', value: details.address, monospace: true),
-        _InfoField(label: 'Identity Key', value: details.identityPublicKey, monospace: true),
-        _InfoField(label: 'Network', value: details.network.name),
-        if (details.source.bip21Uri != null)
-          _InfoField(label: 'BIP21 URI', value: details.source.bip21Uri!, monospace: true),
-        if (details.source.bip353Address != null)
-          _InfoField(label: 'BIP353 Address', value: details.source.bip353Address!),
-      ],
-    );
-  }
-}
-
-class _SparkInvoiceWidget extends StatelessWidget {
-  final SparkInvoiceDetails details;
-
-  const _SparkInvoiceWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    final DateTime? expiry = details.expiryTime != null
-        ? DateTime.fromMillisecondsSinceEpoch(details.expiryTime!.toInt() * 1000)
-        : null;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Invoice', value: details.invoice, monospace: true),
-        _InfoField(label: 'Identity Key', value: details.identityPublicKey, monospace: true),
-        _InfoField(label: 'Network', value: details.network.name),
-        if (details.amount != null) _InfoField(label: 'Amount', value: _formatAmount(details.amount)),
-        if (details.description != null) _InfoField(label: 'Description', value: details.description!),
-        if (details.tokenIdentifier != null)
-          _InfoField(label: 'Token ID', value: details.tokenIdentifier!, monospace: true),
-        if (details.senderPublicKey != null)
-          _InfoField(label: 'Sender Key', value: details.senderPublicKey!, monospace: true),
-        if (expiry != null) _InfoField(label: 'Expires', value: expiry.toLocal().toString()),
-      ],
-    );
-  }
-}
-
-class _LnurlWithdrawWidget extends StatelessWidget {
-  final LnurlWithdrawRequestDetails details;
-
-  const _LnurlWithdrawWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Description', value: details.defaultDescription),
-        _InfoField(
-          label: 'Amount Range',
-          value: '${_formatAmount(details.minWithdrawable)} - ${_formatAmount(details.maxWithdrawable)}',
-        ),
-        const Divider(height: 24),
-        _InfoField(label: 'Callback URL', value: details.callback, monospace: true),
-        _InfoField(label: 'K1', value: details.k1, monospace: true),
-      ],
-    );
-  }
-}
-
-class _LnurlAuthWidget extends StatelessWidget {
-  final LnurlAuthRequestDetails details;
-
-  const _LnurlAuthWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Domain', value: details.domain),
-        if (details.action != null) _InfoField(label: 'Action', value: details.action!),
-        const Divider(height: 24),
-        _InfoField(label: 'URL', value: details.url, monospace: true),
-        _InfoField(label: 'K1', value: details.k1, monospace: true),
-      ],
-    );
-  }
-}
-
-// ============================================================================
-// Helper Widgets and Functions
-// ============================================================================
-
-/// Placeholder screen for UI flows that haven't been implemented yet
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  final Widget content;
-
-  const _PlaceholderScreen({required this.title, required this.content});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Center(
-                child: Column(
-                  children: <Widget>[
-                    Icon(Icons.construction, size: 64, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(height: 16),
-                    Text('Coming Soon', style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 8),
-                    Text(
-                      'This screen is under development.\nShowing any available metadata.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Payment Details',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 16),
-                      content,
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomNavButton(
-        stickToBottom: true,
-        text: 'CLOSE',
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-    );
-  }
-}
-
-/// Helper widget to display a labeled field
-class _InfoField extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool monospace;
-
-  const _InfoField({required this.label, required this.value, this.monospace = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .7),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
-          SelectableText(
-            value,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontFamily: monospace ? 'monospace' : null),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Format amounts from millisatoshis
-String _formatAmount(BigInt? amountMsat) {
-  if (amountMsat == null) {
-    return 'Any amount';
-  }
-  final String sats = (amountMsat ~/ BigInt.from(1000)).toString();
-  return '$sats sats';
-}
-
-/// Format Amount type (handles both Bitcoin and Currency)
-String _formatAmountType(Amount amount) {
-  return amount.when(
-    bitcoin: (BigInt amountMsat) => _formatAmount(amountMsat),
-    currency: (String iso4217Code, BigInt fractionalAmount) => '$iso4217Code $fractionalAmount',
-  );
 }
 
 /// Screen shown when route is not found

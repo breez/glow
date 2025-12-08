@@ -181,8 +181,23 @@ class _PaymentLimitsHelper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (minAmount == null || maxAmount == null) {
+    if (minAmount == null) {
       return const SizedBox.shrink();
+    }
+
+    if (maxAmount == null) {
+      return RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 14.3, color: Color(0x99ffffff), letterSpacing: 0.4),
+          children: <TextSpan>[
+            const TextSpan(text: 'Enter an amount of at least'),
+            TextSpan(
+              text: ' ${minAmount.toString()} sats ',
+              recognizer: TapGestureRecognizer()..onTap = () => onTap(minAmount!),
+            ),
+          ],
+        ),
+      );
     }
     return RichText(
       text: TextSpan(

@@ -110,7 +110,7 @@ All code must comply with the linter rules defined in [analysis_options.yaml](..
 - They prevent Flutter from optimizing the widget tree
 
 **Use separate widget classes instead:**
-- Extract UI components into separate widget classes (e.g., `InvoiceDetailsCard`, `PaymentSummaryRow`)
+- Extract UI components into separate widget classes (e.g., `PaymentHeader`, `PaymentSummaryRow`)
 - Separate widgets enable const constructors, reducing unnecessary rebuilds
 - This improves performance and makes code more maintainable
 

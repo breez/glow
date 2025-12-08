@@ -1,9 +1,26 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:equatable/equatable.dart';
 
+import 'package:glow/features/send_payment/models/payment_flow_state.dart';
+
 /// State for LNURL-Pay and Lightning Address flows
-sealed class LnurlPayState extends Equatable {
+sealed class LnurlPayState extends Equatable implements PaymentFlowState {
   const LnurlPayState();
+
+  @override
+  bool get isInitial => this is LnurlPayInitial;
+  @override
+  bool get isPreparing => this is LnurlPayPreparing;
+  @override
+  bool get isReady => this is LnurlPayReady;
+  @override
+  bool get isSending => this is LnurlPaySending;
+  @override
+  bool get isSuccess => this is LnurlPaySuccess;
+  @override
+  bool get isError => this is LnurlPayError;
+  @override
+  String? get errorMessage => this is LnurlPayError ? (this as LnurlPayError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];

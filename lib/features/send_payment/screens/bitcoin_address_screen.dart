@@ -48,7 +48,8 @@ class BitcoinAddressScreen extends ConsumerWidget {
         ref.read(bitcoinAddressProvider(addressDetails).notifier).selectFeeSpeed(speed);
       },
       onSendPayment: () => ref.read(bitcoinAddressProvider(addressDetails).notifier).sendPayment(),
-      onRetry: (BigInt amount) => ref.read(bitcoinAddressProvider(addressDetails).notifier).preparePayment(amount),
+      onRetry: (BigInt amount) =>
+          ref.read(bitcoinAddressProvider(addressDetails).notifier).preparePayment(amount),
       onCancel: () => Navigator.of(context).pop(),
     );
   }

@@ -40,9 +40,7 @@ class Bip21Screen extends ConsumerWidget {
 
     // Auto-navigate if there's only one payment method (check on every build)
     if (state is Bip21Initial && state.paymentMethods.length == 1) {
-      _log.i(
-        'Single payment method detected, auto-navigating to: ${state.paymentMethods.first.runtimeType}',
-      );
+      _log.i('Single payment method detected, auto-navigating to: ${state.paymentMethods.first.runtimeType}');
 
       // Schedule navigation for after this frame
       WidgetsBinding.instance.addPostFrameCallback((_) {
