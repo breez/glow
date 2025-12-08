@@ -74,6 +74,68 @@ class PaymentService {
     }
   }
 
+  /// Prepare an LNURL-Pay payment
+  ///
+  /// Returns the prepare response with calculated fees and generated invoice
+  /// Throws an exception if preparation fails
+  Future<PrepareLnurlPayResponse> prepareLnurlPay({
+    required BreezSdk sdk,
+    required LnurlPayRequestDetails payRequest,
+    required BigInt amountSats,
+    String? comment,
+    bool? validateSuccessActionUrl,
+  }) async {
+    _log.i('Preparing LNURL-Pay payment');
+
+    try {
+      final PrepareLnurlPayRequest request = PrepareLnurlPayRequest(
+        amountSats: amountSats,
+        payRequest: payRequest,
+        comment: comment,
+        validateSuccessActionUrl: validateSuccessActionUrl,
+      );
+
+      final PrepareLnurlPayResponse response = await sdk.prepareLnurlPay(request: request);
+
+      _log.i(
+        'LNURL-Pay prepared successfully - Amount: ${response.amountSats} sats, Fee: ${response.feeSats} sats',
+      );
+
+      return response;
+    } catch (e) {
+      _log.e('Failed to prepare LNURL-Pay: $e');
+      rethrow;
+    }
+  }
+
+  /// Execute an LNURL-Pay payment
+  ///
+  /// Returns the payment object
+  /// Throws an exception if payment fails
+  Future<Payment> lnurlPay({
+    required BreezSdk sdk,
+    required PrepareLnurlPayResponse prepareResponse,
+    String? idempotencyKey,
+  }) async {
+    _log.i('Executing LNURL-Pay');
+
+    try {
+      final LnurlPayRequest request = LnurlPayRequest(
+        prepareResponse: prepareResponse,
+        idempotencyKey: idempotencyKey,
+      );
+
+      final LnurlPayResponse response = await sdk.lnurlPay(request: request);
+
+      _log.i('LNURL-Pay successful - Payment ID: ${response.payment.id}');
+
+      return response.payment;
+    } catch (e) {
+      _log.e('Failed to execute LNURL-Pay: $e');
+      rethrow;
+    }
+  }
+
   /// Extract a user-friendly error message from an exception
   String extractErrorMessage(Object error) {
     final String errorStr = error.toString();
