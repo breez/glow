@@ -13,6 +13,7 @@ import 'package:glow/features/send/send_screen.dart';
 import 'package:glow/features/send_payment/screens/bip21_screen.dart';
 import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
 import 'package:glow/features/send_payment/screens/bolt12_invoice_request_screen.dart';
+import 'package:glow/features/send_payment/screens/silent_payment_screen.dart';
 import 'package:glow/features/send_payment/screens/spark_address_screen.dart';
 import 'package:glow/features/send_payment/screens/spark_invoice_screen.dart';
 import 'package:glow/features/settings/providers/pin_provider.dart';
@@ -172,11 +173,8 @@ class AppRoutes {
 
       case sendSilentPayment:
         final SilentPaymentAddressDetails args = settings.arguments as SilentPaymentAddressDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'Silent Payment',
-            content: _SilentPaymentWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => SilentPaymentScreen(addressDetails: args),
           settings: settings,
         );
 
@@ -361,27 +359,6 @@ class _Bolt12OfferWidget extends StatelessWidget {
           ),
         const Divider(height: 24),
         _InfoField(label: 'Offer', value: details.offer.offer, monospace: true),
-      ],
-    );
-  }
-}
-
-class _SilentPaymentWidget extends StatelessWidget {
-  final SilentPaymentAddressDetails details;
-
-  const _SilentPaymentWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Address', value: details.address, monospace: true),
-        _InfoField(label: 'Network', value: details.network.name),
-        if (details.source.bip21Uri != null)
-          _InfoField(label: 'BIP21 URI', value: details.source.bip21Uri!, monospace: true),
-        if (details.source.bip353Address != null)
-          _InfoField(label: 'BIP353 Address', value: details.source.bip353Address!),
       ],
     );
   }
