@@ -57,6 +57,7 @@ dependencies:
   local_auth_android: ^2.0.3
   local_auth_darwin: ^2.0.1
   lottie: ^3.3.2
+  keyboard_actions: ^4.2.1
 
 dependency_overrides:
   # Breez SDK

@@ -10,6 +10,8 @@ import 'package:glow/features/settings/widgets/pin_lock_screen.dart';
 import 'package:glow/features/settings/widgets/pin_setup_screen.dart';
 import 'package:glow/features/payment_details/payment_details_screen.dart';
 import 'package:glow/features/send/send_screen.dart';
+import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
+import 'package:glow/features/send_payment/screens/bip21_screen.dart';
 import 'package:glow/features/deposits/unclaimed_deposits_screen.dart';
 import 'package:glow/features/wallet/create_screen.dart';
 import 'package:glow/features/wallet_restore/restore_screen.dart';
@@ -17,11 +19,6 @@ import 'package:glow/features/wallet/list_screen.dart';
 import 'package:glow/features/wallet_onboarding/onboarding_screen.dart';
 import 'package:glow/features/wallet_phrase/phrase_screen.dart';
 import 'package:glow/widgets/bottom_nav_button.dart';
-
-// Import your payment screens here when they're created
-// import 'package:glow/screens/send/bitcoin_address_screen.dart';
-// import 'package:glow/screens/send/bolt11_screen.dart';
-// etc.
 
 /// Handles navigation for payment flows and feature screens
 ///
@@ -70,7 +67,6 @@ class AppRoutes {
   // Settings routes
   static const String appSettings = '/settings';
   static const String pinSetup = '/settings/pin_setup';
-  static const String walletSettings = '/settings/wallet';
 
   // Developers routes
   static const String developersScreen = '/developers';
@@ -118,11 +114,8 @@ class AppRoutes {
 
       case sendBitcoinAddress:
         final BitcoinAddressDetails args = settings.arguments as BitcoinAddressDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'Bitcoin Address Payment',
-            content: _BitcoinAddressWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => BitcoinAddressScreen(addressDetails: args),
           settings: settings,
         );
 
@@ -188,11 +181,8 @@ class AppRoutes {
 
       case sendBip21:
         final Bip21Details args = settings.arguments as Bip21Details;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'BIP21 Payment',
-            content: _Bip21Widget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => Bip21Screen(bip21Details: args),
           settings: settings,
         );
 
@@ -288,15 +278,6 @@ class AppRoutes {
       case pinSetup:
         return MaterialPageRoute<PinSetupScreen>(builder: (_) => const PinSetupScreen(), settings: settings);
 
-      case walletSettings:
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => const _PlaceholderScreen(
-            title: 'Wallet Settings',
-            content: _InfoField(label: 'Status', value: 'Manage your wallet settings'),
-          ),
-          settings: settings,
-        );
-
       // Developers routes
       case developersScreen:
         return MaterialPageRoute<DevelopersScreen>(
@@ -317,27 +298,6 @@ class AppRoutes {
 // ============================================================================
 // Payment Detail Widgets
 // ============================================================================
-
-class _BitcoinAddressWidget extends StatelessWidget {
-  final BitcoinAddressDetails details;
-
-  const _BitcoinAddressWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Address', value: details.address, monospace: true),
-        _InfoField(label: 'Network', value: details.network.name),
-        if (details.source.bip21Uri != null)
-          _InfoField(label: 'BIP21 URI', value: details.source.bip21Uri!, monospace: true),
-        if (details.source.bip353Address != null)
-          _InfoField(label: 'BIP353 Address', value: details.source.bip353Address!),
-      ],
-    );
-  }
-}
 
 class _Bolt11Widget extends StatelessWidget {
   final Bolt11InvoiceDetails details;
@@ -492,47 +452,6 @@ class _SilentPaymentWidget extends StatelessWidget {
           _InfoField(label: 'BIP21 URI', value: details.source.bip21Uri!, monospace: true),
         if (details.source.bip353Address != null)
           _InfoField(label: 'BIP353 Address', value: details.source.bip353Address!),
-      ],
-    );
-  }
-}
-
-class _Bip21Widget extends StatelessWidget {
-  final Bip21Details details;
-
-  const _Bip21Widget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'URI', value: details.uri, monospace: true),
-        if (details.amountSat != null) _InfoField(label: 'Amount', value: '${details.amountSat} sats'),
-        if (details.label != null) _InfoField(label: 'Label', value: details.label!),
-        if (details.message != null) _InfoField(label: 'Message', value: details.message!),
-        if (details.assetId != null) _InfoField(label: 'Asset ID', value: details.assetId!),
-        const Divider(height: 24),
-        _InfoField(label: 'Payment Methods', value: '${details.paymentMethods.length} available'),
-        ...details.paymentMethods.map(
-          (InputType method) => Padding(
-            padding: const EdgeInsets.only(left: 16, bottom: 8),
-            child: Text('• ${_getInputTypeName(method)}', style: Theme.of(context).textTheme.bodyMedium),
-          ),
-        ),
-        if (details.extras.isNotEmpty) ...<Widget>[
-          const Divider(height: 24),
-          const _InfoField(label: 'Extra Parameters', value: ''),
-          ...details.extras.map(
-            (Bip21Extra extra) => Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 8),
-              child: Text(
-                '${extra.key}: ${extra.value}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
-              ),
-            ),
-          ),
-        ],
       ],
     );
   }
@@ -764,26 +683,6 @@ String _formatAmountType(Amount amount) {
   return amount.when(
     bitcoin: (BigInt amountMsat) => _formatAmount(amountMsat),
     currency: (String iso4217Code, BigInt fractionalAmount) => '$iso4217Code $fractionalAmount',
-  );
-}
-
-/// Get human-readable name for InputType
-String _getInputTypeName(InputType inputType) {
-  return inputType.when(
-    bitcoinAddress: (_) => 'Bitcoin Address',
-    bolt11Invoice: (_) => 'BOLT11 Invoice',
-    bolt12Invoice: (_) => 'BOLT12 Invoice',
-    bolt12Offer: (_) => 'BOLT12 Offer',
-    lightningAddress: (_) => 'Lightning Address',
-    lnurlPay: (_) => 'LNURL-Pay',
-    silentPaymentAddress: (_) => 'Silent Payment',
-    lnurlAuth: (_) => 'LNURL Auth',
-    url: (_) => 'URL',
-    bip21: (_) => 'BIP21',
-    bolt12InvoiceRequest: (_) => 'BOLT12 Invoice Request',
-    lnurlWithdraw: (_) => 'LNURL Withdraw',
-    sparkAddress: (_) => 'Spark Address',
-    sparkInvoice: (_) => 'Spark Invoice',
   );
 }
 
