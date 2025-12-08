@@ -2,45 +2,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "glow (dev debug)",
+            "name": "glow (debug)",
             "request": "launch",
             "type": "dart",
             "args": [
-                "--flavor",
-                "dev",
-                "--dart-define=ENV=dev"
+                "--dart-define-from-file=secrets.json",
             ]
         },
         {
-            "name": "glow (dev release)",
+            "name": "glow (profile)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define-from-file=secrets.json",
+            ]
+        },
+        {
+            "name": "glow (release)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",
             "args": [
-                "--flavor",
-                "dev",
-                "--dart-define=ENV=dev"
-            ]
-        },
-        {
-            "name": "glow (prod debug)",
-            "request": "launch",
-            "type": "dart",
-            "args": [
-                "--flavor",
-                "prod",
-                "--dart-define=ENV=prod"
-            ]
-        },
-        {
-            "name": "glow (prod release)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release",
-            "args": [
-                "--flavor",
-                "prod",
-                "--dart-define=ENV=prod"
+                "--dart-define-from-file=secrets.json",
             ]
         },
         {

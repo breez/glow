@@ -34,24 +34,14 @@ android {
         versionName = flutter.versionName
     }
 
-    flavorDimensions += "environment"
-    productFlavors {
-        create("dev") {
-            dimension = "environment"
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
-            resValue("string", "app_name", "Glow Dev")
-            buildConfigField("String", "ENV", "\"dev\"")
-        }
-        create("prod") {
-            dimension = "environment"
-            resValue("string", "app_name", "Glow")
-            buildConfigField("String", "ENV", "\"prod\"")
-        }
-    }
-
     buildTypes {
+        debug {
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-debug"
+            resValue("string", "app_name", "Glow - Debug")
+        }
         release {
+            resValue("string", "app_name", "Glow")
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")

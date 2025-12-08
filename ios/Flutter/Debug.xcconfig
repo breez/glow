@@ -1,2 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
+
+PRODUCT_NAME = Glow - Debug
+PRODUCT_BUNDLE_IDENTIFIER = com.breez.spark.glow.dev
