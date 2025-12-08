@@ -1,12 +1,29 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:equatable/equatable.dart';
 
+import 'package:glow/features/send_payment/models/payment_flow_state.dart';
+
 /// Fee speed options for onchain transactions
 enum FeeSpeed { slow, medium, fast }
 
 /// State for Bitcoin Address (onchain) payment flows
-sealed class BitcoinAddressState extends Equatable {
+sealed class BitcoinAddressState extends Equatable implements PaymentFlowState {
   const BitcoinAddressState();
+
+  @override
+  bool get isInitial => this is BitcoinAddressInitial;
+  @override
+  bool get isPreparing => this is BitcoinAddressPreparing;
+  @override
+  bool get isReady => this is BitcoinAddressReady;
+  @override
+  bool get isSending => this is BitcoinAddressSending;
+  @override
+  bool get isSuccess => this is BitcoinAddressSuccess;
+  @override
+  bool get isError => this is BitcoinAddressError;
+  @override
+  String? get errorMessage => this is BitcoinAddressError ? (this as BitcoinAddressError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];

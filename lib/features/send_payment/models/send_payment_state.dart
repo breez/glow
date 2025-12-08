@@ -1,9 +1,26 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:equatable/equatable.dart';
 
+import 'package:glow/features/send_payment/models/payment_flow_state.dart';
+
 /// Base class for all send payment states
-sealed class SendPaymentState extends Equatable {
+sealed class SendPaymentState extends Equatable implements PaymentFlowState {
   const SendPaymentState();
+
+  @override
+  bool get isInitial => this is SendPaymentInitial;
+  @override
+  bool get isPreparing => this is SendPaymentPreparing;
+  @override
+  bool get isReady => this is SendPaymentReady;
+  @override
+  bool get isSending => this is SendPaymentSending;
+  @override
+  bool get isSuccess => this is SendPaymentSuccess;
+  @override
+  bool get isError => this is SendPaymentError;
+  @override
+  String? get errorMessage => this is SendPaymentError ? (this as SendPaymentError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];
