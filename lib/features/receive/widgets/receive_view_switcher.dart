@@ -37,6 +37,7 @@ class ReceiveViewSwitcher extends ConsumerWidget {
           formControllers: formControllers,
         ),
         AmountInputFlowStep.displayPayment => PaymentDisplayView(state: state),
+        AmountInputFlowStep.paymentReceived => PaymentDisplayView(state: state),
       },
     );
   }

@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:glow/features/receive/models/receive_method.dart';
 
-enum AmountInputFlowStep { initial, inputAmount, displayPayment }
+enum AmountInputFlowStep { initial, inputAmount, displayPayment, paymentReceived }
 
 class ReceiveState extends Equatable {
   const ReceiveState({
