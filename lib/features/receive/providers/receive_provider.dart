@@ -1,21 +1,65 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
+
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
-import 'package:glow/services/breez_sdk_service.dart';
+import 'package:glow/features/payments/models/payment_tracking_state.dart';
+import 'package:glow/features/payments/providers/payment_tracker_provider.dart';
 import 'package:glow/features/receive/models/receive_method.dart';
 import 'package:glow/features/receive/models/receive_state.dart';
+import 'package:glow/logging/app_logger.dart';
 import 'package:glow/providers/sdk_provider.dart';
+import 'package:glow/services/breez_sdk_service.dart';
+import 'package:logger/logger.dart';
+
+final Logger _log = AppLogger.getLogger('ReceiveProvider');
 
 class ReceiveNotifier extends Notifier<ReceiveState> {
   @override
-  ReceiveState build() => ReceiveState.initial();
+  ReceiveState build() {
+    // Clean up tracking when provider is disposed
+    ref.onDispose(() {
+      _log.d('Disposing ReceiveNotifier, stopping payment tracking');
+      ref.read(paymentTrackerProvider.notifier).stopTracking();
+    });
 
-  void changeMethod(ReceiveMethod method) => state = state.copyWith(
-    method: method,
-    isLoading: false,
-    hasError: false,
-    flowStep: AmountInputFlowStep.initial,
-  );
+    // Listen to payment tracker state changes
+    ref.listen<PaymentTrackingState>(paymentTrackerProvider, (
+      PaymentTrackingState? previous,
+      PaymentTrackingState next,
+    ) {
+      if (next is PaymentReceived) {
+        _log.i('Payment received, updating flow state');
+        state = state.copyWith(flowStep: AmountInputFlowStep.paymentReceived);
+      }
+    });
+
+    final ReceiveState initialState = ReceiveState.initial();
+
+    // Start tracking payments for Lightning Address (always listening)
+    if (initialState.method == ReceiveMethod.lightning) {
+      ref.read(paymentTrackerProvider.notifier).startTracking();
+    }
+
+    return initialState;
+  }
+
+  void changeMethod(ReceiveMethod method) {
+    // Stop payment tracking when changing methods
+    ref.read(paymentTrackerProvider.notifier).stopTracking();
+
+    state = state.copyWith(
+      method: method,
+      isLoading: false,
+      hasError: false,
+      flowStep: AmountInputFlowStep.initial,
+    );
+
+    // Restart tracking if switching to Lightning Address
+    if (method == ReceiveMethod.lightning) {
+      ref.read(paymentTrackerProvider.notifier).startTracking();
+    }
+  }
 
   void setLoading() => state = state.copyWith(isLoading: true);
 
@@ -40,10 +84,45 @@ class ReceiveNotifier extends Notifier<ReceiveState> {
           ).future,
         );
         state = state.copyWith(receivePaymentResponse: response, isLoading: false);
+
+        // Extract payment hash from the invoice and start tracking
+        final String? paymentHash = await _extractPaymentHashFromInvoice(response.paymentRequest);
+        ref.read(paymentTrackerProvider.notifier).startTracking(expectedPaymentHash: paymentHash);
       }
       // Bitcoin address handling is done via provider watchers in UI layer
     } catch (err) {
       state = state.copyWith(hasError: true, error: err.toString(), isLoading: false);
+    }
+  }
+
+  /// Extract payment hash from BOLT11 invoice using SDK
+  Future<String?> _extractPaymentHashFromInvoice(String invoice) async {
+    try {
+      final BreezSdk sdk = await ref.read(sdkProvider.future);
+      final InputType inputType = await sdk.parse(input: invoice);
+
+      return inputType.when(
+        bolt11Invoice: (Bolt11InvoiceDetails details) {
+          _log.d('Extracted payment hash from invoice: ${details.paymentHash}');
+          return details.paymentHash;
+        },
+        bolt12Offer: (_) => null,
+        bolt12Invoice: (_) => null,
+        lightningAddress: (_) => null,
+        lnurlPay: (_) => null,
+        silentPaymentAddress: (_) => null,
+        lnurlAuth: (_) => null,
+        url: (_) => null,
+        bip21: (_) => null,
+        bolt12InvoiceRequest: (_) => null,
+        lnurlWithdraw: (_) => null,
+        bitcoinAddress: (_) => null,
+        sparkAddress: (_) => null,
+        sparkInvoice: (_) => null,
+      );
+    } catch (e) {
+      _log.e('Failed to extract payment hash from invoice: $e');
+      return null;
     }
   }
 

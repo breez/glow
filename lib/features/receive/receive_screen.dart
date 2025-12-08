@@ -4,6 +4,7 @@ import 'package:glow/features/receive/models/receive_state.dart';
 import 'package:glow/features/receive/providers/receive_form_controllers.dart';
 import 'package:glow/features/receive/providers/receive_provider.dart';
 import 'package:glow/features/receive/receive_layout.dart';
+import 'package:glow/features/receive/widgets/payment_received_sheet.dart';
 
 class ReceiveScreen extends ConsumerWidget {
   const ReceiveScreen({super.key});
@@ -21,6 +22,9 @@ class ReceiveScreen extends ConsumerWidget {
       case AmountInputFlowStep.displayPayment:
         final ReceiveNotifier notifier = ref.read(receiveProvider.notifier);
         notifier.resetAmountFlow();
+        break;
+      case AmountInputFlowStep.paymentReceived:
+        // Payment received sheet is shown via ref.listen, no action needed here
         break;
     }
   }
@@ -44,6 +48,13 @@ class ReceiveScreen extends ConsumerWidget {
     final ReceiveState state = ref.watch(receiveProvider);
     final ReceiveNotifier notifier = ref.read(receiveProvider.notifier);
     final ReceiveFormControllers formControllers = ref.watch(receiveFormControllersProvider);
+
+    // Listen for payment received state and show success sheet
+    ref.listen<ReceiveState>(receiveProvider, (ReceiveState? previous, ReceiveState next) {
+      if (next.flowStep == AmountInputFlowStep.paymentReceived && next.amountSats != null) {
+        showPaymentReceivedSheet(context, next.amountSats!);
+      }
+    });
 
     return ReceiveLayout(
       state: state,
