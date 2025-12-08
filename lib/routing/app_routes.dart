@@ -12,6 +12,7 @@ import 'package:glow/features/receive/receive_screen.dart';
 import 'package:glow/features/send/send_screen.dart';
 import 'package:glow/features/send_payment/screens/bip21_screen.dart';
 import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
+import 'package:glow/features/send_payment/screens/bolt11_payment_screen.dart';
 import 'package:glow/features/send_payment/screens/bolt12_invoice_request_screen.dart';
 import 'package:glow/features/send_payment/screens/silent_payment_screen.dart';
 import 'package:glow/features/send_payment/screens/spark_address_screen.dart';
@@ -128,11 +129,8 @@ class AppRoutes {
 
       case sendBolt11:
         final Bolt11InvoiceDetails args = settings.arguments as Bolt11InvoiceDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'BOLT11 Invoice',
-            content: _Bolt11Widget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => Bolt11PaymentScreen(invoiceDetails: args),
           settings: settings,
         );
 
@@ -282,37 +280,6 @@ class AppRoutes {
 // ============================================================================
 // Payment Detail Widgets
 // ============================================================================
-
-class _Bolt11Widget extends StatelessWidget {
-  final Bolt11InvoiceDetails details;
-
-  const _Bolt11Widget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    final DateTime expiry = DateTime.fromMillisecondsSinceEpoch(
-      (details.timestamp + details.expiry).toInt() * 1000,
-    );
-    final DateTime created = DateTime.fromMillisecondsSinceEpoch(details.timestamp.toInt() * 1000);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Amount', value: _formatAmount(details.amountMsat)),
-        if (details.description != null) _InfoField(label: 'Description', value: details.description!),
-        _InfoField(label: 'Payment Hash', value: details.paymentHash, monospace: true),
-        _InfoField(label: 'Payee', value: details.payeePubkey, monospace: true),
-        _InfoField(label: 'Network', value: details.network.name),
-        _InfoField(label: 'Created', value: created.toLocal().toString()),
-        _InfoField(label: 'Expires', value: expiry.toLocal().toString()),
-        if (details.routingHints.isNotEmpty)
-          _InfoField(label: 'Routing Hints', value: '${details.routingHints.length} hint(s)'),
-        const Divider(height: 24),
-        _InfoField(label: 'Invoice', value: details.invoice.bolt11, monospace: true),
-      ],
-    );
-  }
-}
 
 class _Bolt12InvoiceWidget extends StatelessWidget {
   final Bolt12InvoiceDetails details;
