@@ -86,7 +86,7 @@ class _VerifyButton extends StatelessWidget {
       child: FilledButton(
         onPressed: isVerifying ? null : onPressed,
         child: isVerifying
-            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
             : const Text('VERIFY'),
       ),
     );

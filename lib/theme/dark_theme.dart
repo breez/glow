@@ -125,6 +125,13 @@ const BottomSheetThemeData darkBottomSheetTheme = BottomSheetThemeData(
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
 );
 
+const ProgressIndicatorThemeData darkProgressIndicatorTheme = ProgressIndicatorThemeData(
+  strokeWidth: 2.0,
+  color: BreezColors.primaryLight,
+  linearTrackColor: Color(0x33FFFFFF),
+  circularTrackColor: Color(0x33FFFFFF),
+);
+
 /// Builds the dark theme by composing all theme components
 ThemeData buildDarkTheme() {
   return ThemeData(
@@ -155,6 +162,7 @@ ThemeData buildDarkTheme() {
     popupMenuTheme: darkPopupMenuTheme,
     dropdownMenuTheme: darkDropdownMenuTheme,
     bottomSheetTheme: darkBottomSheetTheme,
+    progressIndicatorTheme: darkProgressIndicatorTheme,
     primaryIconTheme: const IconThemeData(color: Colors.white),
     textSelectionTheme: TextSelectionThemeData(
       selectionColor: Colors.white.withValues(alpha: .5),

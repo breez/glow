@@ -186,7 +186,7 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
             FilledButton(
               onPressed: _isProcessing ? null : _handleSave,
               child: _isProcessing
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
                   : const Text('DONE'),
             ),
             if (kDebugMode) ...<Widget>[
@@ -196,7 +196,7 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
                 onPressed: _isProcessing ? null : () => setState(() => _showDeleteConfirmation = true),
                 icon: const Icon(Icons.delete_outline),
                 label: _isProcessing
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
                     : const Text('DELETE'),
               ),
             ],
@@ -207,7 +207,7 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
               onPressed: _isProcessing ? null : _handleDelete,
               style: FilledButton.styleFrom(backgroundColor: BreezColors.debugRed),
               child: _isProcessing
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
                   : const Text('DELETE'),
             ),
             const SizedBox(height: 8),

@@ -79,7 +79,7 @@ class _NoBitcoinAddress extends ConsumerWidget {
                       await ref.read(generateBitcoinAddressProvider(null).future);
                     },
               icon: isGenerating
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator())
                   : const Icon(Icons.add),
               label: Text(isGenerating ? 'Generating...' : 'Generate Bitcoin Address'),
             ),

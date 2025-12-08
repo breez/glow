@@ -130,7 +130,7 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
           FilledButton(
             onPressed: _isProcessing ? null : _handleRegister,
             child: _isProcessing
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
                 : const Text('Register'),
           ),
           const SizedBox(height: 24),

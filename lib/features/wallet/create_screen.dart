@@ -85,7 +85,7 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
               FilledButton(
                 onPressed: _isCreating ? null : _createWallet,
                 child: _isCreating
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
                     : const Text('Create Wallet'),
               ),
             ],

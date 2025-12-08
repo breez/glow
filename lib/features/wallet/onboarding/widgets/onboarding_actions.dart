@@ -57,11 +57,7 @@ class _RegisterButton extends StatelessWidget {
         ),
         onPressed: state.isLoading ? null : onRegister,
         child: state.isLoading
-            ? SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: themeData.primaryColor),
-              )
+            ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: themeData.primaryColor))
             : Semantics(
                 button: true,
                 label: "LET'S GLOW!",
