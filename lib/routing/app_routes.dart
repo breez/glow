@@ -1,25 +1,28 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/features/receive/receive_screen.dart';
+import 'package:glow/features/deposits/unclaimed_deposits_screen.dart';
 import 'package:glow/features/developers/developers_screen.dart';
+import 'package:glow/features/lnurl/screens/lnurl_auth_screen.dart';
+import 'package:glow/features/lnurl/screens/lnurl_pay_screen.dart';
+import 'package:glow/features/lnurl/screens/lnurl_withdraw_screen.dart';
+import 'package:glow/features/payment_details/payment_details_screen.dart';
 import 'package:glow/features/qr_scan/qr_scan_view.dart';
+import 'package:glow/features/receive/receive_screen.dart';
+import 'package:glow/features/send/send_screen.dart';
+import 'package:glow/features/send_payment/screens/bip21_screen.dart';
+import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
+import 'package:glow/features/send_payment/screens/bolt12_invoice_request_screen.dart';
 import 'package:glow/features/settings/providers/pin_provider.dart';
 import 'package:glow/features/settings/security_backup_screen.dart';
 import 'package:glow/features/settings/widgets/pin_lock_screen.dart';
 import 'package:glow/features/settings/widgets/pin_setup_screen.dart';
-import 'package:glow/features/payment_details/payment_details_screen.dart';
-import 'package:glow/features/send/send_screen.dart';
-import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
-import 'package:glow/features/send_payment/screens/bip21_screen.dart';
-import 'package:glow/features/lnurl/screens/lnurl_pay_screen.dart';
-import 'package:glow/features/deposits/unclaimed_deposits_screen.dart';
 import 'package:glow/features/wallet/create_screen.dart';
-import 'package:glow/features/wallet_restore/restore_screen.dart';
 import 'package:glow/features/wallet/list_screen.dart';
 import 'package:glow/features/wallet_onboarding/onboarding_screen.dart';
 import 'package:glow/features/wallet_phrase/phrase_screen.dart';
 import 'package:glow/widgets/bottom_nav_button.dart';
+import 'package:glow/features/wallet_restore/restore_screen.dart';
 
 /// Handles navigation for payment flows and feature screens
 ///
@@ -183,12 +186,9 @@ class AppRoutes {
         );
 
       case sendBolt12InvoiceRequest:
-        // final args = settings.arguments as Bolt12InvoiceRequestDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => const _PlaceholderScreen(
-            title: 'BOLT12 Invoice Request',
-            content: _Bolt12InvoiceRequestWidget(),
-          ),
+        final Bolt12InvoiceRequestDetails args = settings.arguments as Bolt12InvoiceRequestDetails;
+        return MaterialPageRoute<Widget>(
+          builder: (_) => Bolt12InvoiceRequestScreen(requestDetails: args),
           settings: settings,
         );
 
@@ -222,11 +222,8 @@ class AppRoutes {
       // Receive routes
       case receiveLnurlWithdraw:
         final LnurlWithdrawRequestDetails args = settings.arguments as LnurlWithdrawRequestDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'LNURL Withdraw',
-            content: _LnurlWithdrawWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => LnurlWithdrawScreen(withdrawDetails: args),
           settings: settings,
         );
 
@@ -236,11 +233,8 @@ class AppRoutes {
       // Auth routes
       case lnurlAuth:
         final LnurlAuthRequestDetails args = settings.arguments as LnurlAuthRequestDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'LNURL Auth',
-            content: _LnurlAuthWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => LnurlAuthScreen(authDetails: args),
           settings: settings,
         );
 
@@ -397,21 +391,6 @@ class _SilentPaymentWidget extends StatelessWidget {
   }
 }
 
-class _Bolt12InvoiceRequestWidget extends StatelessWidget {
-  const _Bolt12InvoiceRequestWidget();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Status', value: 'Ready to create invoice from BOLT12 offer'),
-        _InfoField(label: 'Description', value: 'This flow will fetch an invoice from a BOLT12 offer'),
-      ],
-    );
-  }
-}
-
 class _SparkAddressWidget extends StatelessWidget {
   final SparkAddressDetails details;
 
@@ -458,49 +437,6 @@ class _SparkInvoiceWidget extends StatelessWidget {
         if (details.senderPublicKey != null)
           _InfoField(label: 'Sender Key', value: details.senderPublicKey!, monospace: true),
         if (expiry != null) _InfoField(label: 'Expires', value: expiry.toLocal().toString()),
-      ],
-    );
-  }
-}
-
-class _LnurlWithdrawWidget extends StatelessWidget {
-  final LnurlWithdrawRequestDetails details;
-
-  const _LnurlWithdrawWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Description', value: details.defaultDescription),
-        _InfoField(
-          label: 'Amount Range',
-          value: '${_formatAmount(details.minWithdrawable)} - ${_formatAmount(details.maxWithdrawable)}',
-        ),
-        const Divider(height: 24),
-        _InfoField(label: 'Callback URL', value: details.callback, monospace: true),
-        _InfoField(label: 'K1', value: details.k1, monospace: true),
-      ],
-    );
-  }
-}
-
-class _LnurlAuthWidget extends StatelessWidget {
-  final LnurlAuthRequestDetails details;
-
-  const _LnurlAuthWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Domain', value: details.domain),
-        if (details.action != null) _InfoField(label: 'Action', value: details.action!),
-        const Divider(height: 24),
-        _InfoField(label: 'URL', value: details.url, monospace: true),
-        _InfoField(label: 'K1', value: details.k1, monospace: true),
       ],
     );
   }
