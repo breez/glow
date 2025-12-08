@@ -54,6 +54,16 @@ class InputHandler {
   }
 
   /// Navigate to the appropriate payment screen based on input type
+  /// with optional replacement of the current route
+  void navigateToPaymentScreen(BuildContext context, InputType inputType, {bool replace = false}) {
+    if (replace) {
+      _navigateToPaymentScreenReplacement(context, inputType);
+    } else {
+      _navigateToPaymentScreen(context, inputType);
+    }
+  }
+
+  /// Navigate to the appropriate payment screen based on input type
   void _navigateToPaymentScreen(BuildContext context, InputType inputType) {
     inputType.when(
       bitcoinAddress: (BitcoinAddressDetails details) {
@@ -113,6 +123,70 @@ class InputHandler {
       sparkInvoice: (SparkInvoiceDetails details) {
         _log.i('Navigating to Spark Invoice screen');
         Navigator.pushNamed(context, AppRoutes.sendSparkInvoice, arguments: details);
+      },
+    );
+  }
+
+  /// Navigate with replacement (for BIP21 auto-navigation)
+  void _navigateToPaymentScreenReplacement(BuildContext context, InputType inputType) {
+    inputType.when(
+      bitcoinAddress: (BitcoinAddressDetails details) {
+        _log.i('Replacing with Bitcoin Address screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendBitcoinAddress, arguments: details);
+      },
+      bolt11Invoice: (Bolt11InvoiceDetails details) {
+        _log.i('Replacing with BOLT11 screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendBolt11, arguments: details);
+      },
+      bolt12Invoice: (Bolt12InvoiceDetails details) {
+        _log.i('Replacing with BOLT12 Invoice screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendBolt12Invoice, arguments: details);
+      },
+      bolt12Offer: (Bolt12OfferDetails details) {
+        _log.i('Replacing with BOLT12 Offer screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendBolt12Offer, arguments: details);
+      },
+      lightningAddress: (LightningAddressDetails details) {
+        _log.i('Replacing with Lightning Address screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendLightningAddress, arguments: details);
+      },
+      lnurlPay: (LnurlPayRequestDetails details) {
+        _log.i('Replacing with LNURL-Pay screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendLnurlPay, arguments: details);
+      },
+      silentPaymentAddress: (SilentPaymentAddressDetails details) {
+        _log.i('Replacing with Silent Payment screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendSilentPayment, arguments: details);
+      },
+      lnurlAuth: (LnurlAuthRequestDetails details) {
+        _log.i('Replacing with LNURL-Auth screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.lnurlAuth, arguments: details);
+      },
+      url: (_) {
+        _log.w('URL input type not supported for navigation');
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('URL payments are not supported')));
+      },
+      bip21: (Bip21Details details) {
+        _log.i('Replacing with BIP21 screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendBip21, arguments: details);
+      },
+      bolt12InvoiceRequest: (Bolt12InvoiceRequestDetails details) {
+        _log.i('Replacing with BOLT12 Invoice Request screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendBolt12InvoiceRequest, arguments: details);
+      },
+      lnurlWithdraw: (LnurlWithdrawRequestDetails details) {
+        _log.i('Replacing with LNURL-Withdraw screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.receiveLnurlWithdraw, arguments: details);
+      },
+      sparkAddress: (SparkAddressDetails details) {
+        _log.i('Replacing with Spark Address screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendSparkAddress, arguments: details);
+      },
+      sparkInvoice: (SparkInvoiceDetails details) {
+        _log.i('Replacing with Spark Invoice screen');
+        Navigator.pushReplacementNamed(context, AppRoutes.sendSparkInvoice, arguments: details);
       },
     );
   }
