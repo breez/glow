@@ -70,7 +70,7 @@ class ProfileNotifier extends Notifier<void> {
     final WalletMetadata updatedWallet = wallet.copyWith(profile: updatedProfile);
     await ref.read(walletStorageServiceProvider).updateWallet(updatedWallet);
 
-    // Refresh wallet list - activeWalletProvider will update automatically via listener
+    // Force immediate refresh of wallet list to ensure the UI reflects the updated profile immediately
     ref.invalidate(walletListProvider);
   }
 
