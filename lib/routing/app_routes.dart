@@ -13,6 +13,7 @@ import 'package:glow/features/send/send_screen.dart';
 import 'package:glow/features/send_payment/screens/bip21_screen.dart';
 import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
 import 'package:glow/features/send_payment/screens/bolt12_invoice_request_screen.dart';
+import 'package:glow/features/send_payment/screens/spark_address_screen.dart';
 import 'package:glow/features/send_payment/screens/spark_invoice_screen.dart';
 import 'package:glow/features/settings/providers/pin_provider.dart';
 import 'package:glow/features/settings/security_backup_screen.dart';
@@ -195,11 +196,8 @@ class AppRoutes {
 
       case sendSparkAddress:
         final SparkAddressDetails args = settings.arguments as SparkAddressDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'Spark Address Payment',
-            content: _SparkAddressWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => SparkAddressScreen(addressDetails: args),
           settings: settings,
         );
 
@@ -379,28 +377,6 @@ class _SilentPaymentWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         _InfoField(label: 'Address', value: details.address, monospace: true),
-        _InfoField(label: 'Network', value: details.network.name),
-        if (details.source.bip21Uri != null)
-          _InfoField(label: 'BIP21 URI', value: details.source.bip21Uri!, monospace: true),
-        if (details.source.bip353Address != null)
-          _InfoField(label: 'BIP353 Address', value: details.source.bip353Address!),
-      ],
-    );
-  }
-}
-
-class _SparkAddressWidget extends StatelessWidget {
-  final SparkAddressDetails details;
-
-  const _SparkAddressWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Spark Address', value: details.address, monospace: true),
-        _InfoField(label: 'Identity Key', value: details.identityPublicKey, monospace: true),
         _InfoField(label: 'Network', value: details.network.name),
         if (details.source.bip21Uri != null)
           _InfoField(label: 'BIP21 URI', value: details.source.bip21Uri!, monospace: true),
