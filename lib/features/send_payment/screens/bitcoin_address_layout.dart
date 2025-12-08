@@ -1,12 +1,12 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart' hide PaymentStatus;
 import 'package:flutter/material.dart';
 import 'package:glow/features/send_payment/models/bitcoin_address_state.dart';
-import 'package:glow/features/send_payment/widgets/amount_input_card.dart';
+import 'package:glow/features/send_payment/widgets/amount_input_form.dart';
+import 'package:glow/features/send_payment/widgets/payment_bottom_nav.dart';
 import 'package:glow/features/send_payment/widgets/payment_status_view.dart';
 import 'package:glow/utils/formatters.dart';
-import 'package:glow/widgets/bottom_nav_button.dart';
 import 'package:glow/widgets/card_wrapper.dart';
-import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:glow/widgets/error_card.dart';
 
 /// Layout for Bitcoin Address (onchain) payment (rendering)
 ///
@@ -86,12 +86,13 @@ class _BitcoinAddressLayoutState extends State<BitcoinAddressLayout> {
           onSelectFeeSpeed: widget.onSelectFeeSpeed,
         ),
       ),
-      bottomNavigationBar: _BottomNavButtonWrapper(
+      bottomNavigationBar: PaymentBottomNav(
         state: widget.state,
-        onPreparePayment: _handlePreparePayment,
-        onSendPayment: widget.onSendPayment,
         onRetry: _handleRetry,
         onCancel: widget.onCancel,
+        onReady: widget.onSendPayment,
+        onInitial: _handlePreparePayment,
+        readyLabel: 'CONFIRM',
       ),
     );
   }
@@ -124,6 +125,11 @@ class _BodyContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Show loading indicator while preparing
+    if (state is BitcoinAddressPreparing) {
+      return Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor));
+    }
+
     // Show status view when sending or completed
     if (state is BitcoinAddressSending) {
       return const PaymentStatusView(status: PaymentStatus.sending);
@@ -131,11 +137,6 @@ class _BodyContent extends StatelessWidget {
 
     if (state is BitcoinAddressSuccess) {
       return const PaymentStatusView(status: PaymentStatus.success);
-    }
-
-    // Show loading indicator while preparing
-    if (state is BitcoinAddressPreparing) {
-      return Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor));
     }
 
     // Show scrollable content for other states
@@ -146,76 +147,10 @@ class _BodyContent extends StatelessWidget {
         children: <Widget>[
           // Amount input (initial state)
           if (state is BitcoinAddressInitial)
-            _AmountInputForm(
-              addressDetails: addressDetails,
+            AmountInputForm(
               formKey: formKey,
-              amountController: amountController,
-              amountFocusNode: amountFocusNode,
-            )
-          // Fee selection (when ready)
-          else if (state is BitcoinAddressReady)
-            _FeeSelectionView(
-              addressDetails: addressDetails,
-              state: state as BitcoinAddressReady,
-              onSelectFeeSpeed: onSelectFeeSpeed,
-            )
-          // Error display
-          else if (state is BitcoinAddressError)
-            _ErrorCard(error: state as BitcoinAddressError),
-        ],
-      ),
-    );
-  }
-}
-
-/// Form for amount input
-class _AmountInputForm extends StatelessWidget {
-  final BitcoinAddressDetails addressDetails;
-  final GlobalKey<FormState> formKey;
-  final TextEditingController amountController;
-  final FocusNode amountFocusNode;
-
-  const _AmountInputForm({
-    required this.addressDetails,
-    required this.formKey,
-    required this.amountController,
-    required this.amountFocusNode,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return KeyboardActions(
-      tapOutsideBehavior: TapOutsideBehavior.translucentDismiss,
-      disableScroll: true,
-      config: KeyboardActionsConfig(
-        keyboardActionsPlatform: KeyboardActionsPlatform.IOS,
-        keyboardBarColor: Theme.of(context).colorScheme.surfaceContainer,
-        actions: <KeyboardActionsItem>[
-          KeyboardActionsItem(
-            focusNode: amountFocusNode,
-            toolbarButtons: <ButtonBuilder>[
-              (FocusNode node) {
-                return TextButton(
-                  style: TextButton.styleFrom(padding: const EdgeInsets.only(right: 16.0)),
-                  onPressed: () {
-                    node.unfocus();
-                  },
-                  child: const Text('DONE', style: TextStyle(color: Colors.white)),
-                );
-              },
-            ],
-          ),
-        ],
-      ),
-      child: Form(
-        key: formKey,
-        child: CardWrapper(
-          padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Address display
-              Column(
+              controller: amountController,
+              header: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   const Text(
@@ -253,41 +188,23 @@ class _AmountInputForm extends StatelessWidget {
                   ),
                 ],
               ),
-              const Divider(
-                height: 32.0,
-                color: Color.fromRGBO(40, 59, 74, 0.5),
-                indent: 0.0,
-                endIndent: 0.0,
-              ),
-
-              // Amount input with balance and use all funds
-              AmountInputCard(
-                controller: amountController,
-                focusNode: amountFocusNode,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an amount';
-                  }
-
-                  final BigInt? amount = BigInt.tryParse(value);
-                  if (amount == null) {
-                    return 'Invalid amount';
-                  }
-
-                  // Minimum 25,000 sats for onchain (example from Misty Breez screenshot)
-                  if (amount < BigInt.from(25000)) {
-                    return 'Minimum amount is 25,000 sats';
-                  }
-
-                  return null;
-                },
-                onPaymentLimitTapped: (BigInt amount) {
-                  amountController.text = amount.toString();
-                },
-              ),
-            ],
-          ),
-        ),
+              minAmount: BigInt.from(25000),
+              maxAmount: BigInt.from(2500000000000000),
+              onPaymentLimitTapped: (BigInt amount) {
+                amountController.text = amount.toString();
+              },
+            )
+          // Fee selection (when ready)
+          else if (state is BitcoinAddressReady)
+            _FeeSelectionView(
+              addressDetails: addressDetails,
+              state: state as BitcoinAddressReady,
+              onSelectFeeSpeed: onSelectFeeSpeed,
+            )
+          // Error display
+          else if (state is BitcoinAddressError)
+            ErrorCard(title: 'Failed to prepare payment', message: (state as BitcoinAddressError).message),
+        ],
       ),
     );
   }
@@ -559,86 +476,5 @@ class _PaymentBreakdownCard extends StatelessWidget {
     // For now, approximating $1 = 1000 sats for demo
     final double usd = sats.toDouble() / 1000;
     return usd.toStringAsFixed(2);
-  }
-}
-
-/// Card shown when there's an error
-class _ErrorCard extends StatelessWidget {
-  final BitcoinAddressError error;
-
-  const _ErrorCard({required this.error});
-
-  @override
-  Widget build(BuildContext context) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
-    return CardWrapper(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Icon(Icons.error_outline, color: colorScheme.error),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Failed to prepare payment',
-                  style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.error,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(error.message, style: textTheme.bodyMedium),
-        ],
-      ),
-    );
-  }
-}
-
-/// Bottom navigation button wrapper that changes based on state
-class _BottomNavButtonWrapper extends StatelessWidget {
-  final BitcoinAddressState state;
-  final VoidCallback onPreparePayment;
-  final VoidCallback onSendPayment;
-  final VoidCallback onRetry;
-  final VoidCallback onCancel;
-
-  const _BottomNavButtonWrapper({
-    required this.state,
-    required this.onPreparePayment,
-    required this.onSendPayment,
-    required this.onRetry,
-    required this.onCancel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Hide button when sending or success
-    if (state is BitcoinAddressSending || state is BitcoinAddressSuccess) {
-      return const SizedBox.shrink();
-    }
-
-    // Show retry button on error
-    if (state is BitcoinAddressError) {
-      return BottomNavButton(stickToBottom: true, text: 'RETRY', onPressed: onRetry);
-    }
-
-    // Show confirm button when ready (fee selection screen)
-    if (state is BitcoinAddressReady) {
-      return BottomNavButton(stickToBottom: true, text: 'CONFIRM', onPressed: onSendPayment);
-    }
-
-    // Show next button on initial state (after amount input)
-    if (state is BitcoinAddressInitial) {
-      return BottomNavButton(stickToBottom: true, text: 'NEXT', onPressed: onPreparePayment);
-    }
-
-    // Hide button when preparing
-    return const SizedBox.shrink();
   }
 }

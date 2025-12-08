@@ -94,7 +94,9 @@ class PaymentTrackerNotifier extends Notifier<PaymentTrackingState> {
   /// - For Lightning Invoice: provide expectedPaymentHash to match specific payment
   /// - For Lightning Address: pass null to accept any incoming payment
   void startTracking({String? expectedPaymentHash}) {
-    _log.d('Starting payment tracking${expectedPaymentHash != null ? ' for hash: $expectedPaymentHash' : ' (any payment)'}');
+    _log.d(
+      'Starting payment tracking${expectedPaymentHash != null ? ' for hash: $expectedPaymentHash' : ' (any payment)'}',
+    );
     state = TrackingPayment(expectedPaymentHash: expectedPaymentHash);
   }
 

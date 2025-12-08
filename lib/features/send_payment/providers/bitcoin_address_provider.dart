@@ -59,11 +59,7 @@ class BitcoinAddressNotifier extends Notifier<BitcoinAddressState> {
         'Fast=${_getTotalFee(feeQuote.speedFast)} sats',
       );
 
-      state = BitcoinAddressReady(
-        prepareResponse: response,
-        amountSats: amountSats,
-        feeQuote: feeQuote,
-      );
+      state = BitcoinAddressReady(prepareResponse: response, amountSats: amountSats, feeQuote: feeQuote);
     } catch (e) {
       _log.e('Failed to prepare payment: $e');
       final PaymentService paymentService = ref.read(paymentServiceProvider);
@@ -133,7 +129,6 @@ class BitcoinAddressNotifier extends Notifier<BitcoinAddressState> {
       );
     }
   }
-
 
   /// Map fee speed enum to SDK confirmation speed
   OnchainConfirmationSpeed _mapFeeSpeed(FeeSpeed speed) {
