@@ -12,6 +12,7 @@ import 'package:glow/features/payment_details/payment_details_screen.dart';
 import 'package:glow/features/send/send_screen.dart';
 import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
 import 'package:glow/features/send_payment/screens/bip21_screen.dart';
+import 'package:glow/features/lnurl/screens/lnurl_pay_screen.dart';
 import 'package:glow/features/deposits/unclaimed_deposits_screen.dart';
 import 'package:glow/features/wallet/create_screen.dart';
 import 'package:glow/features/wallet_restore/restore_screen.dart';
@@ -151,21 +152,16 @@ class AppRoutes {
 
       case sendLightningAddress:
         final LightningAddressDetails args = settings.arguments as LightningAddressDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'Lightning Address',
-            content: _LightningAddressWidget(details: args),
-          ),
+        // Lightning Address uses LNURL-Pay under the hood
+        return MaterialPageRoute<Widget>(
+          builder: (_) => LnurlPayScreen(payRequestDetails: args.payRequest),
           settings: settings,
         );
 
       case sendLnurlPay:
         final LnurlPayRequestDetails args = settings.arguments as LnurlPayRequestDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'LNURL-Pay',
-            content: _LnurlPayWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => LnurlPayScreen(payRequestDetails: args),
           settings: settings,
         );
 
@@ -375,62 +371,6 @@ class _Bolt12OfferWidget extends StatelessWidget {
           ),
         const Divider(height: 24),
         _InfoField(label: 'Offer', value: details.offer.offer, monospace: true),
-      ],
-    );
-  }
-}
-
-class _LightningAddressWidget extends StatelessWidget {
-  final LightningAddressDetails details;
-
-  const _LightningAddressWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Lightning Address', value: details.address),
-        _InfoField(label: 'Domain', value: details.payRequest.domain),
-        _InfoField(
-          label: 'Send Range',
-          value:
-              '${_formatAmount(details.payRequest.minSendable)} - ${_formatAmount(details.payRequest.maxSendable)}',
-        ),
-        if (details.payRequest.commentAllowed > 0)
-          _InfoField(label: 'Comment Allowed', value: '${details.payRequest.commentAllowed} characters'),
-        if (details.payRequest.allowsNostr == true) const _InfoField(label: 'Nostr', value: 'Supported'),
-        const Divider(height: 24),
-        _InfoField(label: 'Callback URL', value: details.payRequest.callback, monospace: true),
-      ],
-    );
-  }
-}
-
-class _LnurlPayWidget extends StatelessWidget {
-  final LnurlPayRequestDetails details;
-
-  const _LnurlPayWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _InfoField(label: 'Domain', value: details.domain),
-        _InfoField(
-          label: 'Amount Range',
-          value: '${_formatAmount(details.minSendable)} - ${_formatAmount(details.maxSendable)}',
-        ),
-        if (details.commentAllowed > 0)
-          _InfoField(label: 'Comment Allowed', value: '${details.commentAllowed} characters'),
-        if (details.address != null) _InfoField(label: 'Address', value: details.address!),
-        if (details.allowsNostr == true) const _InfoField(label: 'Nostr', value: 'Supported'),
-        if (details.nostrPubkey != null)
-          _InfoField(label: 'Nostr Pubkey', value: details.nostrPubkey!, monospace: true),
-        const Divider(height: 24),
-        _InfoField(label: 'Callback URL', value: details.callback, monospace: true),
-        _InfoField(label: 'LNURL', value: details.url, monospace: true),
       ],
     );
   }
