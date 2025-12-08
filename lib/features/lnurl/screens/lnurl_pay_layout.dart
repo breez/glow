@@ -3,10 +3,11 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart' hide PaymentStatus
 import 'package:flutter/material.dart';
 import 'package:glow/features/lnurl/models/lnurl_pay_state.dart';
 import 'package:glow/features/send_payment/widgets/amount_input_card.dart';
+import 'package:glow/features/send_payment/widgets/payment_bottom_nav.dart';
+import 'package:glow/features/send_payment/widgets/payment_confirmation_view.dart';
 import 'package:glow/features/send_payment/widgets/payment_status_view.dart';
-import 'package:glow/utils/formatters.dart';
-import 'package:glow/widgets/bottom_nav_button.dart';
 import 'package:glow/widgets/card_wrapper.dart';
+import 'package:glow/widgets/error_card.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 /// Layout for LNURL-Pay / Lightning Address payment (rendering)
@@ -89,12 +90,12 @@ class _LnurlPayLayoutState extends State<LnurlPayLayout> {
           commentController: _commentController,
         ),
       ),
-      bottomNavigationBar: _BottomNavButtonWrapper(
+      bottomNavigationBar: PaymentBottomNav(
         state: widget.state,
-        onPreparePayment: _handlePreparePayment,
-        onSendPayment: widget.onSendPayment,
         onRetry: _handleRetry,
         onCancel: widget.onCancel,
+        onReady: widget.onSendPayment,
+        onInitial: _handlePreparePayment,
       ),
     );
   }
@@ -149,12 +150,12 @@ class _BodyContent extends StatelessWidget {
               commentAllowed: (state as LnurlPayInitial).commentAllowed,
               payRequestDetails: payRequestDetails,
             )
-          // Payment summary (when ready or preparing)
-          else if (state is LnurlPayReady || state is LnurlPayPreparing)
+          // Payment summary (when ready)
+          else if (state is LnurlPayReady)
             _ConfirmationCard(payRequestDetails: payRequestDetails, state: state)
           // Error display
           else if (state is LnurlPayError)
-            _ErrorCard(error: state as LnurlPayError),
+            ErrorCard(title: 'Payment Failed', message: (state as LnurlPayError).message),
         ],
       ),
     );
@@ -409,271 +410,21 @@ class _ConfirmationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Show payment summary when ready
-    if (state is LnurlPayReady) {
-      final LnurlPayReady readyState = state as LnurlPayReady;
-      final String description = readyState.comment ?? _extractDescription(payRequestDetails.metadataStr);
-      return Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(bottom: 24.0),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  payRequestDetails.address ?? '',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    letterSpacing: 0.0,
-                    height: 1.28,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  payRequestDetails.address == null
-                      ? 'You are requested to pay:'
-                      : 'is requesting you to pay:',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 16.0,
-                    letterSpacing: 0.0,
-                    height: 1.28,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(minWidth: double.infinity),
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
-                        height: 1.56,
-                      ),
-                      text: formatSats(readyState.amountSats + readyState.feeSats),
-                      children: <InlineSpan>[
-                        const TextSpan(
-                          text: ' sats',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w600,
-                            height: 1.52,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          CardWrapper(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  <Widget>[
-                      // Amount row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          const Text(
-                            'Amount:',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18.0,
-                              letterSpacing: 0.0,
-                              height: 1.28,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.left,
-                            maxLines: 1,
-                          ),
-                          Text(
-                            '${formatSats(readyState.amountSats)} sats',
-                            style: const TextStyle(fontSize: 18.0, color: Colors.white),
-                          ),
-                        ],
-                      ),
-                      // Fee row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          const Text(
-                            'Fee:',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18.0,
-                              letterSpacing: 0.0,
-                              height: 1.28,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.left,
-                            maxLines: 1,
-                          ),
-                          Text(
-                            '${formatSats(readyState.feeSats)} sats',
-                            style: const TextStyle(fontSize: 18.0, color: Colors.white),
-                          ),
-                        ],
-                      ),
-                      // Description (if available)
-                      if (description.isNotEmpty) ...<Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const Text(
-                              'Description:',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.0,
-                                letterSpacing: 0.0,
-                                height: 1.28,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.left,
-                              maxLines: 1,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 16, bottom: 8.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColorLight.withValues(alpha: .1),
-                                  border: Border.all(
-                                    color: Theme.of(context).primaryColorLight.withValues(alpha: .7),
-                                  ),
-                                  borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-                                ),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                                  width: MediaQuery.of(context).size.width,
-                                  child: Container(
-                                    constraints: const BoxConstraints(
-                                      maxHeight: 120,
-                                      minWidth: double.infinity,
-                                    ),
-                                    child: AutoSizeText(
-                                      description,
-                                      style: const TextStyle(
-                                        fontSize: 14.0,
-                                        letterSpacing: 0.0,
-                                        height: 1.156,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ].expand((Widget widget) sync* {
-                      yield widget;
-                      yield const Divider(
-                        height: 32.0,
-                        color: Color.fromRGBO(40, 59, 74, 0.5),
-                        indent: 0.0,
-                        endIndent: 0.0,
-                      );
-                    }).toList()
-                    ..removeLast(),
-            ),
-          ),
-        ],
-      );
+    if (state is! LnurlPayReady) {
+      return const SizedBox.shrink();
     }
 
-    return const SizedBox.shrink();
-  }
-}
+    final LnurlPayReady readyState = state as LnurlPayReady;
+    final String description = readyState.comment ?? _extractDescription(payRequestDetails.metadataStr);
 
-/// Card shown when there's an error
-class _ErrorCard extends StatelessWidget {
-  final LnurlPayError error;
-
-  const _ErrorCard({required this.error});
-
-  @override
-  Widget build(BuildContext context) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
-    return CardWrapper(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Icon(Icons.error_outline, color: colorScheme.error),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Failed to prepare payment',
-                  style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.error,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(error.message, style: textTheme.bodyMedium),
-        ],
-      ),
+    return PaymentConfirmationView(
+      amountSats: readyState.amountSats,
+      feeSats: readyState.feeSats,
+      recipientLabel: payRequestDetails.address ?? '',
+      recipientSubtitle: payRequestDetails.address == null
+          ? 'You are requested to pay:'
+          : 'is requesting you to pay:',
+      description: description,
     );
-  }
-}
-
-/// Bottom navigation button wrapper that changes based on state
-class _BottomNavButtonWrapper extends StatelessWidget {
-  final LnurlPayState state;
-  final VoidCallback onPreparePayment;
-  final VoidCallback onSendPayment;
-  final VoidCallback onRetry;
-  final VoidCallback onCancel;
-
-  const _BottomNavButtonWrapper({
-    required this.state,
-    required this.onPreparePayment,
-    required this.onSendPayment,
-    required this.onRetry,
-    required this.onCancel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Hide button when sending or success
-    if (state is LnurlPaySending || state is LnurlPaySuccess) {
-      return const SizedBox.shrink();
-    }
-
-    // Show retry button on error
-    if (state is LnurlPayError) {
-      return BottomNavButton(stickToBottom: true, text: 'RETRY', onPressed: onRetry);
-    }
-
-    // Show confirm button when ready
-    if (state is LnurlPayReady) {
-      return BottomNavButton(stickToBottom: true, text: 'SEND', onPressed: onSendPayment);
-    }
-
-    // Show next button on initial state (after amount input)
-    if (state is LnurlPayInitial) {
-      return BottomNavButton(stickToBottom: true, text: 'NEXT', onPressed: onPreparePayment);
-    }
-
-    // Hide button when preparing
-    if (state is LnurlPayPreparing) {
-      return const SizedBox.shrink();
-    }
-
-    // Show cancel button for other states
-    return BottomNavButton(stickToBottom: true, text: 'CANCEL', onPressed: onCancel);
   }
 }
