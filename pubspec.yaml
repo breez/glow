@@ -54,7 +54,7 @@ dependencies:
   timeago: ^3.7.1
   typeaheadx: ^0.0.2
   local_auth: ^3.0.0
-  local_auth_android: ^2.0.3
+  local_auth_android: ^2.0.4
   local_auth_darwin: ^2.0.1
   lottie: ^3.3.2
   keyboard_actions: ^4.2.1
