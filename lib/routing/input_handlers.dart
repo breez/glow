@@ -95,11 +95,11 @@ class InputHandler {
         Navigator.pushNamed(context, AppRoutes.sendSilentPayment, arguments: details);
       },
       lnurlAuth: (LnurlAuthRequestDetails details) {
-        _log.i('Navigating to LNURL-Auth screen');
-        Navigator.pushNamed(context, AppRoutes.lnurlAuth, arguments: details);
+        _log.w('LNURL-Auth input type not supported');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported input')));
       },
       url: (_) {
-        _log.w('URL input type not supported for navigation');
+        _log.w('URL input type not supported');
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('URL payments are not supported')));
@@ -109,8 +109,8 @@ class InputHandler {
         Navigator.pushNamed(context, AppRoutes.sendBip21, arguments: details);
       },
       bolt12InvoiceRequest: (Bolt12InvoiceRequestDetails details) {
-        _log.i('Navigating to BOLT12 Invoice Request screen');
-        Navigator.pushNamed(context, AppRoutes.sendBolt12InvoiceRequest, arguments: details);
+        _log.w('BOLT12 Invoice Request input type not supported');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported input')));
       },
       lnurlWithdraw: (LnurlWithdrawRequestDetails details) {
         _log.i('Navigating to LNURL-Withdraw screen');
@@ -159,11 +159,11 @@ class InputHandler {
         Navigator.pushReplacementNamed(context, AppRoutes.sendSilentPayment, arguments: details);
       },
       lnurlAuth: (LnurlAuthRequestDetails details) {
-        _log.i('Replacing with LNURL-Auth screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.lnurlAuth, arguments: details);
+        _log.w('LNURL-Auth input type not supported');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported input')));
       },
       url: (_) {
-        _log.w('URL input type not supported for navigation');
+        _log.w('URL input type not supported');
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('URL payments are not supported')));
@@ -173,8 +173,8 @@ class InputHandler {
         Navigator.pushReplacementNamed(context, AppRoutes.sendBip21, arguments: details);
       },
       bolt12InvoiceRequest: (Bolt12InvoiceRequestDetails details) {
-        _log.i('Replacing with BOLT12 Invoice Request screen');
-        Navigator.pushReplacementNamed(context, AppRoutes.sendBolt12InvoiceRequest, arguments: details);
+        _log.w('BOLT12 Invoice Request input type not supported');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported input')));
       },
       lnurlWithdraw: (LnurlWithdrawRequestDetails details) {
         _log.i('Replacing with LNURL-Withdraw screen');
