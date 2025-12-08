@@ -14,6 +14,7 @@ import 'package:glow/features/send_payment/screens/bip21_screen.dart';
 import 'package:glow/features/send_payment/screens/bitcoin_address_screen.dart';
 import 'package:glow/features/send_payment/screens/bolt11_payment_screen.dart';
 import 'package:glow/features/send_payment/screens/bolt12_invoice_request_screen.dart';
+import 'package:glow/features/send_payment/screens/bolt12_offer_screen.dart';
 import 'package:glow/features/send_payment/screens/silent_payment_screen.dart';
 import 'package:glow/features/send_payment/screens/spark_address_screen.dart';
 import 'package:glow/features/send_payment/screens/spark_invoice_screen.dart';
@@ -146,11 +147,8 @@ class AppRoutes {
 
       case sendBolt12Offer:
         final Bolt12OfferDetails args = settings.arguments as Bolt12OfferDetails;
-        return MaterialPageRoute<_PlaceholderScreen>(
-          builder: (_) => _PlaceholderScreen(
-            title: 'BOLT12 Offer',
-            content: _Bolt12OfferWidget(details: args),
-          ),
+        return MaterialPageRoute<Widget>(
+          builder: (_) => Bolt12OfferScreen(offerDetails: args),
           settings: settings,
         );
 
@@ -294,38 +292,6 @@ class _Bolt12InvoiceWidget extends StatelessWidget {
         _InfoField(label: 'Amount', value: _formatAmount(details.amountMsat)),
         const Divider(height: 24),
         _InfoField(label: 'Invoice', value: details.invoice.invoice, monospace: true),
-      ],
-    );
-  }
-}
-
-class _Bolt12OfferWidget extends StatelessWidget {
-  final Bolt12OfferDetails details;
-
-  const _Bolt12OfferWidget({required this.details});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        if (details.description != null) _InfoField(label: 'Description', value: details.description!),
-        if (details.issuer != null) _InfoField(label: 'Issuer', value: details.issuer!),
-        if (details.minAmount != null)
-          _InfoField(label: 'Minimum Amount', value: _formatAmountType(details.minAmount!)),
-        _InfoField(label: 'Chains', value: details.chains.join(', ')),
-        _InfoField(label: 'Paths', value: '${details.paths.length} blinded path(s)'),
-        if (details.signingPubkey != null)
-          _InfoField(label: 'Signing Key', value: details.signingPubkey!, monospace: true),
-        if (details.absoluteExpiry != null)
-          _InfoField(
-            label: 'Expires',
-            value: DateTime.fromMillisecondsSinceEpoch(
-              details.absoluteExpiry!.toInt() * 1000,
-            ).toLocal().toString(),
-          ),
-        const Divider(height: 24),
-        _InfoField(label: 'Offer', value: details.offer.offer, monospace: true),
       ],
     );
   }
