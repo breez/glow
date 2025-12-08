@@ -112,7 +112,7 @@ void main() {
       );
 
       expect(state.formattedAmount, '50,000');
-      expect(state.formattedAmountWithSign, '+50,000');
+      expect(state.formattedAmountWithSign, '+ 50,000');
       expect(state.isReceive, true);
       expect(state.formattedStatus, 'Completed');
     });
@@ -133,7 +133,7 @@ void main() {
       final TransactionItemState item = TransactionItemState(
         payment: payment,
         formattedAmount: '50,000',
-        formattedAmountWithSign: '+50,000',
+        formattedAmountWithSign: '+ 50,000',
         formattedTime: 'Just now',
         formattedStatus: 'Completed',
         formattedMethod: 'Lightning',
@@ -261,7 +261,7 @@ void main() {
       final TransactionItemState transaction = TransactionItemState(
         payment: mockPayment,
         formattedAmount: '50,000',
-        formattedAmountWithSign: '+50,000',
+        formattedAmountWithSign: '+ 50,000',
         formattedTime: '2h ago',
         formattedStatus: 'Completed',
         formattedMethod: 'Lightning',

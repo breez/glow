@@ -184,7 +184,7 @@ class HomeDemoScreen extends StatelessWidget {
       TransactionItemState(
         payment: mockPayment1,
         formattedAmount: '50,000',
-        formattedAmountWithSign: '+50,000',
+        formattedAmountWithSign: '+ 50,000',
         formattedTime: '2h ago',
         formattedStatus: 'Completed',
         formattedMethod: 'Lightning',
@@ -194,7 +194,7 @@ class HomeDemoScreen extends StatelessWidget {
       TransactionItemState(
         payment: mockPayment2,
         formattedAmount: '25,000',
-        formattedAmountWithSign: '-25,000',
+        formattedAmountWithSign: '- 25,000',
         formattedTime: '1d ago',
         formattedStatus: 'Completed',
         formattedMethod: 'Lightning',
@@ -204,7 +204,7 @@ class HomeDemoScreen extends StatelessWidget {
       TransactionItemState(
         payment: mockPayment3,
         formattedAmount: '100,000',
-        formattedAmountWithSign: '+100,000',
+        formattedAmountWithSign: '+ 100,000',
         formattedTime: '10m ago',
         formattedStatus: 'Pending',
         formattedMethod: 'Lightning',

@@ -22,8 +22,8 @@ class TransactionListItem extends StatelessWidget {
           child: ListTile(
             onTap: onTap,
             leading: _buildAvatarContainer(context),
-            title: Transform.translate(offset: const Offset(-8, 0), child: _buildTitle()),
-            subtitle: Transform.translate(offset: const Offset(-8, 0), child: _buildSubtitle(context)),
+            title: _buildTitle(),
+            subtitle: _buildSubtitle(context),
             trailing: _buildAmount(context),
           ),
         ),
@@ -56,29 +56,12 @@ class TransactionListItem extends StatelessWidget {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final bool isCompleted = transaction.payment.status == PaymentStatus.completed;
     final Color color = transaction.isReceive
-        ? Colors.green
+        ? Colors.yellow
         : isCompleted
-        ? colorScheme.primary
-        : colorScheme.onSurfaceVariant;
+        ? colorScheme.surface
+        : const Color(0xb3303234);
 
-    IconData icon;
-    switch (transaction.payment.method) {
-      case PaymentMethod.lightning:
-        icon = Icons.bolt;
-        break;
-      case PaymentMethod.deposit:
-        icon = Icons.arrow_downward;
-        break;
-      case PaymentMethod.withdraw:
-        icon = Icons.arrow_upward;
-        break;
-      case PaymentMethod.token:
-        icon = Icons.token;
-        break;
-      default:
-        icon = transaction.isReceive ? Icons.arrow_downward : Icons.arrow_upward;
-    }
-
+    final IconData icon = transaction.isReceive ? Icons.add_rounded : Icons.remove_rounded;
     return Icon(icon, size: 16, color: color);
   }
 
@@ -158,7 +141,7 @@ class TransactionListItem extends StatelessWidget {
           ),
           if (hasFees && !isPending)
             Text(
-              '${transaction.isReceive ? '' : '-'}${transaction.payment.fees} sats',
+              'FEE ${transaction.payment.fees}',
               style: TextStyle(
                 color: amountColor.withValues(alpha: .7),
                 fontSize: 10.5,

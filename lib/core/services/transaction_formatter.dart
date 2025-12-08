@@ -156,8 +156,8 @@ class TransactionFormatter {
   String formatAmountWithSign(BigInt amount, PaymentType type) {
     final String formattedAmount = formatSats(amount);
     return switch (type) {
-      PaymentType.send => '-$formattedAmount',
-      PaymentType.receive => '+$formattedAmount',
+      PaymentType.send => '- $formattedAmount',
+      PaymentType.receive => '+ $formattedAmount',
     };
   }
 
