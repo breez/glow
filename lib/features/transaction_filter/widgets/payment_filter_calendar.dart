@@ -1,6 +1,7 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:glow/features/transaction_filter/providers/transaction_filter_provider.dart';
 import 'package:glow/providers/sdk_provider.dart';
 
@@ -12,7 +13,12 @@ class PaymentsFilterCalendar extends ConsumerWidget {
     final AsyncValue<List<Payment>> paymentsAsync = ref.watch(paymentsProvider);
 
     return IconButton(
-      icon: const Icon(Icons.calendar_today_outlined),
+      icon: SvgPicture.asset(
+        'assets/svg/calendar.svg',
+        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
+        width: 24.0,
+        height: 24.0,
+      ),
       // Disable the button if there are no payments to select a range from.
       onPressed: paymentsAsync.asData?.value.isNotEmpty == true
           ? () async {

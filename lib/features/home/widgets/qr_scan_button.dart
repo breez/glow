@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:glow/features/qr_scan/services/qr_scan_service.dart';
 import 'package:glow/routing/input_handlers.dart';
 import 'package:glow/logging/app_logger.dart';
@@ -16,7 +17,12 @@ class QrScanButton extends ConsumerWidget {
       padding: const EdgeInsets.only(top: 32.0),
       child: FloatingActionButton(
         onPressed: () => _scanBarcode(context, ref),
-        child: const Icon(Icons.qr_code),
+        child: SvgPicture.asset(
+          'assets/svg/qr_scan.svg',
+          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
+          width: 24.0,
+          height: 24.0,
+        ),
       ),
     );
   }

@@ -27,7 +27,6 @@ class TransactionFilterView extends ConsumerWidget {
             children: <Widget>[
               const PaymentFilterExporter(),
               const PaymentsFilterCalendar(),
-              const SizedBox(width: 8),
               PaymentFilterDropdown(paymentTypes, (List<PaymentType> value) {
                 ref.read(transactionFilterProvider.notifier).setPaymentTypes(value);
               }),
