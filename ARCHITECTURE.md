@@ -2,7 +2,7 @@
 
 To ensure maintainability, testability, and scalability, we follow strict Separation of Concerns (SoC) principles and a custom Feature-First architecture.
 
-## 1. Feature-First Structure (The "Twist")
+## 1. Feature-First Structure
 We organize code by **feature**, but with a flattened internal structure compared to standard Clean Architecture.
 
 ### Directory Structure
@@ -84,4 +84,158 @@ class DetailLayout extends StatelessWidget {
     );
   }
 }
+```
+
+## 3. Development Standards
+
+### Code Quality Standards
+
+All code must comply with the linter rules defined in [analysis_options.yaml](../analysis_options.yaml).
+
+**Key linter rules:**
+- `always_specify_types` - Always declare explicit types for variables, parameters, and return values
+- `always_declare_return_types` - All functions and methods must have explicit return types
+- `prefer_const_constructors` - Use const constructors wherever possible for better performance
+- `require_trailing_commas` - Add trailing commas for better formatting and cleaner diffs
+- `prefer_single_quotes` - Use single quotes for strings
+- `use_build_context_synchronously` - Prevent async context errors in widgets
+
+**Before committing:** Run `flutter analyze` to ensure compliance with all linter rules.
+
+### Widget Performance Guidelines
+
+**No helper methods in widgets:**
+- Do NOT use private helper methods (e.g., `_buildHeader()`, `_buildRow()`) inside widget classes
+- Helper methods are not performant in Flutter as they are called on every rebuild
+- They prevent Flutter from optimizing the widget tree
+
+**Use separate widget classes instead:**
+- Extract UI components into separate widget classes (e.g., `InvoiceDetailsCard`, `PaymentSummaryRow`)
+- Separate widgets enable const constructors, reducing unnecessary rebuilds
+- This improves performance and makes code more maintainable
+
+**Example:**
+```dart
+// ❌ Bad - Helper method
+class MyWidget extends StatelessWidget {
+  Widget _buildHeader() {  // Called on every rebuild
+    return Text('Header');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [_buildHeader()]);
+  }
+}
+
+// ✅ Good - Separate widget class
+class MyWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Column(children: [HeaderWidget()]);  // Can be const!
+  }
+}
+
+class HeaderWidget extends StatelessWidget {
+  const HeaderWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text('Header');
+  }
+}
+```
+
+### Riverpod 3.0 Guidelines
+
+**Provider Syntax:**
+- Use `NotifierProvider<MyNotifier, MyState>` (not the old `StateNotifierProvider`)
+- Use function reference syntax: `NotifierProvider<MyNotifier, MyState>(MyNotifier.new)`
+- Always specify explicit types for provider declarations (required by linter)
+
+**Notifier Classes:**
+- Extend `Notifier<State>` or `AsyncNotifier<State>` (not `StateNotifier`)
+- For async operations that return `Future`, use `AsyncNotifier<State>`
+
+**Basic Notifier Example:**
+```dart
+// Provider declaration with explicit type
+final NotifierProvider<CounterNotifier, int> counterProvider =
+  NotifierProvider<CounterNotifier, int>(CounterNotifier.new);
+
+// Notifier class
+class CounterNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void increment() => state++;
+}
+```
+
+**Family Notifiers:**
+
+In Riverpod 3.0, there are no separate `FamilyNotifier` or `AutoDisposeFamilyNotifier` classes.
+
+**Key differences:**
+- Notifier class extends `Notifier<State>` (same as non-family)
+- Family parameters are passed through the constructor
+- Provider declaration chains `.family` and optionally `.autoDispose`
+
+**Family Notifier Example:**
+```dart
+// Provider declaration with family and autoDispose
+final NotifierProviderFamily<TodoNotifier, TodoState, String> todoProvider =
+  NotifierProvider.autoDispose.family<TodoNotifier, TodoState, String>(
+    TodoNotifier.new,
+  );
+
+// Notifier class receives family parameter via constructor
+class TodoNotifier extends Notifier<TodoState> {
+  TodoNotifier(this.todoId);
+  final String todoId;
+
+  @override
+  TodoState build() {
+    // Use this.todoId to access the family parameter
+    return TodoState.loading(todoId);
+  }
+
+  Future<void> load() async {
+    final data = await fetchTodo(todoId);
+    state = TodoState.loaded(data);
+  }
+}
+
+// Usage in widget
+ref.watch(todoProvider('todo-123'));
+ref.read(todoProvider('todo-123').notifier).load();
+```
+
+**AsyncNotifier Family Example:**
+```dart
+// Provider declaration
+final AsyncNotifierProviderFamily<UserNotifier, User, int> userProvider =
+  AsyncNotifierProvider.autoDispose.family<UserNotifier, User, int>(
+    UserNotifier.new,
+  );
+
+// AsyncNotifier class
+class UserNotifier extends AsyncNotifier<User> {
+  UserNotifier(this.userId);
+  final int userId;
+
+  @override
+  Future<User> build() async {
+    // Fetch data in build method
+    return await fetchUser(userId);
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => fetchUser(userId));
+  }
+}
+
+// Usage
+ref.watch(userProvider(42));  // Returns AsyncValue<User>
 ```
