@@ -26,28 +26,32 @@ class PaymentFilterDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
-      child: DropdownButton<String>(
-        value: _getSelection(activeFilters),
-        dropdownColor: Theme.of(context).colorScheme.surfaceContainer,
-        iconEnabledColor: Colors.white,
-        items: const <String>[_all, _sent, _received].map((String value) {
-          return DropdownMenuItem<String>(value: value, child: Text(value));
-        }).toList(),
-        onChanged: (String? newValue) {
-          final List<PaymentType> newFilters;
-          switch (newValue) {
-            case _sent:
-              newFilters = <PaymentType>[PaymentType.send];
-              break;
-            case _received:
-              newFilters = <PaymentType>[PaymentType.receive];
-              break;
-            default: // "All Activities"
-              newFilters = <PaymentType>[]; // An empty list signifies all activities
-              break;
-          }
-          onFilterChanged(newFilters);
-        },
+      child: ButtonTheme(
+        alignedDropdown: true,
+        child: DropdownButton<String>(
+          value: _getSelection(activeFilters),
+          style: const TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 0.2),
+          dropdownColor: Theme.of(context).colorScheme.surfaceContainer,
+          iconEnabledColor: Colors.white,
+          items: const <String>[_all, _sent, _received].map((String value) {
+            return DropdownMenuItem<String>(value: value, child: Text(value));
+          }).toList(),
+          onChanged: (String? newValue) {
+            final List<PaymentType> newFilters;
+            switch (newValue) {
+              case _sent:
+                newFilters = <PaymentType>[PaymentType.send];
+                break;
+              case _received:
+                newFilters = <PaymentType>[PaymentType.receive];
+                break;
+              default: // "All Activities"
+                newFilters = <PaymentType>[]; // An empty list signifies all activities
+                break;
+            }
+            onFilterChanged(newFilters);
+          },
+        ),
       ),
     );
   }
