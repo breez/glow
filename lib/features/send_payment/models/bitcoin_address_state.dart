@@ -82,6 +82,15 @@ class BitcoinAddressReady extends BitcoinAddressState {
     }
   }
 
+  /// Calculate affordability for each fee speed given a balance
+  Map<FeeSpeed, bool> getAffordability(BigInt balance) {
+    return <FeeSpeed, bool>{
+      FeeSpeed.slow: (amountSats + getFeeForSpeed(FeeSpeed.slow)) <= balance,
+      FeeSpeed.medium: (amountSats + getFeeForSpeed(FeeSpeed.medium)) <= balance,
+      FeeSpeed.fast: (amountSats + getFeeForSpeed(FeeSpeed.fast)) <= balance,
+    };
+  }
+
   BitcoinAddressReady copyWith({FeeSpeed? selectedSpeed}) {
     return BitcoinAddressReady(
       prepareResponse: prepareResponse,

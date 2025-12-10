@@ -16,6 +16,24 @@ final NotifierProviderFamily<BitcoinAddressNotifier, BitcoinAddressState, Bitcoi
 bitcoinAddressProvider = NotifierProvider.autoDispose
     .family<BitcoinAddressNotifier, BitcoinAddressState, BitcoinAddressDetails>(BitcoinAddressNotifier.new);
 
+/// Provider for fee affordability calculation
+///
+/// Returns null if not in Ready state or balance not available
+final ProviderFamily<Map<FeeSpeed, bool>?, BitcoinAddressDetails> bitcoinAddressAffordabilityProvider =
+    Provider.autoDispose.family<Map<FeeSpeed, bool>?, BitcoinAddressDetails>((
+      Ref ref,
+      BitcoinAddressDetails details,
+    ) {
+      final BitcoinAddressState state = ref.watch(bitcoinAddressProvider(details));
+      final AsyncValue<BigInt> balanceAsync = ref.watch(balanceProvider);
+
+      if (state is BitcoinAddressReady && balanceAsync.hasValue) {
+        return state.getAffordability(balanceAsync.value!);
+      }
+
+      return null;
+    });
+
 /// Notifier for Bitcoin Address (onchain) payment flow
 class BitcoinAddressNotifier extends Notifier<BitcoinAddressState> {
   BitcoinAddressNotifier(this.arg);
@@ -59,7 +77,29 @@ class BitcoinAddressNotifier extends Notifier<BitcoinAddressState> {
         'Fast=${_getTotalFee(feeQuote.speedFast)} sats',
       );
 
-      state = BitcoinAddressReady(prepareResponse: response, amountSats: amountSats, feeQuote: feeQuote);
+      // Determine the default selected speed based on affordability
+      final AsyncValue<BigInt> balanceAsync = ref.read(balanceProvider);
+      FeeSpeed defaultSpeed = FeeSpeed.fast; // Default to fast
+
+      if (balanceAsync.hasValue) {
+        final BigInt balance = balanceAsync.value!;
+        // Check affordability from fastest to cheapest
+        if (amountSats + _getTotalFee(feeQuote.speedFast) <= balance) {
+          defaultSpeed = FeeSpeed.fast;
+        } else if (amountSats + _getTotalFee(feeQuote.speedMedium) <= balance) {
+          defaultSpeed = FeeSpeed.medium;
+        } else if (amountSats + _getTotalFee(feeQuote.speedSlow) <= balance) {
+          defaultSpeed = FeeSpeed.slow;
+        }
+        // If none are affordable, keep fast as default (validation will catch it later)
+      }
+
+      state = BitcoinAddressReady(
+        prepareResponse: response,
+        amountSats: amountSats,
+        feeQuote: feeQuote,
+        selectedSpeed: defaultSpeed,
+      );
     } catch (e) {
       _log.e('Failed to prepare payment: $e');
       final PaymentService paymentService = ref.read(paymentServiceProvider);

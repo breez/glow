@@ -21,6 +21,7 @@ class BitcoinAddressScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final BitcoinAddressState state = ref.watch(bitcoinAddressProvider(addressDetails));
+    final Map<FeeSpeed, bool>? affordability = ref.watch(bitcoinAddressAffordabilityProvider(addressDetails));
 
     // Listen for success state and navigate home
     ref.listen<BitcoinAddressState>(bitcoinAddressProvider(addressDetails), (
@@ -41,6 +42,7 @@ class BitcoinAddressScreen extends ConsumerWidget {
     return BitcoinAddressLayout(
       addressDetails: addressDetails,
       state: state,
+      affordability: affordability,
       onPreparePayment: (BigInt amount) {
         ref.read(bitcoinAddressProvider(addressDetails).notifier).preparePayment(amount);
       },

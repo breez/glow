@@ -17,6 +17,7 @@ import 'package:glow/widgets/error_card.dart';
 class BitcoinAddressLayout extends StatefulWidget {
   final BitcoinAddressDetails addressDetails;
   final BitcoinAddressState state;
+  final Map<FeeSpeed, bool>? affordability;
   final void Function(BigInt amount) onPreparePayment;
   final void Function(FeeSpeed speed) onSelectFeeSpeed;
   final VoidCallback onSendPayment;
@@ -31,6 +32,7 @@ class BitcoinAddressLayout extends StatefulWidget {
     required this.onSendPayment,
     required this.onRetry,
     required this.onCancel,
+    this.affordability,
     super.key,
   });
 
@@ -80,6 +82,7 @@ class _BitcoinAddressLayoutState extends State<BitcoinAddressLayout> {
         child: _BodyContent(
           addressDetails: widget.addressDetails,
           state: widget.state,
+          affordability: widget.affordability,
           formKey: _formKey,
           amountController: _amountController,
           amountFocusNode: _amountFocusNode,
@@ -109,6 +112,7 @@ class _BitcoinAddressLayoutState extends State<BitcoinAddressLayout> {
 class _BodyContent extends StatelessWidget {
   final BitcoinAddressDetails addressDetails;
   final BitcoinAddressState state;
+  final Map<FeeSpeed, bool>? affordability;
   final GlobalKey<FormState> formKey;
   final TextEditingController amountController;
   final FocusNode amountFocusNode;
@@ -121,6 +125,7 @@ class _BodyContent extends StatelessWidget {
     required this.amountController,
     required this.amountFocusNode,
     required this.onSelectFeeSpeed,
+    this.affordability,
   });
 
   @override
@@ -199,6 +204,7 @@ class _BodyContent extends StatelessWidget {
             _FeeSelectionView(
               addressDetails: addressDetails,
               state: state as BitcoinAddressReady,
+              affordability: affordability,
               onSelectFeeSpeed: onSelectFeeSpeed,
             )
           // Error display
@@ -214,16 +220,22 @@ class _BodyContent extends StatelessWidget {
 class _FeeSelectionView extends StatelessWidget {
   final BitcoinAddressDetails addressDetails;
   final BitcoinAddressReady state;
+  final Map<FeeSpeed, bool>? affordability;
   final void Function(FeeSpeed speed) onSelectFeeSpeed;
 
   const _FeeSelectionView({
     required this.addressDetails,
     required this.state,
     required this.onSelectFeeSpeed,
+    this.affordability,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Use provided affordability or default to all enabled
+    final Map<FeeSpeed, bool> feeAffordability =
+        affordability ?? <FeeSpeed, bool>{FeeSpeed.slow: true, FeeSpeed.medium: true, FeeSpeed.fast: true};
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -231,6 +243,7 @@ class _FeeSelectionView extends StatelessWidget {
         _FeeSpeedTabs(
           selectedSpeed: state.selectedSpeed,
           feeQuote: state.feeQuote,
+          affordability: feeAffordability,
           onSelectSpeed: onSelectFeeSpeed,
         ),
         const SizedBox(height: 8),
@@ -267,9 +280,15 @@ class _FeeSelectionView extends StatelessWidget {
 class _FeeSpeedTabs extends StatelessWidget {
   final FeeSpeed selectedSpeed;
   final SendOnchainFeeQuote feeQuote;
+  final Map<FeeSpeed, bool> affordability;
   final void Function(FeeSpeed speed) onSelectSpeed;
 
-  const _FeeSpeedTabs({required this.selectedSpeed, required this.feeQuote, required this.onSelectSpeed});
+  const _FeeSpeedTabs({
+    required this.selectedSpeed,
+    required this.feeQuote,
+    required this.affordability,
+    required this.onSelectSpeed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -286,6 +305,7 @@ class _FeeSpeedTabs extends StatelessWidget {
             child: _FeeSpeedTab(
               label: 'ECONOMY',
               isSelected: selectedSpeed == FeeSpeed.slow,
+              isEnabled: affordability[FeeSpeed.slow] ?? true,
               onTap: () => onSelectSpeed(FeeSpeed.slow),
               position: _TabPosition.left,
             ),
@@ -294,6 +314,7 @@ class _FeeSpeedTabs extends StatelessWidget {
             child: _FeeSpeedTab(
               label: 'REGULAR',
               isSelected: selectedSpeed == FeeSpeed.medium,
+              isEnabled: affordability[FeeSpeed.medium] ?? true,
               onTap: () => onSelectSpeed(FeeSpeed.medium),
               position: _TabPosition.middle,
             ),
@@ -302,6 +323,7 @@ class _FeeSpeedTabs extends StatelessWidget {
             child: _FeeSpeedTab(
               label: 'PRIORITY',
               isSelected: selectedSpeed == FeeSpeed.fast,
+              isEnabled: affordability[FeeSpeed.fast] ?? true,
               onTap: () => onSelectSpeed(FeeSpeed.fast),
               position: _TabPosition.right,
             ),
@@ -319,6 +341,7 @@ enum _TabPosition { left, middle, right }
 class _FeeSpeedTab extends StatelessWidget {
   final String label;
   final bool isSelected;
+  final bool isEnabled;
   final VoidCallback onTap;
   final _TabPosition position;
 
@@ -327,6 +350,7 @@ class _FeeSpeedTab extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     required this.position,
+    this.isEnabled = true,
   });
 
   @override
@@ -360,12 +384,12 @@ class _FeeSpeedTab extends StatelessWidget {
     }
 
     return InkWell(
-      onTap: onTap,
+      onTap: isEnabled ? onTap : null,
       borderRadius: borderRadius,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+          color: isEnabled ? (isSelected ? Theme.of(context).primaryColor : Colors.transparent) : Colors.grey,
           border: border,
           borderRadius: borderRadius,
         ),
@@ -373,7 +397,7 @@ class _FeeSpeedTab extends StatelessWidget {
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white70,
+            color: isEnabled ? (isSelected ? Colors.white : Colors.white70) : Colors.white38,
             fontSize: 14.0,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
