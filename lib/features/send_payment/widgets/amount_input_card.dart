@@ -2,10 +2,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glow/core/services/transaction_formatter.dart';
 import 'package:glow/providers/sdk_provider.dart';
 
 /// Widget for entering payment amount
 class AmountInputCard extends ConsumerStatefulWidget {
+  final TransactionFormatter formatter = const TransactionFormatter();
+
   final TextEditingController controller;
   final FocusNode focusNode;
   final String? Function(String?)? validator;
@@ -114,7 +117,7 @@ class _AmountInputCardState extends ConsumerState<AmountInputCard> {
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      'Balance: ${_formatSats(balanceAsync.value!)}',
+                      'Balance: ${widget.formatter.formatBalance(balanceAsync.value!)}',
 
                       style: const TextStyle(
                         color: Color.fromRGBO(182, 188, 193, 1),
@@ -157,18 +160,20 @@ class _AmountInputCardState extends ConsumerState<AmountInputCard> {
     }
 
     if (widget.minAmount != null && amount < widget.minAmount!) {
-      return 'Amount must be at least ${_formatSats(widget.minAmount!)}';
+      return 'Payment is below the limit ${widget.formatter.formatBalance(widget.minAmount!)}';
     }
 
     if (widget.maxAmount != null && amount > widget.maxAmount!) {
-      return 'Amount must not exceed ${_formatSats(widget.maxAmount!)}';
+      return 'Payment exceeds the limit ${widget.formatter.formatBalance(widget.maxAmount!)}.';
+    }
+
+    // Validate against current balance
+    final AsyncValue<BigInt> balanceAsync = ref.read(balanceProvider);
+    if (balanceAsync.hasValue && amount > balanceAsync.value!) {
+      return 'Insufficient balance';
     }
 
     return null;
-  }
-
-  String _formatSats(BigInt sats) {
-    return '${sats.toString()} sats';
   }
 }
 

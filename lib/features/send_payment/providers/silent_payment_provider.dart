@@ -65,6 +65,16 @@ class SilentPaymentNotifier extends Notifier<SilentPaymentState> {
 
       _log.i('Payment prepared - Amount: ${response.amount} sats, Fee: $feeSats sats');
 
+      // Validate balance after calculating fees
+      final AsyncValue<BigInt> balanceAsync = ref.read(balanceProvider);
+      if (balanceAsync.hasValue) {
+        paymentService.validateBalance(
+          currentBalance: balanceAsync.value!,
+          paymentAmount: response.amount,
+          estimatedFee: feeSats,
+        );
+      }
+
       state = SilentPaymentReady(prepareResponse: response, amountSats: response.amount, feeSats: feeSats);
     } catch (e) {
       _log.e('Failed to prepare payment: $e');

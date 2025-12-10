@@ -64,6 +64,16 @@ class Bolt11PaymentNotifier extends Notifier<Bolt11PaymentState> {
 
       _log.i('Payment prepared - Amount: ${response.amount} sats, Fee: $feeSats sats');
 
+      // Validate balance after calculating fees
+      final AsyncValue<BigInt> balanceAsync = ref.read(balanceProvider);
+      if (balanceAsync.hasValue) {
+        paymentService.validateBalance(
+          currentBalance: balanceAsync.value!,
+          paymentAmount: response.amount,
+          estimatedFee: feeSats,
+        );
+      }
+
       state = Bolt11PaymentReady(
         prepareResponse: response,
         amountSats: response.amount,

@@ -132,14 +132,25 @@ class BitcoinAddressNotifier extends Notifier<BitcoinAddressState> {
       return;
     }
 
-    state = BitcoinAddressSending(
-      prepareResponse: currentState.prepareResponse,
-      selectedSpeed: currentState.selectedSpeed,
-    );
-
     try {
-      final BreezSdk sdk = await ref.read(sdkProvider.future);
       final PaymentService paymentService = ref.read(paymentServiceProvider);
+
+      // Validate balance with the actually selected fee speed
+      final AsyncValue<BigInt> balanceAsync = ref.read(balanceProvider);
+      if (balanceAsync.hasValue) {
+        paymentService.validateBalance(
+          currentBalance: balanceAsync.value!,
+          paymentAmount: currentState.amountSats,
+          estimatedFee: currentState.selectedFeeSats,
+        );
+      }
+
+      state = BitcoinAddressSending(
+        prepareResponse: currentState.prepareResponse,
+        selectedSpeed: currentState.selectedSpeed,
+      );
+
+      final BreezSdk sdk = await ref.read(sdkProvider.future);
 
       _log.i('Sending Bitcoin Address payment with ${currentState.selectedSpeed.name} fee');
 

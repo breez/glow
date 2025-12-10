@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart' hide PaymentStatus;
 import 'package:flutter/material.dart';
+import 'package:glow/core/services/transaction_formatter.dart';
 import 'package:glow/features/lnurl/models/lnurl_pay_state.dart';
 import 'package:glow/features/send_payment/widgets/amount_input_card.dart';
 import 'package:glow/features/send_payment/widgets/payment_bottom_nav.dart';
@@ -164,6 +165,7 @@ class _BodyContent extends StatelessWidget {
 
 /// Form for amount and optional comment input
 class _AmountAndCommentForm extends StatefulWidget {
+  final TransactionFormatter formatter = const TransactionFormatter();
   final GlobalKey<FormState> formKey;
   final TextEditingController amountController;
   final TextEditingController commentController;
@@ -327,11 +329,11 @@ class _AmountAndCommentFormState extends State<_AmountAndCommentForm> {
 
                         final BigInt amountMsat = amount * BigInt.from(1000);
                         if (amountMsat < widget.minSendable) {
-                          return 'Amount must be at least $minSats sats';
+                          return 'Payment is below the limit ${widget.formatter.formatBalance(minSats)}';
                         }
 
                         if (amountMsat > widget.maxSendable) {
-                          return 'Amount must not exceed $maxSats sats';
+                          return 'Payment exceeds the limit ${widget.formatter.formatBalance(maxSats)}';
                         }
 
                         return null;

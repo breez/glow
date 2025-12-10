@@ -14,6 +14,30 @@ final Provider<PaymentService> paymentServiceProvider = Provider<PaymentService>
 ///
 /// This service wraps SDK payment calls and provides error handling
 class PaymentService {
+  /// Validate that the user has sufficient balance for a payment
+  ///
+  /// Throws an exception if balance is insufficient
+  void validateBalance({
+    required BigInt currentBalance,
+    required BigInt paymentAmount,
+    BigInt? estimatedFee,
+  }) {
+    final BigInt totalRequired = paymentAmount + (estimatedFee ?? BigInt.zero);
+
+    _log.t('Validating balance - Current: $currentBalance sats, Required: $totalRequired sats');
+
+    if (currentBalance < totalRequired) {
+      final String errorMessage = estimatedFee != null
+          ? 'Insufficient balance. Required $totalRequired sats ($paymentAmount + $estimatedFee fee), but only $currentBalance sats available.'
+          : 'Insufficient balance. Required $paymentAmount sats, but only $currentBalance sats available.';
+
+      _log.w(errorMessage);
+      throw Exception(errorMessage);
+    }
+
+    _log.t('Balance validation passed');
+  }
+
   /// Prepare a send payment (BOLT11, BOLT12, Spark invoices, etc.)
   ///
   /// Returns the prepare response with calculated fees

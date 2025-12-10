@@ -66,6 +66,16 @@ class LnurlPayNotifier extends Notifier<LnurlPayState> {
 
       _log.i('LNURL-Pay prepared - Amount: ${response.amountSats} sats, Fee: ${response.feeSats} sats');
 
+      // Validate balance after calculating fees
+      final AsyncValue<BigInt> balanceAsync = ref.read(balanceProvider);
+      if (balanceAsync.hasValue) {
+        paymentService.validateBalance(
+          currentBalance: balanceAsync.value!,
+          paymentAmount: response.amountSats,
+          estimatedFee: response.feeSats,
+        );
+      }
+
       state = LnurlPayReady(
         prepareResponse: response,
         amountSats: response.amountSats,
