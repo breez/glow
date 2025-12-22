@@ -22,7 +22,6 @@ class PinService with LoggerMixin {
       aOptions: AndroidOptions(
         sharedPreferencesName: 'glow_prefs$suffix',
         preferencesKeyPrefix: 'glow${suffix}_',
-        resetOnError: true,
       ),
       iOptions: IOSOptions(accountName: '$_accountName$suffix', accessibility: _keychainAccessibility),
       mOptions: MacOsOptions(accountName: '$_accountName$suffix', accessibility: _keychainAccessibility),
