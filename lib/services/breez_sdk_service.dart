@@ -29,7 +29,7 @@ class BreezSdkService with LoggerMixin {
       syncIntervalSecs: BreezConfig.defaultSyncIntervalSecs,
       maxDepositClaimFee: maxDepositClaimFee ?? BreezConfig.defaultMaxDepositClaimFee,
       lnurlDomain: BreezConfig.lnurlDomain,
-      preferSparkOverLightning: true,
+      preferSparkOverLightning: BreezConfig.preferSparkOverLightning,
       useDefaultExternalInputParsers: false,
       privateEnabledDefault: false,
       optimizationConfig: BreezConfig.defaultOptimizationConfig,

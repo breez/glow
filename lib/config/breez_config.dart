@@ -5,6 +5,7 @@ class BreezConfig {
   static const String apiKey = String.fromEnvironment('BREEZ_API_KEY');
   static const int defaultSyncIntervalSecs = 60;
   static const String lnurlDomain = 'breez.cash';
+  static bool get preferSparkOverLightning => false;
   static MaxFee get defaultMaxDepositClaimFee => MaxFee.rate(satPerVbyte: BigInt.from(1));
   static const OptimizationConfig defaultOptimizationConfig = OptimizationConfig(
     autoEnabled: true,
