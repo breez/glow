@@ -52,13 +52,13 @@ class DevelopersScreen extends ConsumerWidget {
     );
   }
 
-  void _showMaxFeeBottomSheet(BuildContext context, WidgetRef ref, Fee currentFee) {
+  void _showMaxFeeBottomSheet(BuildContext context, WidgetRef ref, MaxFee currentFee) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) => MaxFeeBottomSheet(
         currentFee: currentFee,
-        onSave: (Fee fee) async {
+        onSave: (MaxFee fee) async {
           try {
             await ref.read(maxDepositClaimFeeProvider.notifier).setFee(fee);
 
@@ -156,7 +156,7 @@ class DevelopersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final Network network = ref.watch(networkProvider);
-    final Fee maxDepositClaimFee = ref.watch(maxDepositClaimFeeProvider);
+    final MaxFee maxDepositClaimFee = ref.watch(maxDepositClaimFeeProvider);
 
     return DevelopersLayout(
       network: network,

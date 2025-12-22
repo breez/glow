@@ -56,7 +56,7 @@ final FutureProvider<BreezSdk> sdkProvider = FutureProvider<BreezSdk>((Ref ref) 
   final Network network = ref.watch(networkProvider);
   log.d('Network: $network');
 
-  final Fee maxDepositClaimFee = ref.watch(maxDepositClaimFeeProvider);
+  final MaxFee maxDepositClaimFee = ref.watch(maxDepositClaimFeeProvider);
   log.d('Max deposit claim fee: $maxDepositClaimFee');
 
   if (walletId == null) {
@@ -311,7 +311,7 @@ final FutureProviderFamily<ClaimDepositResponse, DepositInfo> claimDepositProvid
       log.d('Manually claiming deposit: ${deposit.txid}:${deposit.vout}');
       final BreezSdk sdk = await ref.watch(sdkProvider.future);
       final BreezSdkService service = ref.read(breezSdkServiceProvider);
-      final Fee maxDepositClaimFee = ref.watch(maxDepositClaimFeeProvider);
+      final MaxFee maxDepositClaimFee = ref.watch(maxDepositClaimFeeProvider);
 
       final ClaimDepositResponse response = await service.claimDeposit(
         sdk,

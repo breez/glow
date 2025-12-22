@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/services/config_service.dart';
 
 /// Notifier for max deposit claim fee
-class MaxDepositClaimFeeNotifier extends Notifier<Fee> {
+class MaxDepositClaimFeeNotifier extends Notifier<MaxFee> {
   @override
-  Fee build() {
+  MaxFee build() {
     final ConfigService configService = ref.watch(configServiceProvider);
     return configService.getMaxDepositClaimFee();
   }
 
-  Future<void> setFee(Fee fee) async {
+  Future<void> setFee(MaxFee fee) async {
     final ConfigService configService = ref.read(configServiceProvider);
     await configService.setMaxDepositClaimFee(fee);
     state = fee;
@@ -24,5 +24,5 @@ class MaxDepositClaimFeeNotifier extends Notifier<Fee> {
 }
 
 /// Provider for max deposit claim fee
-final NotifierProvider<MaxDepositClaimFeeNotifier, Fee> maxDepositClaimFeeProvider =
-    NotifierProvider<MaxDepositClaimFeeNotifier, Fee>(MaxDepositClaimFeeNotifier.new);
+final NotifierProvider<MaxDepositClaimFeeNotifier, MaxFee> maxDepositClaimFeeProvider =
+    NotifierProvider<MaxDepositClaimFeeNotifier, MaxFee>(MaxDepositClaimFeeNotifier.new);

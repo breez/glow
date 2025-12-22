@@ -18,7 +18,7 @@ class ConfigService {
 
   /// Get the current max deposit claim fee
   /// Returns the persisted value or default if not set
-  Fee getMaxDepositClaimFee() {
+  MaxFee getMaxDepositClaimFee() {
     final String? type = _prefs.getString(_maxDepositClaimFeeTypeKey);
     final String? value = _prefs.getString(_maxDepositClaimFeeValueKey);
 
@@ -31,10 +31,13 @@ class ConfigService {
       final BigInt feeValue = BigInt.parse(value);
       if (type == 'rate') {
         log.d('Loaded max deposit claim fee: rate=$feeValue sat/vByte');
-        return Fee.rate(satPerVbyte: feeValue);
+        return MaxFee.rate(satPerVbyte: feeValue);
       } else if (type == 'fixed') {
         log.d('Loaded max deposit claim fee: fixed=$feeValue sats');
-        return Fee.fixed(amount: feeValue);
+        return MaxFee.fixed(amount: feeValue);
+      } else if (type == 'networkRecommended') {
+        log.d('Loaded max deposit claim fee: networkRecommended=$feeValue sats');
+        return MaxFee.networkRecommended(leewaySatPerVbyte: feeValue);
       }
     } catch (e) {
       log.e('Failed to parse persisted fee, using default: $e');
@@ -44,7 +47,7 @@ class ConfigService {
   }
 
   /// Set the max deposit claim fee and persist it
-  Future<void> setMaxDepositClaimFee(Fee fee) async {
+  Future<void> setMaxDepositClaimFee(MaxFee fee) async {
     final Future<Null> result = fee.when(
       rate: (BigInt satPerVbyte) async {
         await _prefs.setString(_maxDepositClaimFeeTypeKey, 'rate');
@@ -55,6 +58,11 @@ class ConfigService {
         await _prefs.setString(_maxDepositClaimFeeTypeKey, 'fixed');
         await _prefs.setString(_maxDepositClaimFeeValueKey, amount.toString());
         log.i('Saved max deposit claim fee: fixed=$amount sats');
+      },
+      networkRecommended: (BigInt leewaySatPerVbyte) async {
+        await _prefs.setString(_maxDepositClaimFeeTypeKey, 'networkRecommended');
+        await _prefs.setString(_maxDepositClaimFeeValueKey, leewaySatPerVbyte.toString());
+        log.i('Saved max deposit claim fee: rate=$leewaySatPerVbyte sat/vByte');
       },
     );
     await result;

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:glow/features/developers/widgets/toggle_button.dart';
 
 class MaxFeeBottomSheet extends StatefulWidget {
-  final Fee currentFee;
-  final Function(Fee) onSave;
+  final MaxFee currentFee;
+  final Function(MaxFee) onSave;
   final VoidCallback onReset;
 
   const MaxFeeBottomSheet({required this.currentFee, required this.onSave, required this.onReset, super.key});
@@ -31,10 +31,15 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _useFixedFee = widget.currentFee.when(rate: (_) => false, fixed: (_) => true);
+    _useFixedFee = widget.currentFee.when(
+      rate: (_) => false,
+      fixed: (_) => true,
+      networkRecommended: (_) => false,
+    );
     _sliderValue = widget.currentFee.when(
       rate: (BigInt rate) => rate.toDouble(),
       fixed: (BigInt amount) => amount.toDouble(),
+      networkRecommended: (BigInt leeway) => leeway.toDouble(),
     );
   }
 
@@ -48,12 +53,12 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
     return (fixedFee / _conversionFactor).floorToDouble().clamp(_minRate, _maxRate);
   }
 
-  Fee get _currentFee {
+  MaxFee get _currentFee {
     final BigInt rate = BigInt.from(_sliderValue.round());
     if (_useFixedFee) {
-      return Fee.fixed(amount: rate);
+      return MaxFee.fixed(amount: rate);
     } else {
-      return Fee.rate(satPerVbyte: rate);
+      return MaxFee.rate(satPerVbyte: rate);
     }
   }
 

@@ -16,7 +16,7 @@ class BreezSdkService with LoggerMixin {
     required String walletId,
     required String mnemonic,
     required Network network,
-    Fee? maxDepositClaimFee,
+    MaxFee? maxDepositClaimFee,
   }) async {
     log.i('Connecting SDK for wallet: $walletId on ${network.name}');
 
