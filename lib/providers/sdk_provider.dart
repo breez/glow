@@ -218,13 +218,6 @@ final Provider<void> sdkEventListenerProvider = Provider<void>((Ref ref) {
           await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
           await ref.read(paymentsProvider.notifier).refreshIfChanged();
         },
-        dataSynced: (bool didPullNewRecords) async {
-          log.i('Data synced');
-          if (didPullNewRecords) {
-            await ref.read(nodeInfoProvider.notifier).refreshIfChanged();
-            await ref.read(paymentsProvider.notifier).refreshIfChanged();
-          }
-        },
         paymentSucceeded: (Payment payment) async {
           log.i('Payment succeeded: ${payment.id}');
           await ref.read(nodeInfoProvider.notifier).refreshIfChanged();

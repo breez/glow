@@ -29,7 +29,6 @@ class PaymentTrackerNotifier extends Notifier<PaymentTrackingState> {
       next.whenData((SdkEvent event) {
         event.when(
           synced: () {},
-          dataSynced: (bool didPullNewRecords) {},
           paymentSucceeded: (Payment payment) {
             _handlePaymentEvent(payment);
           },
