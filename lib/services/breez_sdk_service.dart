@@ -32,6 +32,7 @@ class BreezSdkService with LoggerMixin {
       preferSparkOverLightning: true,
       useDefaultExternalInputParsers: false,
       privateEnabledDefault: false,
+      optimizationConfig: BreezConfig.defaultOptimizationConfig,
     );
 
     try {

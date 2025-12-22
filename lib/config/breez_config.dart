@@ -1,4 +1,4 @@
-import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart' show MaxFee;
+import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart' show MaxFee, OptimizationConfig;
 
 /// App-specific configuration for Breez SDK connection.
 class BreezConfig {
@@ -6,4 +6,8 @@ class BreezConfig {
   static const int defaultSyncIntervalSecs = 60;
   static const String lnurlDomain = 'breez.cash';
   static MaxFee get defaultMaxDepositClaimFee => MaxFee.rate(satPerVbyte: BigInt.from(1));
+  static const OptimizationConfig defaultOptimizationConfig = OptimizationConfig(
+    autoEnabled: true,
+    multiplicity: 1,
+  );
 }

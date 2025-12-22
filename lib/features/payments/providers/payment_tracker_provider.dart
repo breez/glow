@@ -41,6 +41,7 @@ class PaymentTrackerNotifier extends Notifier<PaymentTrackingState> {
           },
           unclaimedDeposits: (List<DepositInfo> unclaimedDeposits) {},
           claimedDeposits: (List<DepositInfo> claimedDeposits) {},
+          optimization: (OptimizationEvent optimizationEvent) {},
         );
       });
     });

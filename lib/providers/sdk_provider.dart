@@ -245,6 +245,10 @@ final Provider<void> sdkEventListenerProvider = Provider<void>((Ref ref) {
         claimedDeposits: (List<DepositInfo> claimedDeposits) {
           log.i('Claimed Deposits: ${claimedDeposits.length}');
         },
+        optimization: (OptimizationEvent optimizationEvent) {
+          log.i('Optimization event: ${optimizationEvent.runtimeType}');
+          // TODO(erdemyerebasmaz): handle optimization events
+        },
       );
     });
   });
