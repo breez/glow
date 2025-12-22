@@ -2,7 +2,7 @@ import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/config/breez_config.dart';
+import 'package:glow/config/app_config.dart';
 import 'package:glow/providers/sdk_provider.dart';
 import 'package:glow/theme/colors.dart';
 
@@ -114,9 +114,9 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
 
       if (mounted) {
         widget.onSuccess();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lightning Address updated: $value@${BreezConfig.lnurlDomain}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lightning Address updated: $value@${AppConfig.lnurlDomain}')));
       }
     } catch (e) {
       if (mounted) {
@@ -175,7 +175,7 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
               decoration: InputDecoration(
                 labelText: 'Username',
                 errorText: _errorText,
-                suffixText: '@${BreezConfig.lnurlDomain}',
+                suffixText: '@${AppConfig.lnurlDomain}',
                 suffixStyle: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 border: const OutlineInputBorder(),
               ),

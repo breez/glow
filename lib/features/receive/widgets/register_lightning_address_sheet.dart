@@ -1,7 +1,7 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/config/breez_config.dart';
+import 'package:glow/config/app_config.dart';
 import 'package:glow/providers/sdk_provider.dart';
 
 /// Show bottom sheet for registering a new Lightning Address
@@ -78,7 +78,7 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
       if (mounted) {
         widget.onSuccess();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lightning Address registered: $value@${BreezConfig.lnurlDomain}')),
+          SnackBar(content: Text('Lightning Address registered: $value@${AppConfig.lnurlDomain}')),
         );
       }
     } catch (e) {
@@ -119,7 +119,7 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
             decoration: InputDecoration(
               labelText: 'Username',
               errorText: _errorText,
-              suffixText: '@${BreezConfig.lnurlDomain}',
+              suffixText: '@${AppConfig.lnurlDomain}',
               suffixStyle: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
               border: const OutlineInputBorder(),
             ),
