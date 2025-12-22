@@ -33,14 +33,30 @@ BUILD_DATE=$(date +%Y%m%d)
 cd build/app/outputs/flutter-apk || exit 1
 
 # Copy and rename APKs based on build type
-for f in app-*-${BUILD_TYPE}.apk; do
-  [ -f "$f" ] || continue
+# Copy and rename APKs based on build type
+# Enable nullglob to handle case where no files match a pattern
+shopt -s nullglob
+files=(app-*-${BUILD_TYPE}.apk app-${BUILD_TYPE}.apk)
+shopt -u nullglob
+
+if [ ${#files[@]} -eq 0 ]; then
+  echo "No APKs found for ${BUILD_TYPE} build in $(pwd)"
+  exit 1
+fi
+
+for f in "${files[@]}"; do
+  abi=""
+  if [[ "$f" == "app-${BUILD_TYPE}.apk" ]]; then
+    abi="universal"
+  else
+    # Extract ABI from app-<abi>-release.apk
+    abi=$(echo "$f" | sed -E "s/app-(.*)-${BUILD_TYPE}\.apk/\1/")
+  fi
   
-  abi=$(echo "$f" | sed -E "s/app-(.*)-${BUILD_TYPE}\.apk/\1/")
   new_name="glow-${VERSION_NAME}-${VERSION_CODE}-${BUILD_TYPE}-${abi}-${BUILD_DATE}-${GIT_SHA}-sdk@${SDK_SHA}.apk"
   
   cp "$f" "$new_name"
   echo "Created: $new_name (original: $f)"
 done
 
-echo "Done! APKs copied &renamed in build/app/outputs/flutter-apk/"
+echo "Done! APKs copied & renamed in build/app/outputs/flutter-apk/"
