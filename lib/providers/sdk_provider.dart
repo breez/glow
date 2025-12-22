@@ -8,6 +8,7 @@ import 'package:glow/logging/app_logger.dart';
 import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/wallet/providers/wallet_provider.dart';
 import 'package:glow/services/breez_sdk_service.dart';
+import 'package:glow/services/config_service.dart';
 import 'package:glow/features/wallet/services/wallet_storage_service.dart';
 import 'package:glow/features/developers/providers/max_deposit_fee_provider.dart';
 import 'package:glow/features/developers/providers/network_provider.dart';
@@ -73,13 +74,12 @@ final FutureProvider<BreezSdk> sdkProvider = FutureProvider<BreezSdk>((Ref ref) 
     throw Exception('Wallet mnemonic not found');
   }
 
+  // Create config with app settings and user preferences
+  final ConfigService configService = ref.read(configServiceProvider);
+  final Config config = configService.createConfig(network: network, maxDepositClaimFee: maxDepositClaimFee);
+
   final BreezSdkService service = ref.read(breezSdkServiceProvider);
-  return await service.connect(
-    walletId: walletId,
-    mnemonic: mnemonic,
-    network: network,
-    maxDepositClaimFee: maxDepositClaimFee,
-  );
+  return await service.connect(walletId: walletId, mnemonic: mnemonic, config: config);
 });
 
 /// Node info - only updates when data actually changes

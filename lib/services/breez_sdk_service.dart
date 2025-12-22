@@ -4,7 +4,6 @@ import 'dart:math' show Random;
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart' as breez_sdk_spark show connect;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/config/breez_config.dart';
 import 'package:glow/logging/breez_sdk_logger.dart';
 import 'package:glow/logging/logger_mixin.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,25 +14,12 @@ class BreezSdkService with LoggerMixin {
   Future<BreezSdk> connect({
     required String walletId,
     required String mnemonic,
-    required Network network,
-    MaxFee? maxDepositClaimFee,
+    required Config config,
   }) async {
-    log.i('Connecting SDK for wallet: $walletId on ${network.name}');
+    log.i('Connecting SDK for wallet: $walletId on ${config.network.name}');
 
     final Directory appDir = await getApplicationDocumentsDirectory();
     final String storageDir = '${appDir.path}/wallets/$walletId';
-
-    final Config config = Config(
-      apiKey: BreezConfig.apiKey,
-      network: network,
-      syncIntervalSecs: BreezConfig.defaultSyncIntervalSecs,
-      maxDepositClaimFee: maxDepositClaimFee ?? BreezConfig.defaultMaxDepositClaimFee,
-      lnurlDomain: BreezConfig.lnurlDomain,
-      preferSparkOverLightning: BreezConfig.preferSparkOverLightning,
-      useDefaultExternalInputParsers: false,
-      privateEnabledDefault: false,
-      optimizationConfig: BreezConfig.defaultOptimizationConfig,
-    );
 
     try {
       final BreezSdk sdk = await breez_sdk_spark.connect(

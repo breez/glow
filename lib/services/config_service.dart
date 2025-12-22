@@ -1,6 +1,7 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
+import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart' as breez_sdk_spark show defaultConfig;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glow/config/breez_config.dart';
+import 'package:glow/config/app_config.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +12,9 @@ final Logger log = AppLogger.getLogger('ConfigService');
 class ConfigService {
   static const String _maxDepositClaimFeeTypeKey = 'max_deposit_claim_fee_type';
   static const String _maxDepositClaimFeeValueKey = 'max_deposit_claim_fee_value';
+
+  /// Default max deposit claim fee from SDK
+  static final MaxFee defaultMaxDepositClaimFee = MaxFee.rate(satPerVbyte: BigInt.one);
 
   final SharedPreferences _prefs;
 
@@ -23,8 +27,8 @@ class ConfigService {
     final String? value = _prefs.getString(_maxDepositClaimFeeValueKey);
 
     if (type == null || value == null) {
-      log.d('No persisted max deposit claim fee, using default');
-      return BreezConfig.defaultMaxDepositClaimFee;
+      log.d('No persisted max deposit claim fee, using SDK default');
+      return defaultMaxDepositClaimFee;
     }
 
     try {
@@ -40,10 +44,10 @@ class ConfigService {
         return MaxFee.networkRecommended(leewaySatPerVbyte: feeValue);
       }
     } catch (e) {
-      log.e('Failed to parse persisted fee, using default: $e');
+      log.e('Failed to parse persisted fee, using SDK default: $e');
     }
 
-    return BreezConfig.defaultMaxDepositClaimFee;
+    return defaultMaxDepositClaimFee;
   }
 
   /// Set the max deposit claim fee and persist it
@@ -73,6 +77,28 @@ class ConfigService {
     await _prefs.remove(_maxDepositClaimFeeTypeKey);
     await _prefs.remove(_maxDepositClaimFeeValueKey);
     log.i('Reset max deposit claim fee to default');
+  }
+
+  /// Create a Config instance for the given network
+  /// Merges SDK defaults with app-specific config and user preferences
+  Config createConfig({required Network network, MaxFee? maxDepositClaimFee}) {
+    // Get SDK defaults for the network
+    final Config networkDefaults = breez_sdk_spark.defaultConfig(network: network);
+
+    // Use provided fee, or user's saved preference, or network default
+    final MaxFee effectiveFee = maxDepositClaimFee ?? getMaxDepositClaimFee();
+
+    return Config(
+      apiKey: AppConfig.apiKey,
+      network: network,
+      syncIntervalSecs: networkDefaults.syncIntervalSecs,
+      maxDepositClaimFee: effectiveFee,
+      lnurlDomain: AppConfig.lnurlDomain,
+      preferSparkOverLightning: networkDefaults.preferSparkOverLightning,
+      useDefaultExternalInputParsers: networkDefaults.useDefaultExternalInputParsers,
+      privateEnabledDefault: networkDefaults.privateEnabledDefault,
+      optimizationConfig: networkDefaults.optimizationConfig,
+    );
   }
 }
 
