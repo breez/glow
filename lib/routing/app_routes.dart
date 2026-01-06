@@ -21,6 +21,7 @@ import 'package:glow/features/send_payment/screens/spark_address_screen.dart';
 import 'package:glow/features/send_payment/screens/spark_invoice_screen.dart';
 import 'package:glow/features/settings/providers/pin_provider.dart';
 import 'package:glow/features/settings/security_backup_screen.dart';
+import 'package:glow/features/settings/services/pin_service.dart';
 import 'package:glow/features/settings/widgets/pin_lock_screen.dart';
 import 'package:glow/features/settings/widgets/pin_setup_screen.dart';
 import 'package:glow/features/wallet/create_screen.dart';
@@ -231,21 +232,35 @@ class AppRoutes {
           builder: (BuildContext context) {
             return Consumer(
               builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final bool isPinEnabled = ref.watch(pinStatusProvider).value ?? false;
+                final PinService pinService = ref.read(pinServiceProvider);
 
-                if (isPinEnabled) {
-                  return PinLockScreen(
-                    popOnSuccess: false,
-                    onUnlocked: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute<SecurityBackupScreen>(builder: (_) => const SecurityBackupScreen()),
+                // Use FutureBuilder to check PIN status once without listening to provider changes
+                return FutureBuilder<bool>(
+                  future: pinService.hasPin(),
+                  builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Scaffold(
+                        body: Center(child: CircularProgressIndicator()),
                       );
-                    },
-                  );
-                }
+                    }
 
-                return const SecurityBackupScreen();
+                    final bool isPinEnabled = snapshot.data ?? false;
+
+                    if (isPinEnabled) {
+                      return PinLockScreen(
+                        popOnSuccess: false,
+                        onUnlocked: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute<SecurityBackupScreen>(builder: (_) => const SecurityBackupScreen()),
+                          );
+                        },
+                      );
+                    }
+
+                    return const SecurityBackupScreen();
+                  },
+                );
               },
             );
           },

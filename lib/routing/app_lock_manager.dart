@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/settings/providers/pin_provider.dart';
+import 'package:glow/features/settings/services/pin_service.dart';
 import 'package:glow/features/settings/widgets/pin_lock_screen.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:logger/logger.dart';
 
 final Logger log = AppLogger.getLogger('AppLockManager');
+
+/// Global navigator key for accessing Navigator from AppLockManager
+final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Manages app-level PIN lock on resume
 /// Shows PIN lock screen if user paused app longer than configured interval
@@ -26,6 +30,30 @@ class _AppLockManagerState extends ConsumerState<AppLockManager> {
   void initState() {
     super.initState();
     _listener = AppLifecycleListener(onStateChange: _onAppLifecycleStateChanged);
+
+    // Check PIN on cold app start (AppLifecycleListener won't fire resumed event on initial launch)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkPinOnStart();
+    });
+  }
+
+  Future<void> _checkPinOnStart() async {
+    log.d('Cold app start - checking if PIN lock needed');
+
+    // Get PIN service to read current values from storage
+    final PinService pinService = ref.read(pinServiceProvider);
+
+    // Read PIN status directly from storage
+    final bool isPinEnabled = await pinService.hasPin();
+
+    log.d('Cold start - PIN enabled: $isPinEnabled');
+
+    // Show lock immediately if PIN is enabled on cold start
+    if (isPinEnabled && _pauseTime == null) {
+      log.d('Cold start with PIN enabled - will show PIN lock screen');
+      _pauseTime = DateTime.now(); // Initialize to prevent duplicate checks
+      _showPinLock();
+    }
   }
 
   @override
@@ -50,70 +78,84 @@ class _AppLockManagerState extends ConsumerState<AppLockManager> {
     _pauseTime = DateTime.now();
   }
 
-  void _onAppResumed() {
+  Future<void> _onAppResumed() async {
     log.d('App resumed - checking if PIN lock needed');
 
-    // Don't show lock if this is the first resume
+    final DateTime now = DateTime.now();
+
+    // Get PIN service to read current values from storage
+    final PinService pinService = ref.read(pinServiceProvider);
+
+    // Read PIN status and lock interval directly from storage to ensure we get persisted values
+    final bool isPinEnabled = await pinService.hasPin();
+    final int lockIntervalSeconds = await pinService.getLockInterval();
+
+    log.d('PIN enabled: $isPinEnabled, lock interval: $lockIntervalSeconds seconds');
+
+    // If this is the first resume, initialize pause time and check if we should show lock
     if (_pauseTime == null) {
-      _pauseTime = DateTime.now();
+      _pauseTime = now;
+      // On first app open/resume, show lock immediately if PIN is enabled
+      if (isPinEnabled) {
+        log.d('First app open with PIN enabled - will show PIN lock screen');
+        _showPinLock();
+      } else {
+        log.d('First app open, no PIN enabled');
+      }
       return;
     }
 
-    final DateTime now = DateTime.now();
     final int secondsPaused = now.difference(_pauseTime!).inSeconds;
 
-    // Get PIN status and lock interval
-    final bool isPinEnabled = ref.read(pinStatusProvider).value ?? false;
-    final int lockInterval = ref.read(pinLockIntervalProvider).value ?? 5;
-
-    // Convert interval to seconds based on dropdown values
-    // 0 = immediate, 1 = 30 seconds, 2 = 2 minutes, 5 = 5 minutes, etc.
-    final int lockSeconds = _convertIntervalToSeconds(lockInterval);
-
-    log.d('Paused for $secondsPaused seconds, lock interval is $lockSeconds seconds');
+    log.d('Paused for $secondsPaused seconds, lock interval is $lockIntervalSeconds seconds');
 
     // Show lock if PIN is enabled and interval exceeded
-    if (isPinEnabled && secondsPaused >= lockSeconds) {
-      log.d('Showing PIN lock screen');
+    if (isPinEnabled && secondsPaused >= lockIntervalSeconds) {
+      log.d('Lock interval exceeded - will show PIN lock screen');
       _showPinLock();
     } else {
-      log.d('No PIN lock needed');
+      log.d('No PIN lock needed (interval not exceeded or PIN disabled)');
       _pauseTime = now;
     }
   }
 
-  int _convertIntervalToSeconds(int interval) {
-    switch (interval) {
-      case 0:
-        return 0; // Immediate
-      case 1:
-        return 30; // 30 seconds
-      case 2:
-        return 120; // 2 minutes
-      case 5:
-        return 300; // 5 minutes
-      case 10:
-        return 600; // 10 minutes
-      case 30:
-        return 1800; // 30 minutes
-      case 60:
-        return 3600; // 1 hour
-      default:
-        return 300; // Default to 5 minutes
-    }
-  }
-
   void _showPinLock() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => PinLockScreen(
-          onUnlocked: () {
-            _pauseTime = DateTime.now();
-          },
-        ),
-        fullscreenDialog: true,
-      ),
-    );
+    // Ensure the widget is still mounted
+    if (!mounted) {
+      log.w('Widget not mounted, cannot show PIN lock');
+      return;
+    }
+
+    // Use addPostFrameCallback to ensure Navigator is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        log.w('Widget not mounted after frame callback, cannot show PIN lock');
+        return;
+      }
+
+      final NavigatorState? navigator = appNavigatorKey.currentState;
+      if (navigator == null) {
+        log.e('Navigator not available, cannot show PIN lock');
+        return;
+      }
+
+      try {
+        log.d('Pushing PIN lock screen to Navigator');
+        navigator.push(
+          MaterialPageRoute<void>(
+            builder: (_) => PinLockScreen(
+              onUnlocked: () {
+                _pauseTime = DateTime.now();
+                log.d('PIN lock unlocked successfully');
+              },
+            ),
+            fullscreenDialog: true,
+          ),
+        );
+      } catch (e, stack) {
+        log.e('Failed to show PIN lock screen', error: e, stackTrace: stack);
+      }
+    });
   }
 
   @override

@@ -76,10 +76,10 @@ class SecurityBackupNotifier extends Notifier<void> {
     return (mnemonic: mnemonic, wallet: wallet);
   }
 
-  /// Update PIN lock interval
-  Future<void> setLockInterval(int minutes) async {
+  /// Update PIN lock interval (in seconds)
+  Future<void> setLockInterval(int seconds) async {
     try {
-      await _pinService.setLockInterval(minutes);
+      await _pinService.setLockInterval(seconds);
       // ignore: unawaited_futures
       ref.refresh(pinLockIntervalProvider);
     } catch (e) {
