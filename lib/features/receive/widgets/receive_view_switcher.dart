@@ -37,8 +37,25 @@ class ReceiveViewSwitcher extends ConsumerWidget {
           formControllers: formControllers,
         ),
         AmountInputFlowStep.displayPayment => PaymentDisplayView(state: state),
-        AmountInputFlowStep.paymentReceived => PaymentDisplayView(state: state),
+        AmountInputFlowStep.paymentReceived => _buildPaymentReceivedView(state),
       },
     );
+  }
+
+  /// Build the appropriate view for payment received state
+  /// For Lightning Address payments (no invoice), show the Lightning Address view
+  /// For invoice-based payments, show the payment display view
+  Widget _buildPaymentReceivedView(ReceiveState state) {
+    // If there's no receivePaymentResponse, this was a Lightning Address payment
+    // Show the Lightning Address view as background while the success sheet displays
+    if (state.receivePaymentResponse == null) {
+      return switch (state.method) {
+        ReceiveMethod.lightning => const LightningReceiveView(),
+        ReceiveMethod.bitcoin => const BitcoinReceiveView(),
+      };
+    }
+
+    // For invoice-based payments, show the payment display
+    return PaymentDisplayView(state: state);
   }
 }
