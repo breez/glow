@@ -17,26 +17,35 @@ final Logger _log = AppLogger.getLogger('ReceiveProvider');
 class ReceiveNotifier extends Notifier<ReceiveState> {
   @override
   ReceiveState build() {
-    // Clean up tracking when provider is disposed
-    ref.onDispose(() {
-      _log.d('Disposing ReceiveNotifier, stopping payment tracking');
-      ref.read(paymentTrackerProvider.notifier).stopTracking();
-    });
-
     // Listen to payment tracker state changes
-    ref.listen<PaymentTrackingState>(paymentTrackerProvider, (
-      PaymentTrackingState? previous,
-      PaymentTrackingState next,
-    ) {
-      if (next is PaymentReceived) {
-        _log.i('Payment received, updating flow state');
-        state = state.copyWith(flowStep: AmountInputFlowStep.paymentReceived);
-      }
-    });
+    ref.listen<PaymentTrackingState>(
+      paymentTrackerProvider,
+      (PaymentTrackingState? previous, PaymentTrackingState next) {
+        // Early exit if provider is already disposed
+        if (!ref.mounted) {
+          return;
+        }
+
+        if (next is PaymentReceived) {
+          // Schedule state update after current build cycle to avoid lifecycle violation
+          Future<void>.microtask(() {
+            if (!ref.mounted) {
+              return;
+            }
+            state = state.copyWith(
+              flowStep: AmountInputFlowStep.paymentReceived,
+              amountSats: BigInt.from(next.payment.amount.toInt()),
+            );
+          });
+        }
+      },
+    );
 
     // Schedule payment tracking to start after build completes
     Future<void>.microtask(() {
-      _log.d('Starting payment tracking after initialization');
+      if (!ref.mounted) {
+        return;
+      }
       ref.read(paymentTrackerProvider.notifier).startTracking();
     });
 
