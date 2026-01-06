@@ -30,6 +30,30 @@ class _AppLockManagerState extends ConsumerState<AppLockManager> {
   void initState() {
     super.initState();
     _listener = AppLifecycleListener(onStateChange: _onAppLifecycleStateChanged);
+
+    // Check PIN on cold app start (AppLifecycleListener won't fire resumed event on initial launch)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkPinOnStart();
+    });
+  }
+
+  Future<void> _checkPinOnStart() async {
+    log.d('Cold app start - checking if PIN lock needed');
+
+    // Get PIN service to read current values from storage
+    final PinService pinService = ref.read(pinServiceProvider);
+
+    // Read PIN status directly from storage
+    final bool isPinEnabled = await pinService.hasPin();
+
+    log.d('Cold start - PIN enabled: $isPinEnabled');
+
+    // Show lock immediately if PIN is enabled on cold start
+    if (isPinEnabled && _pauseTime == null) {
+      log.d('Cold start with PIN enabled - will show PIN lock screen');
+      _pauseTime = DateTime.now(); // Initialize to prevent duplicate checks
+      _showPinLock();
+    }
   }
 
   @override
