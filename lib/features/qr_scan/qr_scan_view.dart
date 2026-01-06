@@ -58,6 +58,7 @@ class _QRScanViewState extends State<QRScanView> {
       _popWithResult(code);
     } else {
       log.w('No valid QR code found in capture');
+      _showSnackBar('No valid QR code found');
     }
   }
 
