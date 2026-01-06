@@ -55,9 +55,9 @@ class _AppLockManagerState extends ConsumerState<AppLockManager> {
 
     final DateTime now = DateTime.now();
 
-    // Get PIN status and lock interval
+    // Get PIN status and lock interval (in seconds)
     final bool isPinEnabled = ref.read(pinStatusProvider).value ?? false;
-    final int lockInterval = ref.read(pinLockIntervalProvider).value ?? 5;
+    final int lockIntervalSeconds = ref.read(pinLockIntervalProvider).value ?? 300;
 
     // If this is the first resume, initialize pause time and check if we should show lock
     if (_pauseTime == null) {
@@ -72,40 +72,15 @@ class _AppLockManagerState extends ConsumerState<AppLockManager> {
 
     final int secondsPaused = now.difference(_pauseTime!).inSeconds;
 
-    // Convert interval to seconds based on dropdown values
-    // 0 = immediate, 1 = 30 seconds, 2 = 2 minutes, 5 = 5 minutes, etc.
-    final int lockSeconds = _convertIntervalToSeconds(lockInterval);
-
-    log.d('Paused for $secondsPaused seconds, lock interval is $lockSeconds seconds');
+    log.d('Paused for $secondsPaused seconds, lock interval is $lockIntervalSeconds seconds');
 
     // Show lock if PIN is enabled and interval exceeded
-    if (isPinEnabled && secondsPaused >= lockSeconds) {
+    if (isPinEnabled && secondsPaused >= lockIntervalSeconds) {
       log.d('Showing PIN lock screen');
       _showPinLock();
     } else {
       log.d('No PIN lock needed');
       _pauseTime = now;
-    }
-  }
-
-  int _convertIntervalToSeconds(int interval) {
-    switch (interval) {
-      case 0:
-        return 0; // Immediate
-      case 1:
-        return 30; // 30 seconds
-      case 2:
-        return 120; // 2 minutes
-      case 5:
-        return 300; // 5 minutes
-      case 10:
-        return 600; // 10 minutes
-      case 30:
-        return 1800; // 30 minutes
-      case 60:
-        return 3600; // 1 hour
-      default:
-        return 300; // Default to 5 minutes
     }
   }
 

@@ -116,22 +116,22 @@ class PinService with LoggerMixin {
     }
   }
 
-  /// Get PIN lock interval (minutes)
+  /// Get PIN lock interval (seconds)
   Future<int> getLockInterval() async {
     try {
       final String? value = await _storage.read(key: 'pin_lock_interval');
-      return int.tryParse(value ?? '') ?? 5; // Default 5 minutes
+      return int.tryParse(value ?? '') ?? 300; // Default 300 seconds (5 minutes)
     } catch (e, stack) {
       log.e('Failed to get lock interval', error: e, stackTrace: stack);
-      return 5;
+      return 300;
     }
   }
 
-  /// Set PIN lock interval (minutes)
-  Future<void> setLockInterval(int minutes) async {
+  /// Set PIN lock interval (seconds)
+  Future<void> setLockInterval(int seconds) async {
     try {
-      await _storage.write(key: 'pin_lock_interval', value: minutes.toString());
-      log.i('Lock interval set to $minutes minutes');
+      await _storage.write(key: 'pin_lock_interval', value: seconds.toString());
+      log.i('Lock interval set to $seconds seconds');
     } catch (e, stack) {
       log.e('Failed to set lock interval', error: e, stackTrace: stack);
       rethrow;

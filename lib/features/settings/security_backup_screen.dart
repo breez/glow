@@ -95,9 +95,9 @@ class SecurityBackupScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _handleLockIntervalChanged(SecurityBackupNotifier notifier, double minutes) async {
+  Future<void> _handleLockIntervalChanged(SecurityBackupNotifier notifier, double seconds) async {
     try {
-      await notifier.setLockInterval(minutes.toInt());
+      await notifier.setLockInterval(seconds.toInt());
     } catch (e) {
       // Handle error
     }
