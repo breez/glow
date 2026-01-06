@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/features/settings/providers/pin_provider.dart';
+import 'package:glow/features/settings/services/pin_service.dart';
 import 'package:glow/features/settings/widgets/pin_lock_screen.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:logger/logger.dart';
@@ -53,14 +54,17 @@ class _AppLockManagerState extends ConsumerState<AppLockManager> {
     _pauseTime = DateTime.now();
   }
 
-  void _onAppResumed() {
+  Future<void> _onAppResumed() async {
     log.d('App resumed - checking if PIN lock needed');
 
     final DateTime now = DateTime.now();
 
-    // Get PIN status and lock interval (in seconds)
-    final bool isPinEnabled = ref.read(pinStatusProvider).value ?? false;
-    final int lockIntervalSeconds = ref.read(pinLockIntervalProvider).value ?? 300;
+    // Get PIN service to read current values from storage
+    final PinService pinService = ref.read(pinServiceProvider);
+
+    // Read PIN status and lock interval directly from storage to ensure we get persisted values
+    final bool isPinEnabled = await pinService.hasPin();
+    final int lockIntervalSeconds = await pinService.getLockInterval();
 
     log.d('PIN enabled: $isPinEnabled, lock interval: $lockIntervalSeconds seconds');
 
