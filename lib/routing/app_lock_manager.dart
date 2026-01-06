@@ -53,18 +53,24 @@ class _AppLockManagerState extends ConsumerState<AppLockManager> {
   void _onAppResumed() {
     log.d('App resumed - checking if PIN lock needed');
 
-    // Don't show lock if this is the first resume
-    if (_pauseTime == null) {
-      _pauseTime = DateTime.now();
-      return;
-    }
-
     final DateTime now = DateTime.now();
-    final int secondsPaused = now.difference(_pauseTime!).inSeconds;
 
     // Get PIN status and lock interval
     final bool isPinEnabled = ref.read(pinStatusProvider).value ?? false;
     final int lockInterval = ref.read(pinLockIntervalProvider).value ?? 5;
+
+    // If this is the first resume, initialize pause time and check if we should show lock
+    if (_pauseTime == null) {
+      _pauseTime = now;
+      // On first app open/resume, show lock immediately if PIN is enabled
+      if (isPinEnabled) {
+        log.d('First app open with PIN enabled - showing PIN lock screen');
+        _showPinLock();
+      }
+      return;
+    }
+
+    final int secondsPaused = now.difference(_pauseTime!).inSeconds;
 
     // Convert interval to seconds based on dropdown values
     // 0 = immediate, 1 = 30 seconds, 2 = 2 minutes, 5 = 5 minutes, etc.
