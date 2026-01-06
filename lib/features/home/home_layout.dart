@@ -94,6 +94,7 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
           drawer: const HomeDrawer(),
           floatingActionButton: const QrScanButton(),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonAnimator: FloatingActionButtonAnimator.noAnimation,
           body: SafeArea(
             child: Column(
               children: <Widget>[
