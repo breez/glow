@@ -81,6 +81,7 @@ class MainApp extends ConsumerWidget {
       value: themeData.appBarTheme.systemOverlayStyle!,
       child: MaterialApp(
         title: 'Glow',
+        navigatorKey: appNavigatorKey,
         initialRoute: AppRoutes.homeScreen,
         routes: <String, WidgetBuilder>{AppRoutes.homeScreen: (BuildContext context) => const _AppRouter()},
         onGenerateRoute: AppRoutes.generateRoute,
