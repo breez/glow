@@ -6,6 +6,7 @@ import 'package:glow/features/transaction_filter/models/transaction_filter_state
 import 'package:glow/features/transaction_filter/providers/transaction_filter_provider.dart';
 import 'package:glow/features/transactions/providers/transaction_providers.dart';
 import 'package:glow/features/transactions/services/csv_export_service.dart';
+import 'package:glow/theme/dark_theme.dart';
 
 class PaymentFilterExporter extends ConsumerWidget {
   const PaymentFilterExporter({super.key});
@@ -39,7 +40,12 @@ class PaymentFilterExporter extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text('Payment data not available')));
+          ).showSnackBar(
+            const SnackBar(
+              content: Text('Payment data not available'),
+              padding: kHomeScreenSnackBarPadding,
+            ),
+          );
         }
         return;
       }
@@ -49,9 +55,12 @@ class PaymentFilterExporter extends ConsumerWidget {
       // Check if filtered payment list is empty
       if (filteredPayments.isEmpty) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('No payments match the current filter')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No payments match the current filter'),
+              padding: kHomeScreenSnackBarPadding,
+            ),
+          );
         }
         return;
       }
@@ -74,7 +83,12 @@ class PaymentFilterExporter extends ConsumerWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Export failed: $e'),
+            padding: kHomeScreenSnackBarPadding,
+          ),
+        );
       }
     }
   }

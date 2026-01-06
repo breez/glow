@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glow/routing/app_routes.dart';
 import 'package:glow/logging/app_logger.dart';
 import 'package:glow/routing/input_parser_provider.dart';
+import 'package:glow/theme/dark_theme.dart';
 import 'package:logger/logger.dart';
 
 final Logger _log = AppLogger.getLogger('InputHandler');
@@ -42,13 +43,23 @@ class InputHandler {
           _log.e('Failed to parse input: $message');
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('Invalid payment info: $message')));
+          ).showSnackBar(
+            SnackBar(
+              content: Text('Invalid payment info: $message'),
+              padding: kHomeScreenSnackBarPadding,
+            ),
+          );
         },
       );
     } catch (e) {
       _log.e('Error handling input: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error processing payment: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error processing payment: $e'),
+            padding: kHomeScreenSnackBarPadding,
+          ),
+        );
       }
     }
   }
@@ -96,13 +107,23 @@ class InputHandler {
       },
       lnurlAuth: (LnurlAuthRequestDetails details) {
         _log.w('LNURL-Auth input type not supported');
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported input')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unsupported input'),
+            padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0),
+          ),
+        );
       },
       url: (_) {
         _log.w('URL input type not supported');
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('URL payments are not supported')));
+        ).showSnackBar(
+          const SnackBar(
+            content: Text('URL payments are not supported'),
+            padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0),
+          ),
+        );
       },
       bip21: (Bip21Details details) {
         _log.i('Navigating to BIP21 screen');
@@ -110,7 +131,12 @@ class InputHandler {
       },
       bolt12InvoiceRequest: (Bolt12InvoiceRequestDetails details) {
         _log.w('BOLT12 Invoice Request input type not supported');
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported input')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unsupported input'),
+            padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0),
+          ),
+        );
       },
       lnurlWithdraw: (LnurlWithdrawRequestDetails details) {
         _log.i('Navigating to LNURL-Withdraw screen');
@@ -160,13 +186,23 @@ class InputHandler {
       },
       lnurlAuth: (LnurlAuthRequestDetails details) {
         _log.w('LNURL-Auth input type not supported');
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported input')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unsupported input'),
+            padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0),
+          ),
+        );
       },
       url: (_) {
         _log.w('URL input type not supported');
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('URL payments are not supported')));
+        ).showSnackBar(
+          const SnackBar(
+            content: Text('URL payments are not supported'),
+            padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0),
+          ),
+        );
       },
       bip21: (Bip21Details details) {
         _log.i('Replacing with BIP21 screen');
@@ -174,7 +210,12 @@ class InputHandler {
       },
       bolt12InvoiceRequest: (Bolt12InvoiceRequestDetails details) {
         _log.w('BOLT12 Invoice Request input type not supported');
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported input')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unsupported input'),
+            padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0),
+          ),
+        );
       },
       lnurlWithdraw: (LnurlWithdrawRequestDetails details) {
         _log.i('Replacing with LNURL-Withdraw screen');

@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:glow/features/qr_scan/services/qr_scan_service.dart';
 import 'package:glow/routing/input_handlers.dart';
 import 'package:glow/logging/app_logger.dart';
+import 'package:glow/theme/dark_theme.dart';
 import 'package:logger/logger.dart';
 
 final Logger log = AppLogger.getLogger('QrScanButton');
@@ -13,16 +14,13 @@ class QrScanButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32.0),
-      child: FloatingActionButton(
-        onPressed: () => _scanBarcode(context, ref),
-        child: SvgPicture.asset(
-          'assets/svg/qr_scan.svg',
-          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
-          width: 24.0,
-          height: 24.0,
-        ),
+    return FloatingActionButton(
+      onPressed: () => _scanBarcode(context, ref),
+      child: SvgPicture.asset(
+        'assets/svg/qr_scan.svg',
+        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
+        width: 24.0,
+        height: 24.0,
       ),
     );
   }
@@ -36,7 +34,12 @@ class QrScanButton extends ConsumerWidget {
 
     if (barcode.isEmpty && context.mounted) {
       final ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
-      scaffoldMessenger.showSnackBar(const SnackBar(content: Text('No QR code found in image')));
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text('No QR code found in image'),
+          padding: kHomeScreenSnackBarPadding,
+        ),
+      );
       return;
     }
 
