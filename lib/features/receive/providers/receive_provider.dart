@@ -34,14 +34,13 @@ class ReceiveNotifier extends Notifier<ReceiveState> {
       }
     });
 
-    final ReceiveState initialState = ReceiveState.initial();
-
-    // Start tracking payments for Lightning Address (always listening)
-    if (initialState.method == ReceiveMethod.lightning) {
+    // Schedule payment tracking to start after build completes
+    Future<void>.microtask(() {
+      _log.d('Starting payment tracking after initialization');
       ref.read(paymentTrackerProvider.notifier).startTracking();
-    }
+    });
 
-    return initialState;
+    return ReceiveState.initial();
   }
 
   void changeMethod(ReceiveMethod method) {
@@ -142,7 +141,7 @@ class ReceiveNotifier extends Notifier<ReceiveState> {
 }
 
 final NotifierProvider<ReceiveNotifier, ReceiveState> receiveProvider =
-    NotifierProvider<ReceiveNotifier, ReceiveState>(ReceiveNotifier.new);
+    NotifierProvider.autoDispose<ReceiveNotifier, ReceiveState>(ReceiveNotifier.new);
 
 /// Generate payment request
 final FutureProviderFamily<ReceivePaymentResponse, ReceivePaymentRequest> receivePaymentProvider =
