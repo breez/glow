@@ -37,14 +37,17 @@ class SecurityBackupScreen extends ConsumerWidget {
     );
   }
 
-  void _handleTogglePin(
+  Future<void> _handleTogglePin(
     BuildContext context,
     SecurityBackupNotifier notifier,
     bool enable,
     bool currentStatus,
-  ) {
+  ) async {
     if (notifier.togglePin(enable, currentStatus)) {
-      Navigator.pushNamed(context, AppRoutes.pinSetup);
+      // Navigate to PIN setup and wait for result
+      await Navigator.pushNamed(context, AppRoutes.pinSetup);
+      // After returning from PIN setup, refresh the PIN status
+      // This ensures the UI updates without requiring PIN verification again
     } else {
       // Deactivate happened, show feedback
       ScaffoldMessenger.of(

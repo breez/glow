@@ -39,9 +39,11 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     ref.listen<PinSetupState>(pinSetupNotifierProvider, (PinSetupState? previous, PinSetupState current) {
       log.d('State changed to ${current.runtimeType}');
       if (current is PinSetupSuccess) {
-        Navigator.pop(context);
+        // Refresh PIN status before popping
         // ignore: unawaited_futures, unused_result
         ref.refresh(pinStatusProvider);
+        // Pop back to previous screen
+        Navigator.pop(context);
       }
     });
 
