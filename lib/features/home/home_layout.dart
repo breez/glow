@@ -93,8 +93,7 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
           drawer: const HomeDrawer(),
           floatingActionButton: const QrScanButton(),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          floatingActionButtonAnimator: FloatingActionButtonAnimator.noAnimation,
+          floatingActionButtonLocation: const _CenterDockedFabLocation(offsetY: -16.0),
           body: SafeArea(
             child: Column(
               children: <Widget>[
@@ -111,5 +110,23 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
         );
       },
     );
+  }
+}
+
+class _CenterDockedFabLocation extends FloatingActionButtonLocation {
+  const _CenterDockedFabLocation({required this.offsetY});
+
+  final double offsetY;
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final double fabX =
+        (scaffoldGeometry.scaffoldSize.width - scaffoldGeometry.floatingActionButtonSize.width) / 2.0;
+    final double fabY =
+        scaffoldGeometry.scaffoldSize.height -
+        scaffoldGeometry.floatingActionButtonSize.height -
+        scaffoldGeometry.minInsets.bottom +
+        offsetY;
+    return Offset(fabX, fabY);
   }
 }
