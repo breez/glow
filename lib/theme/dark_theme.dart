@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:glow/theme/colors.dart';
 
+/// Padding for snackbars on the home screen to ensure they appear below the FAB
+const EdgeInsets kHomeScreenSnackBarPadding = EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0);
+
 const ColorScheme darkColorScheme = ColorScheme.dark(
   primary: Colors.white,
   onPrimary: Colors.white,
@@ -112,8 +115,7 @@ const SnackBarThemeData darkSnackBarTheme = SnackBarThemeData(
   backgroundColor: Color(0xFF334560),
   actionTextColor: BreezColors.warningDark,
   contentTextStyle: TextStyle(color: Colors.white, fontSize: 14.0, letterSpacing: 0.25, height: 1.2),
-  behavior: SnackBarBehavior.floating,
-  insetPadding: EdgeInsets.zero,
+  behavior: SnackBarBehavior.fixed,
 );
 
 const PopupMenuThemeData darkPopupMenuTheme = PopupMenuThemeData(
