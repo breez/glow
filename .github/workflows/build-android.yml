@@ -1,0 +1,396 @@
+name: Build Android
+on:
+  workflow_dispatch:
+    inputs:
+      use-published-plugins:
+        description: 'Boolean indicating whether to use a published plugin for the SDK. Default = false.'
+        required: false
+        type: boolean
+        default: false
+      spark-sdk-plugin-version:
+        description: 'Version for the published Spark SDK plugin "v(MAJOR.MINOR.BUILD)". Defaults to latest published version on "breez/breez-sdk-spark-flutter"'
+        required: false
+        type: string
+        default: ''
+      spark-sdk-ref:
+        description: 'Spark SDK commit/tag/branch reference when not using a published plugin. Default = "main"'
+        required: false
+        type: string
+        default: 'main'
+
+jobs:
+  pre-setup:
+    name: Pre-setup
+    runs-on: ubuntu-latest
+    outputs:
+      # These outputs mimic the inputs for the workflow.
+      # Their only purpose is to be able to test this workflow if you make
+      # changes that you won't want to commit to main yet.
+      # You can set these values manually, to test how the CI behaves with
+      # certain inputs.
+      use-published-plugins: ${{ inputs.use-published-plugins }}
+      spark-sdk-plugin-version: ${{ inputs.spark-sdk-plugin-version }}
+      spark-sdk-ref: ${{ inputs.spark-sdk-ref }}
+    steps:
+      - name: Checkout Spark SDK Flutter plugin repository
+        if: ${{ inputs.use-published-plugins == true && inputs.spark-sdk-plugin-version == '' }}
+        uses: actions/checkout@v5
+        with:
+          repository: 'breez/breez-sdk-spark-flutter'
+
+      - name: Get the latest tag and set 'spark-sdk-plugin-version'
+        if: ${{ inputs.use-published-plugins == true && inputs.spark-sdk-plugin-version == '' }}
+        id: latest-tag
+        run: |
+          latest_tag=$(git describe --tags "$(git rev-list --tags --max-count=1)")
+          echo "spark-sdk-plugin-version=$latest_tag" >> "$GITHUB_OUTPUT"
+
+      - run: echo "set pre-setup output variables"
+
+      - name: Disk Cleanup
+        run: |
+          echo "::group::Free space before cleanup"
+          df -h --total
+          echo "::endgroup::"
+          echo "::group::Cleaned Files"
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/local/lib/android/sdk/ndk
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo apt-get clean
+          echo "::endgroup::"
+          echo "::group::Free space after cleanup"
+          df -h --total
+          echo "::endgroup::"
+
+  setup:
+    name: Setup
+    needs: pre-setup
+    runs-on: ubuntu-latest
+    outputs:
+      # Careful, a boolean input is not a boolean output. A boolean input is
+      # actually a boolean, but these outputs are strings. All the boolean
+      # checks in this file have the format `boolean == 'true'`. So feel free
+      # to set these variables here to `true` or `false`
+      # (e.g. bindings-windows: true) if you want to test something.
+      use-published-plugins: ${{ needs.pre-setup.outputs.use-published-plugins }}
+      spark-sdk-plugin-version: ${{ needs.pre-setup.outputs.spark-sdk-plugin-version }}
+      spark-sdk-ref: ${{ needs.pre-setup.outputs.spark-sdk-ref }}
+    steps:
+      - run: echo "set setup output variables"
+
+  build-android:
+    needs: setup
+    name: Build Android
+    runs-on: macOS-latest
+    steps:
+      - name: Disk Cleanup
+        run: |
+          echo "::group::Free space before cleanup"
+          df -hI
+          echo "::endgroup::"
+          echo "::group::Cleaned Files"
+          sudo rm -rf /Applications/Xcode_14.3.1.app
+          sudo rm -rf /Applications/Xcode_15.0.1.app
+          sudo rm -rf /Applications/Xcode_15.1.app
+          sudo rm -rf /Applications/Xcode_15.2.app
+          sudo rm -rf /Applications/Xcode_15.3.app
+          echo "::endgroup::"
+          echo "::group::Free space after cleanup"
+          df -hI
+          echo "::endgroup::"
+
+      - name: 🏗️ Check-out glow repository
+        uses: actions/checkout@v5
+        with:
+          path: 'glow'
+
+      - name: Set Spark SDK plugin version (published)
+        if: ${{ needs.setup.outputs.use-published-plugins == 'true' }}
+        working-directory: glow
+        run: |
+          # Update pubspec.yaml to use the published version
+          SDK_VERSION="${{ needs.setup.outputs.spark-sdk-plugin-version }}"
+          if [ -n "$SDK_VERSION" ]; then
+            sed -i.bak "s|ref:.*|ref: $SDK_VERSION|" pubspec.yaml
+          fi
+          # Remove dependency_overrides for local path
+          sed -i.bak '/^dependency_overrides:/,/^[a-z]/{ /path:/d; }' pubspec.yaml
+          rm -f pubspec.yaml.bak
+
+      - name: Decode Keystore
+        env:
+          STORE_FILE_BASE64: ${{ secrets.STORE_FILE_BASE64 }}
+        run: |
+          echo "STORE_FILE=${RUNNER_TEMP}/keystore/glow-release.keystore" >> "$GITHUB_ENV"
+          TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}/keystore"
+          mkdir -p "${TMP_KEYSTORE_FILE_PATH}"
+          echo "$STORE_FILE_BASE64" | base64 -do "${TMP_KEYSTORE_FILE_PATH}/glow-release.keystore"
+
+      - name: Install rust
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        run: |
+          rustup set auto-self-update disable
+          rustup toolchain install stable --profile minimal
+
+      - name: Install Protoc
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "27.2"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏗️ Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 🏗️ Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.32.4'
+          cache: true
+
+      - name: 🏗️ Setup spark-sdk repository
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        uses: actions/checkout@v5
+        with:
+          repository: 'breez/spark-sdk'
+          ssh-key: ${{ secrets.REPO_SSH_KEY }}
+          path: 'spark-sdk'
+          ref: ${{ needs.setup.outputs.spark-sdk-ref }}
+
+      - name: 🏗️ Rust cache
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: spark-sdk/
+          cache-all-crates: true
+
+      - name: 📦 Install flutter_rust_bridge_codegen
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        run: |
+          cargo install cargo-expand --locked
+          cargo install flutter_rust_bridge_codegen@2.9.0 --locked
+
+      - name: 🔒 Install SSH Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.REPO_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          sudo chmod 600 ~/.ssh/id_rsa
+          ssh-add ~/.ssh/id_rsa
+
+      - name: 🔨 Build Spark SDK Android bindings
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        working-directory: spark-sdk/packages/flutter
+        run: make generate-bindings-build-release
+
+      - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
+        working-directory: glow
+        run: flutter precache
+
+      - name: 📦 Install Flutter dependencies
+        working-directory: glow
+        run: flutter pub get
+
+      - name: 🔍 Perform static analysis
+        working-directory: glow
+        run: dart analyze --fatal-infos
+
+      - name: Get Version from pubspec.yaml
+        working-directory: glow
+        run: |
+          VERSION=$(awk -F ': ' '/^version:/ {print $2}' pubspec.yaml)
+          VERSION_BASE=${VERSION%%+*}
+          BUILD_NUMBER=$(date -u +%s)
+
+          echo "VERSION_BASE=$VERSION_BASE"
+          echo "BUILD_NUMBER=$BUILD_NUMBER"
+
+          echo "VERSION_BASE=$VERSION_BASE" >> "$GITHUB_ENV"
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
+
+      - name: 🚀 Build Universal APK
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        working-directory: glow
+        run: |
+          flutter build apk \
+            --build-name="$VERSION_BASE" \
+            --build-number="$BUILD_NUMBER" \
+            --release \
+            --split-debug-info="./obfuscated/debug" \
+            --obfuscate \
+            --no-pub
+
+      - name: 🚀 Build Release APK (split per ABI)
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        working-directory: glow
+        run: |
+          flutter build apk \
+            --build-name="$VERSION_BASE" \
+            --build-number="$BUILD_NUMBER" \
+            --release \
+            --split-debug-info="./obfuscated/debug" \
+            --obfuscate \
+            --no-pub \
+            --split-per-abi
+
+      - name: 🚀 Build Release App Bundle
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        working-directory: glow
+        run: |
+          flutter build appbundle \
+            --build-name="$VERSION_BASE" \
+            --build-number="$BUILD_NUMBER" \
+            --release \
+            --split-debug-info="./obfuscated/debug" \
+            --obfuscate \
+            --no-pub
+
+      - name: 📝 Rename APKs & App Bundle
+        working-directory: glow
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.apk
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.arm64-v8a.apk
+          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.armeabi-v7a.apk
+          mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.x86_64.apk
+          mv build/app/outputs/bundle/release/app-release.aab build/app/outputs/bundle/release/Glow.${{ env.BUILD_NUMBER }}.aab
+
+      - name: 🗃️ Compress Universal APK
+        if: github.event_name == 'release'
+        uses: TheDoctor0/zip-release@master
+        with:
+          filename: Glow.${{ env.BUILD_NUMBER }}.apk.zip
+          directory: glow/build/app/outputs/flutter-apk/
+          includes: Glow.${{ env.BUILD_NUMBER }}.apk
+          type: zip
+
+      - name: 🗃️ Compress Arm64 APK
+        if: github.event_name == 'release'
+        uses: TheDoctor0/zip-release@master
+        with:
+          filename: Glow.${{ env.BUILD_NUMBER }}.arm64-v8a.apk.zip
+          directory: glow/build/app/outputs/flutter-apk/
+          includes: Glow.${{ env.BUILD_NUMBER }}.arm64-v8a.apk
+          type: zip
+
+      - name: 🗃️ Compress Armeabi APK
+        if: github.event_name == 'release'
+        uses: TheDoctor0/zip-release@master
+        with:
+          filename: Glow.${{ env.BUILD_NUMBER }}.armeabi-v7a.apk.zip
+          directory: glow/build/app/outputs/flutter-apk/
+          includes: Glow.${{ env.BUILD_NUMBER }}.armeabi-v7a.apk
+          type: zip
+
+      - name: 🗃️ Compress x86_64 APK
+        if: github.event_name == 'release'
+        uses: TheDoctor0/zip-release@master
+        with:
+          filename: Glow.${{ env.BUILD_NUMBER }}.x86_64.apk.zip
+          directory: glow/build/app/outputs/flutter-apk/
+          includes: Glow.${{ env.BUILD_NUMBER }}.x86_64.apk
+          type: zip
+
+      - name: 🗃️ Compress Bundle build folder
+        if: github.event_name == 'release'
+        uses: TheDoctor0/zip-release@master
+        with:
+          filename: bundle-build.zip
+          directory: glow/build/app/outputs/bundle/release
+          type: zip
+
+      - name: 📤 Upload Universal APK asset
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          asset_name: Glow.${{ env.BUILD_NUMBER }}.universal.zip
+          file: glow/build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.apk.zip
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload Arm64 APK asset
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          asset_name: Glow.${{ env.BUILD_NUMBER }}.arm64-v8a.zip
+          file: glow/build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.arm64-v8a.apk.zip
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload Armeabi APK asset
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          asset_name: Glow.${{ env.BUILD_NUMBER }}.armeabi-v7a.zip
+          file: glow/build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.armeabi-v7a.apk.zip
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload x86_64 APK asset
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          asset_name: Glow.${{ env.BUILD_NUMBER }}.x86_64.zip
+          file: glow/build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.x86_64.apk.zip
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload Bundle asset
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          asset_name: Glow.${{ env.BUILD_NUMBER }}.aab.zip
+          file: glow/build/app/outputs/bundle/release/bundle-build.zip
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload Universal APK artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Glow.${{ env.BUILD_NUMBER }}.universal
+          path: glow/build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.apk
+
+      - name: 📤 Upload Arm64 APK artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Glow.${{ env.BUILD_NUMBER }}.arm64-v8a
+          path: glow/build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.arm64-v8a.apk
+
+      - name: 📤 Upload Armeabi APK artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Glow.${{ env.BUILD_NUMBER }}.armeabi-v7a
+          path: glow/build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.armeabi-v7a.apk
+
+      - name: 📤 Upload x86_64 APK artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Glow.${{ env.BUILD_NUMBER }}.x86_64
+          path: glow/build/app/outputs/flutter-apk/Glow.${{ env.BUILD_NUMBER }}.x86_64.apk
+
+      - name: 📤 Upload Bundle artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Glow.${{ env.BUILD_NUMBER }}.aab
+          path: glow/build/app/outputs/bundle/release/Glow.${{ env.BUILD_NUMBER }}.aab

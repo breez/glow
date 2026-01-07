@@ -1,0 +1,378 @@
+name: Build iOS
+on:
+  workflow_dispatch:
+    inputs:
+      use-published-plugins:
+        description: 'Boolean indicating whether to use a published plugin for the SDK. Default = false.'
+        required: false
+        type: boolean
+        default: false
+      spark-sdk-plugin-version:
+        description: 'Version for the published Spark SDK plugin "v(MAJOR.MINOR.BUILD)". Defaults to latest published version on "breez/breez-sdk-spark-flutter"'
+        required: false
+        type: string
+        default: ''
+      spark-sdk-ref:
+        description: 'Spark SDK commit/tag/branch reference when not using a published plugin. Default = "main"'
+        required: false
+        type: string
+        default: 'main'
+
+jobs:
+  pre-setup:
+    name: Pre-setup
+    runs-on: ubuntu-latest
+    outputs:
+      # These outputs mimic the inputs for the workflow.
+      # Their only purpose is to be able to test this workflow if you make
+      # changes that you won't want to commit to main yet.
+      # You can set these values manually, to test how the CI behaves with
+      # certain inputs.
+      use-published-plugins: ${{ inputs.use-published-plugins }}
+      spark-sdk-plugin-version: ${{ inputs.spark-sdk-plugin-version }}
+      spark-sdk-ref: ${{ inputs.spark-sdk-ref }}
+    steps:
+      - name: Checkout Spark SDK Flutter plugin repository
+        if: ${{ inputs.use-published-plugins == true && inputs.spark-sdk-plugin-version == '' }}
+        uses: actions/checkout@v5
+        with:
+          repository: 'breez/breez-sdk-spark-flutter'
+
+      - name: Get the latest tag and set 'spark-sdk-plugin-version'
+        if: ${{ inputs.use-published-plugins == true && inputs.spark-sdk-plugin-version == '' }}
+        id: latest-tag
+        run: |
+          latest_tag=$(git describe --tags "$(git rev-list --tags --max-count=1)")
+          echo "spark-sdk-plugin-version=$latest_tag" >> "$GITHUB_OUTPUT"
+
+      - run: echo "set pre-setup output variables"
+
+      - name: Disk Cleanup
+        run: |
+          echo "::group::Free space before cleanup"
+          df -h --total
+          echo "::endgroup::"
+          echo "::group::Cleaned Files"
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/local/lib/android/sdk/ndk
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo apt-get clean
+          echo "::endgroup::"
+          echo "::group::Free space after cleanup"
+          df -h --total
+          echo "::endgroup::"
+
+  setup:
+    name: Setup
+    needs: pre-setup
+    runs-on: ubuntu-latest
+    outputs:
+      # Careful, a boolean input is not a boolean output. A boolean input is
+      # actually a boolean, but these outputs are strings. All the boolean
+      # checks in this file have the format `boolean == 'true'`. So feel free
+      # to set these variables here to `true` or `false`
+      # (e.g. bindings-windows: true) if you want to test something.
+      use-published-plugins: ${{ needs.pre-setup.outputs.use-published-plugins }}
+      spark-sdk-plugin-version: ${{ needs.pre-setup.outputs.spark-sdk-plugin-version }}
+      spark-sdk-ref: ${{ needs.pre-setup.outputs.spark-sdk-ref }}
+    steps:
+      - run: echo "set setup output variables"
+
+  build-ios:
+    needs: setup
+    name: Build iOS
+    runs-on: macos-15
+    env:
+      SCHEME: Runner
+      BUILD_CONFIGURATION: Release
+      TESTFLIGHT_USERNAME: ${{ secrets.TESTFLIGHT_USERNAME }}
+      TESTFLIGHT_PASSWORD: ${{ secrets.TESTFLIGHT_PASSWORD }}
+      IOS_VERSION_STRING: 0.1.0
+      P12_BASE64: ${{ secrets.P12_BASE64 }}
+      P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+    steps:
+      - name: Disk Cleanup
+        run: |
+          echo "::group::Free space before cleanup"
+          df -hI
+          echo "::endgroup::"
+          echo "::group::Cleaned Files"
+          sudo rm -rf /Users/runner/Library/Android/sdk
+          sudo rm -rf /Applications/Xcode_15.4.app
+          sudo rm -rf /Applications/Xcode_16.1.app
+          sudo rm -rf /Applications/Xcode_16.2.app
+          sudo rm -rf /Applications/Xcode_16.3_Release_Candidate_2.app
+          echo "::endgroup::"
+          echo "::group::Free space after cleanup"
+          df -hI
+          echo "::endgroup::"
+
+      - name: 🏗️ Check-out glow repository
+        uses: actions/checkout@v5
+        with:
+          path: 'glow'
+
+      - name: Set Spark SDK plugin version (published)
+        if: ${{ needs.setup.outputs.use-published-plugins == 'true' }}
+        working-directory: glow
+        run: |
+          # Update pubspec.yaml to use the published version
+          SDK_VERSION="${{ needs.setup.outputs.spark-sdk-plugin-version }}"
+          if [ -n "$SDK_VERSION" ]; then
+            sed -i.bak "s|ref:.*|ref: $SDK_VERSION|" pubspec.yaml
+          fi
+          # Remove dependency_overrides for local path
+          sed -i.bak '/^dependency_overrides:/,/^[a-z]/{ /path:/d; }' pubspec.yaml
+          rm -f pubspec.yaml.bak
+
+      - name: Install rust
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        run: |
+          rustup set auto-self-update disable
+          rustup toolchain install stable --profile minimal
+
+      - name: Set IPHONEOS_DEPLOYMENT_TARGET
+        run: echo "IPHONEOS_DEPLOYMENT_TARGET=13.0" >> "$GITHUB_ENV"
+
+      - name: Install Protoc
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "27.2"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏗️ Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 🏗️ Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.32.4'
+          cache: true
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'
+
+      - name: 🔐 Install Keychain keys
+        run: |
+          KEYCHAIN_PATH="$RUNNER_TEMP/ios-build.keychain"
+          security create-keychain -p ci "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security unlock-keychain -p ci "$KEYCHAIN_PATH"
+          security set-keychain-settings -t 6400 -l "$KEYCHAIN_PATH"
+
+          P12_KEY_PATH="$RUNNER_TEMP/key.p12"
+          echo -n "$P12_BASE64" | base64 --decode -o "$P12_KEY_PATH"
+          security import "$P12_KEY_PATH" -k "$KEYCHAIN_PATH" -P "$P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+
+          security set-key-partition-list -S apple-tool:,apple: -s -k ci "$KEYCHAIN_PATH" > /dev/null
+
+          echo "=== Imported signing identities ==="
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          # Cleanup
+          rm -f "$P12_KEY_PATH"
+
+      - name: 🏗️ Setup spark-sdk repository
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        uses: actions/checkout@v5
+        with:
+          repository: 'breez/spark-sdk'
+          ssh-key: ${{ secrets.REPO_SSH_KEY }}
+          path: 'spark-sdk'
+          ref: ${{ needs.setup.outputs.spark-sdk-ref }}
+
+      - name: 🏗️ Rust cache
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: spark-sdk/
+          cache-all-crates: true
+
+      - name: 📦 Install flutter_rust_bridge_codegen
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        run: |
+          cargo install cargo-expand --locked
+          cargo install flutter_rust_bridge_codegen@2.9.0 --locked
+
+      - name: 🔒 Install SSH Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.REPO_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          sudo chmod 600 ~/.ssh/id_rsa
+          ssh-add ~/.ssh/id_rsa
+
+      - name: 🔨 Build Spark SDK iOS bindings
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        working-directory: spark-sdk/packages/flutter
+        run: make generate-bindings-build-release
+
+      - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
+        working-directory: glow
+        run: flutter precache
+
+      - name: 📦 Install Flutter dependencies
+        working-directory: glow
+        run: flutter pub get
+
+      - name: 🔍 Perform static analysis
+        working-directory: glow
+        run: dart analyze --fatal-infos
+
+      - name: 📝 Install the Provisioning Profile
+        run: |
+          set -euo pipefail
+
+          # Define paths
+          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
+          PROFILES_DIR=~/Library/MobileDevice/Provisioning\ Profiles
+
+          # Decode and save provisioning profile
+          echo "Decoding provisioning profile..."
+          echo -n "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > "$PP_PATH"
+
+          # Verify provisioning profile validity
+          echo "Verifying provisioning profile validity..."
+          if ! security cms -D -i "$PP_PATH" > /dev/null 2>&1; then
+            echo "Error: Invalid provisioning profile" >&2
+            exit 1
+          fi
+
+          # Check expiration date
+          expiration=$(security cms -D -i "$PP_PATH" | plutil -extract ExpirationDate raw -)
+          expiration_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$expiration" "+%s" 2>/dev/null)
+          current_epoch=$(date "+%s")
+
+          if [ -z "$expiration_epoch" ] || [ "$expiration_epoch" -lt "$current_epoch" ]; then
+            echo "Error: Expired or invalid date in provisioning profile" >&2
+            echo "Expiration date: $expiration" >&2
+            exit 1
+          fi
+
+          echo "Provisioning profile is valid and not expired."
+
+          # Apply provisioning profile
+          echo "Creating profiles directory..."
+          mkdir -p "$PROFILES_DIR"
+          echo "Copying provisioning profile..."
+          cp "$PP_PATH" "$PROFILES_DIR"
+
+          # Verify copying was successful
+          echo "Verifying provisioning profile is installed..."
+          if [ ! -f "$PROFILES_DIR/$(basename "$PP_PATH")" ]; then
+            echo "Error: Provisioning profile copy failed!" >&2
+            exit 1
+          fi
+
+          echo "Listing installed provisioning profiles:"
+          ls -l "$PROFILES_DIR"
+
+          # Cleanup temporary file
+          echo "Cleaning up temporary files..."
+          rm -f "$PP_PATH"
+
+          echo "Provisioning profile installed successfully."
+
+      - name: Get Version from pubspec.yaml
+        working-directory: glow
+        run: |
+          VERSION=$(awk -F ': ' '/^version:/ {print $2}' pubspec.yaml)
+          VERSION_BASE=${VERSION%%+*}
+          BUILD_NUMBER=$((GITHUB_RUN_NUMBER + 1000))
+
+          echo "VERSION_BASE=$VERSION_BASE"
+          echo "BUILD_NUMBER=$BUILD_NUMBER"
+
+          echo "VERSION_BASE=$VERSION_BASE" >> "$GITHUB_ENV"
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
+
+      - name: 🚀 Build app
+        working-directory: glow
+        run: |
+          flutter build ios \
+            --build-name="$VERSION_BASE" \
+            --build-number="$BUILD_NUMBER" \
+            --release \
+            --split-debug-info="./obfuscated/debug" \
+            --obfuscate \
+            --no-config-only \
+            --no-pub \
+            --no-codesign
+
+      - name: 📦 Resolve Swift package dependencies
+        working-directory: glow
+        run: |
+          xcodebuild \
+            -resolvePackageDependencies \
+            -workspace ios/Runner.xcworkspace \
+            -scheme ${{ env.SCHEME }} \
+            -configuration ${{ env.BUILD_CONFIGURATION }}
+
+      - name: 🔨 Build application and generate xcarchive file
+        working-directory: glow
+        run: |
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" ios/Runner/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ env.IOS_VERSION_STRING }}" ios/Runner/Info.plist
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme ${{ env.SCHEME }} \
+            -configuration ${{ env.BUILD_CONFIGURATION }} \
+            -sdk 'iphoneos' \
+            -destination 'generic/platform=iOS' \
+            -archivePath build-output/app.xcarchive \
+            clean archive
+
+      - name: 📤 Export the archive to an ipa file
+        working-directory: glow
+        run: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath build-output/app.xcarchive \
+            -exportPath build-output/ios \
+            -exportOptionsPlist ios/ExportOptions.plist
+
+      - name: 🗃️ Compress build folder
+        if: github.event_name == 'release'
+        uses: TheDoctor0/zip-release@master
+        with:
+          filename: build.zip
+          directory: glow/build/ios/iphoneos
+          type: zip
+
+      - name: 📤 Upload release
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          asset_name: release-iOS.zip
+          file: glow/build/ios/iphoneos/build.zip
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-iOS
+          path: glow/build/ios/iphoneos
+
+      - name: 📱 Publish to TestFlight
+        run: |
+          altool="$(dirname "$(xcode-select -p)")/Developer/usr/bin/altool"
+          ipa="$PWD/glow/build-output/ios/glow.ipa"
+          "$altool" \
+            --upload-app \
+            --type ios \
+            --file "$ipa" \
+            --username "$TESTFLIGHT_USERNAME" \
+            --password "$TESTFLIGHT_PASSWORD"

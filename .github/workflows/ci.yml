@@ -1,0 +1,93 @@
+name: CI
+on:
+  # Triggers the workflow on push events but only for the "main" branch
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      spark_sdk_ref:
+        description: 'Spark SDK commit/tag/branch reference'
+        required: false
+        type: string
+        default: 'main'
+  workflow_call:
+    inputs:
+      spark_sdk_ref:
+        description: 'Spark SDK commit/tag/branch reference'
+        required: false
+        type: string
+        default: 'main'
+
+jobs:
+  build:
+    runs-on: macOS-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: 🏗️ Check-out glow repository
+        uses: actions/checkout@v5
+        with:
+          path: 'glow'
+
+      - name: 🏗️ Setup spark-sdk repository
+        uses: actions/checkout@v5
+        with:
+          repository: 'breez/spark-sdk'
+          ssh-key: ${{ secrets.REPO_SSH_KEY }}
+          path: 'spark-sdk'
+          ref: ${{ inputs.spark_sdk_ref || 'main' }}
+
+      - name: 🏗️ Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 🏗️ Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.32.4'
+          cache: true
+
+      - name: Install rust
+        run: |
+          rustup set auto-self-update disable
+          rustup toolchain install stable --profile minimal
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "27.2"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📦 Install flutter_rust_bridge_codegen
+        run: |
+          cargo install cargo-expand --locked
+          cargo install flutter_rust_bridge_codegen@2.9.0 --locked
+
+      - name: 🔒 Install SSH Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.REPO_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          sudo chmod 600 ~/.ssh/id_rsa
+          ssh-add ~/.ssh/id_rsa
+
+      - name: 🔨 Generate Spark SDK bindings
+        working-directory: spark-sdk/packages/flutter
+        run: make generate-bindings-build-release
+
+      - name: 📦 Install Flutter dependencies
+        working-directory: glow
+        run: flutter pub get
+
+      - name: 🔍 Perform static analysis
+        working-directory: glow
+        run: dart analyze --fatal-infos
+
+      - name: Check Formatting
+        working-directory: glow
+        run: dart format -o none --set-exit-if-changed -l 100 .
