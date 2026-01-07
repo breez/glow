@@ -1,8 +1,18 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+// Load keystore properties from key.properties file if it exists
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -24,27 +34,65 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.breez.spark.glow"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        getByName("debug") {
+            val debugStoreFile = keystoreProperties.getProperty("storeFileDebug")
+            if (debugStoreFile != null) {
+                keyAlias = keystoreProperties.getProperty("keyAliasDebug")
+                keyPassword = keystoreProperties.getProperty("keyPasswordDebug")
+                storeFile = file(debugStoreFile)
+                storePassword = keystoreProperties.getProperty("storePasswordDebug")
+            }
+        }
+
+        create("release") {
+            val releaseStoreFile = keystoreProperties.getProperty("storeFile")
+            if (releaseStoreFile != null) {
+                // Use key.properties file
+                println("Using key properties from key.properties file")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = file(releaseStoreFile)
+                storePassword = keystoreProperties.getProperty("storePassword")
+            } else {
+                // Fall back to environment variables (for CI)
+                val envStoreFile = System.getenv("STORE_FILE")
+                if (envStoreFile != null) {
+                    println("Using key properties from environment variables")
+                    keyAlias = System.getenv("KEY_ALIAS")
+                    keyPassword = System.getenv("KEY_PASSWORD")
+                    storeFile = file(envStoreFile)
+                    storePassword = System.getenv("STORE_PASSWORD")
+                } else {
+                    println("No storeFile provided, release builds will use debug keystore")
+                }
+            }
+        }
+    }
+
     buildTypes {
         debug {
+            signingConfig = signingConfigs.getByName("debug")
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-debug"
             resValue("string", "app_name", "Glow - Debug")
         }
         release {
+            signingConfig = signingConfigs.getByName("release")
             resValue("string", "app_name", "Glow")
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
