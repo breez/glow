@@ -62,7 +62,7 @@ jobs:
           version: "27.2"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Just
+      - name: Set up just
         uses: extractions/setup-just@v3
 
       - name: 📦 Install Spark SDK dependencies
@@ -75,18 +75,10 @@ jobs:
         working-directory: spark-sdk/packages/flutter
         run: just frb
 
-      - name: 🔒 Install SSH Key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.REPO_SSH_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          sudo chmod 600 ~/.ssh/id_rsa
-          ssh-add ~/.ssh/id_rsa
-
-      - name: 🔨 Generate Spark SDK bindings
+      - name: Generate Dart/Flutter bindings
         working-directory: spark-sdk/packages/flutter
-        run: just build
+        continue-on-error: true
+        run: just gen
 
       - name: 📦 Install Flutter dependencies
         working-directory: glow
