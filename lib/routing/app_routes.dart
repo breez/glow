@@ -120,7 +120,10 @@ class AppRoutes {
 
       // Send payment routes
       case AppRoutes.sendScreen:
-        return MaterialPageRoute<SendScreen>(builder: (_) => const SendScreen(), settings: settings);
+        return MaterialPageRoute<SendScreen>(
+          builder: (_) => const SendScreen(),
+          settings: settings,
+        );
 
       case sendBitcoinAddress:
         final BitcoinAddressDetails args = settings.arguments as BitcoinAddressDetails;
@@ -216,7 +219,10 @@ class AppRoutes {
         );
 
       case AppRoutes.receiveScreen:
-        return MaterialPageRoute<ReceiveScreen>(builder: (_) => const ReceiveScreen(), settings: settings);
+        return MaterialPageRoute<ReceiveScreen>(
+          builder: (_) => const ReceiveScreen(),
+          settings: settings,
+        );
 
       // Auth routes
       case lnurlAuth:
@@ -239,9 +245,7 @@ class AppRoutes {
                   future: pinService.hasPin(),
                   builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Scaffold(
-                        body: Center(child: CircularProgressIndicator()),
-                      );
+                      return const Scaffold(body: Center(child: CircularProgressIndicator()));
                     }
 
                     final bool isPinEnabled = snapshot.data ?? false;
@@ -252,7 +256,9 @@ class AppRoutes {
                         onUnlocked: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute<SecurityBackupScreen>(builder: (_) => const SecurityBackupScreen()),
+                            MaterialPageRoute<SecurityBackupScreen>(
+                              builder: (_) => const SecurityBackupScreen(),
+                            ),
                           );
                         },
                       );
@@ -268,7 +274,10 @@ class AppRoutes {
         );
 
       case pinSetup:
-        return MaterialPageRoute<PinSetupScreen>(builder: (_) => const PinSetupScreen(), settings: settings);
+        return MaterialPageRoute<PinSetupScreen>(
+          builder: (_) => const PinSetupScreen(),
+          settings: settings,
+        );
 
       // Developers routes
       case developersScreen:

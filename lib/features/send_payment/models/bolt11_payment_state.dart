@@ -20,7 +20,8 @@ sealed class Bolt11PaymentState extends Equatable implements PaymentFlowState {
   @override
   bool get isError => this is Bolt11PaymentError;
   @override
-  String? get errorMessage => this is Bolt11PaymentError ? (this as Bolt11PaymentError).message : null;
+  String? get errorMessage =>
+      this is Bolt11PaymentError ? (this as Bolt11PaymentError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];

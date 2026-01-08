@@ -14,7 +14,9 @@ final Logger _log = AppLogger.getLogger('Bolt12InvoiceNotifier');
 /// This provider manages the state for sending a BOLT12 payment
 final NotifierProviderFamily<Bolt12InvoiceNotifier, Bolt12InvoiceState, Bolt12InvoiceDetails>
 bolt12InvoiceProvider = NotifierProvider.autoDispose
-    .family<Bolt12InvoiceNotifier, Bolt12InvoiceState, Bolt12InvoiceDetails>(Bolt12InvoiceNotifier.new);
+    .family<Bolt12InvoiceNotifier, Bolt12InvoiceState, Bolt12InvoiceDetails>(
+      Bolt12InvoiceNotifier.new,
+    );
 
 /// Notifier for BOLT12 invoice payment flow
 class Bolt12InvoiceNotifier extends Notifier<Bolt12InvoiceState> {
@@ -51,20 +53,29 @@ class Bolt12InvoiceNotifier extends Notifier<Bolt12InvoiceState> {
           return feeQuote.speedMedium.userFeeSat + feeQuote.speedMedium.l1BroadcastFeeSat;
         },
         bolt11Invoice:
-            (Bolt11InvoiceDetails invoiceDetails, BigInt? sparkTransferFeeSats, BigInt lightningFeeSats) {
+            (
+              Bolt11InvoiceDetails invoiceDetails,
+              BigInt? sparkTransferFeeSats,
+              BigInt lightningFeeSats,
+            ) {
               return (sparkTransferFeeSats ?? BigInt.zero) + lightningFeeSats;
             },
         sparkAddress: (String address, BigInt fee, String? tokenIdentifier) {
           return fee;
         },
-        sparkInvoice: (SparkInvoiceDetails sparkInvoiceDetails, BigInt fee, String? tokenIdentifier) {
-          return fee;
-        },
+        sparkInvoice:
+            (SparkInvoiceDetails sparkInvoiceDetails, BigInt fee, String? tokenIdentifier) {
+              return fee;
+            },
       );
 
       _log.i('Payment prepared - Amount: ${response.amount} sats, Fee: $feeSats sats');
 
-      state = Bolt12InvoiceReady(prepareResponse: response, amountSats: response.amount, feeSats: feeSats);
+      state = Bolt12InvoiceReady(
+        prepareResponse: response,
+        amountSats: response.amount,
+        feeSats: feeSats,
+      );
     } catch (e) {
       _log.e('Failed to prepare payment: $e');
       final PaymentService paymentService = ref.read(paymentServiceProvider);

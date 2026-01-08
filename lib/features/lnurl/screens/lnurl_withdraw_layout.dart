@@ -151,7 +151,10 @@ class _WithdrawDetailsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Withdraw Details', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            'Withdraw Details',
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 16),
 
           // Description
@@ -175,7 +178,10 @@ class _WithdrawDetailsCard extends StatelessWidget {
                 Icon(Icons.info_outline, size: 20, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text('Withdraw funds from this service to your wallet', style: textTheme.bodySmall),
+                  child: Text(
+                    'Withdraw funds from this service to your wallet',
+                    style: textTheme.bodySmall,
+                  ),
                 ),
               ],
             ),
@@ -204,7 +210,9 @@ class _DetailRow extends StatelessWidget {
       children: <Widget>[
         Text(
           label,
-          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.7)),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
         ),
         const SizedBox(width: 16),
         Flexible(
@@ -250,7 +258,10 @@ class _SuccessView extends StatelessWidget {
         children: <Widget>[
           Icon(Icons.check_circle_outline, size: 80, color: Theme.of(context).colorScheme.primary),
           const SizedBox(height: 24),
-          const Text('Withdrawal Successful!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text(
+            'Withdrawal Successful!',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
           Text(
             'Funds are being received',

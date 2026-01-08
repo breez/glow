@@ -59,7 +59,11 @@ class _AnimatedLogoState extends State<AnimatedLogo> with SingleTickerProviderSt
     final Color scaffoldBgColor = themeData.scaffoldBackgroundColor;
 
     return AnimatedBuilder(
-      animation: Listenable.merge(<Listenable?>[_scaleAnimation, _opacityAnimation, _glowAnimation]),
+      animation: Listenable.merge(<Listenable?>[
+        _scaleAnimation,
+        _opacityAnimation,
+        _glowAnimation,
+      ]),
       builder: (BuildContext context, Widget? child) {
         // Single pulse effect - fade out glow smoothly after peak
         final double pulseValue = _glowAnimation.value;
@@ -87,14 +91,18 @@ class _AnimatedLogoState extends State<AnimatedLogo> with SingleTickerProviderSt
                           shape: BoxShape.circle,
                           boxShadow: <BoxShadow>[
                             BoxShadow(
-                              color: themeData.colorScheme.primary.withValues(alpha: .4 * glowOpacity),
+                              color: themeData.colorScheme.primary.withValues(
+                                alpha: .4 * glowOpacity,
+                              ),
                               blurRadius: 30 + (glowOpacity * 15),
                               spreadRadius: 5 + (glowOpacity * 5),
                             ),
                             BoxShadow(
                               color: pulseValue == 1.0
                                   ? scaffoldBgColor
-                                  : themeData.colorScheme.secondary.withValues(alpha: .4 * glowOpacity),
+                                  : themeData.colorScheme.secondary.withValues(
+                                      alpha: .4 * glowOpacity,
+                                    ),
                               blurRadius: 15,
                               spreadRadius: 2,
                             ),
@@ -115,7 +123,10 @@ class _AnimatedLogoState extends State<AnimatedLogo> with SingleTickerProviderSt
                 SizedBox(height: screenSize.height * 0.03),
                 // Tagline with staggered animation
                 Opacity(
-                  opacity: ((_opacityAnimation.value - 0.3) / 0.7).clamp(0.0, 1.0), // Delayed fade-in
+                  opacity: ((_opacityAnimation.value - 0.3) / 0.7).clamp(
+                    0.0,
+                    1.0,
+                  ), // Delayed fade-in
                   child: AutoSizeText(
                     'TBD: Tagline Text',
                     textAlign: TextAlign.center,

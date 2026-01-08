@@ -63,7 +63,10 @@ class _ProfileEditorDialogState extends ConsumerState<ProfileEditorDialog> {
         ),
         titlePadding: const EdgeInsets.all(0.0),
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(12.0), top: Radius.circular(13.0)),
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(12.0),
+            top: Radius.circular(13.0),
+          ),
         ),
         children: <Widget>[
           SingleChildScrollView(
@@ -107,7 +110,9 @@ class _ProfileEditorDialogState extends ConsumerState<ProfileEditorDialog> {
   Future<void> pickGalleryImage() async {
     try {
       // Pick and crop image (returns temp path)
-      final String? imagePath = await ref.read(profileNotifierProvider.notifier).pickImageForPreview();
+      final String? imagePath = await ref
+          .read(profileNotifierProvider.notifier)
+          .pickImageForPreview();
 
       if (imagePath == null) {
         // User cancelled
@@ -122,7 +127,9 @@ class _ProfileEditorDialogState extends ConsumerState<ProfileEditorDialog> {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
     }
   }
 
@@ -160,7 +167,9 @@ class _ProfileEditorDialogState extends ConsumerState<ProfileEditorDialog> {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update profile: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to update profile: $e')));
     } finally {
       if (mounted) {
         setState(() => isSaving = false);
@@ -215,7 +224,9 @@ class _TitleBackground extends StatelessWidget {
     return Container(
       height: 70.0,
       decoration: ShapeDecoration(
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(12.0))),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
+        ),
         color: themeData.canvasColor,
       ),
     );
@@ -267,7 +278,9 @@ class _RandomButton extends StatelessWidget {
         onPressed: onPressed,
         child: Text(
           'RANDOM',
-          style: themeData.textTheme.labelLarge?.copyWith(color: themeData.colorScheme.onPrimaryContainer),
+          style: themeData.textTheme.labelLarge?.copyWith(
+            color: themeData.colorScheme.onPrimaryContainer,
+          ),
           maxLines: 1,
         ),
       ),
@@ -332,7 +345,9 @@ class _GalleryButton extends StatelessWidget {
         onPressed: onPressed,
         child: Text(
           'GALLERY',
-          style: themeData.textTheme.labelLarge?.copyWith(color: themeData.colorScheme.onPrimaryContainer),
+          style: themeData.textTheme.labelLarge?.copyWith(
+            color: themeData.colorScheme.onPrimaryContainer,
+          ),
           maxLines: 1,
         ),
       ),

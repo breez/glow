@@ -14,16 +14,16 @@ final Logger _log = AppLogger.getLogger('BitcoinAddressNotifier');
 /// This provider manages the state for sending a Bitcoin onchain payment
 final NotifierProviderFamily<BitcoinAddressNotifier, BitcoinAddressState, BitcoinAddressDetails>
 bitcoinAddressProvider = NotifierProvider.autoDispose
-    .family<BitcoinAddressNotifier, BitcoinAddressState, BitcoinAddressDetails>(BitcoinAddressNotifier.new);
+    .family<BitcoinAddressNotifier, BitcoinAddressState, BitcoinAddressDetails>(
+      BitcoinAddressNotifier.new,
+    );
 
 /// Provider for fee affordability calculation
 ///
 /// Returns null if not in Ready state or balance not available
-final ProviderFamily<Map<FeeSpeed, bool>?, BitcoinAddressDetails> bitcoinAddressAffordabilityProvider =
-    Provider.autoDispose.family<Map<FeeSpeed, bool>?, BitcoinAddressDetails>((
-      Ref ref,
-      BitcoinAddressDetails details,
-    ) {
+final ProviderFamily<Map<FeeSpeed, bool>?, BitcoinAddressDetails>
+bitcoinAddressAffordabilityProvider = Provider.autoDispose
+    .family<Map<FeeSpeed, bool>?, BitcoinAddressDetails>((Ref ref, BitcoinAddressDetails details) {
       final BitcoinAddressState state = ref.watch(bitcoinAddressProvider(details));
       final AsyncValue<BigInt> balanceAsync = ref.watch(balanceProvider);
 

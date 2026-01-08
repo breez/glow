@@ -6,25 +6,26 @@ import 'package:glow/services/breez_sdk_service.dart';
 import 'package:glow/features/developers/providers/max_deposit_fee_provider.dart';
 
 /// Provider to list unclaimed deposits
-final FutureProvider<List<DepositInfo>> unclaimedDepositsProvider = FutureProvider<List<DepositInfo>>((
-  Ref ref,
-) async {
-  final BreezSdk sdk = await ref.watch(sdkProvider.future);
-  final BreezSdkService service = ref.read(breezSdkServiceProvider);
+final FutureProvider<List<DepositInfo>> unclaimedDepositsProvider =
+    FutureProvider<List<DepositInfo>>((Ref ref) async {
+      final BreezSdk sdk = await ref.watch(sdkProvider.future);
+      final BreezSdkService service = ref.read(breezSdkServiceProvider);
 
-  // Watch the event stream to know when to refresh
-  // This creates a dependency on the stream but doesn't create circular invalidation
-  ref.watch(sdkEventsStreamProvider);
+      // Watch the event stream to know when to refresh
+      // This creates a dependency on the stream but doesn't create circular invalidation
+      ref.watch(sdkEventsStreamProvider);
 
-  final List<DepositInfo> deposits = await service.listUnclaimedDeposits(sdk);
-  if (deposits.isNotEmpty) {
-    log.d('Unclaimed deposits: ${deposits.length}');
-  }
-  return deposits;
-});
+      final List<DepositInfo> deposits = await service.listUnclaimedDeposits(sdk);
+      if (deposits.isNotEmpty) {
+        log.d('Unclaimed deposits: ${deposits.length}');
+      }
+      return deposits;
+    });
 
 /// Check if there are any unclaimed deposits that need attention
-final Provider<AsyncValue<bool>> hasUnclaimedDepositsProvider = Provider<AsyncValue<bool>>((Ref ref) {
+final Provider<AsyncValue<bool>> hasUnclaimedDepositsProvider = Provider<AsyncValue<bool>>((
+  Ref ref,
+) {
   return ref.watch(unclaimedDepositsProvider).whenData((List<DepositInfo> deposits) {
     final bool hasUnclaimed = deposits.isNotEmpty;
     if (hasUnclaimed) {
@@ -35,8 +36,12 @@ final Provider<AsyncValue<bool>> hasUnclaimedDepositsProvider = Provider<AsyncVa
 });
 
 /// Get count of unclaimed deposits for UI display
-final Provider<AsyncValue<int>> unclaimedDepositsCountProvider = Provider<AsyncValue<int>>((Ref ref) {
-  return ref.watch(unclaimedDepositsProvider).whenData((List<DepositInfo> deposits) => deposits.length);
+final Provider<AsyncValue<int>> unclaimedDepositsCountProvider = Provider<AsyncValue<int>>((
+  Ref ref,
+) {
+  return ref
+      .watch(unclaimedDepositsProvider)
+      .whenData((List<DepositInfo> deposits) => deposits.length);
 });
 
 /// Manual deposit claiming provider (for retrying failed claims)

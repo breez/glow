@@ -7,7 +7,12 @@ class MaxFeeBottomSheet extends StatefulWidget {
   final Function(MaxFee) onSave;
   final VoidCallback onReset;
 
-  const MaxFeeBottomSheet({required this.currentFee, required this.onSave, required this.onReset, super.key});
+  const MaxFeeBottomSheet({
+    required this.currentFee,
+    required this.onSave,
+    required this.onReset,
+    super.key,
+  });
 
   @override
   State<MaxFeeBottomSheet> createState() => _MaxFeeBottomSheetState();
@@ -132,7 +137,9 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                 const SizedBox(height: 8),
                 Text(
                   'Set the maximum fee for claiming Bitcoin deposits',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
 
                 const SizedBox(height: 32),
@@ -244,13 +251,17 @@ class _MaxFeeBottomSheetState extends State<MaxFeeBottomSheet> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            _useFixedFee ? '${_minFixed.round()} sats' : '${_minRate.floor()} sat/vB',
+                            _useFixedFee
+                                ? '${_minFixed.round()} sats'
+                                : '${_minRate.floor()} sat/vB',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                           Text(
-                            _useFixedFee ? '${_maxFixed.round()} sats' : '${_maxRate.floor()} sat/vB',
+                            _useFixedFee
+                                ? '${_maxFixed.round()} sats'
+                                : '${_maxRate.floor()} sat/vB',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),

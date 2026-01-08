@@ -75,9 +75,16 @@ class WalletMetadata {
           other.isVerified == isVerified;
 
   @override
-  int get hashCode =>
-      Object.hash(id, profile.animal, profile.color, profile.customName, profile.customImagePath, isVerified);
+  int get hashCode => Object.hash(
+    id,
+    profile.animal,
+    profile.color,
+    profile.customName,
+    profile.customImagePath,
+    isVerified,
+  );
 
   @override
-  String toString() => 'WalletMetadata(id: $id, profile: ${profile.displayName}, isVerified: $isVerified)';
+  String toString() =>
+      'WalletMetadata(id: $id, profile: ${profile.displayName}, isVerified: $isVerified)';
 }

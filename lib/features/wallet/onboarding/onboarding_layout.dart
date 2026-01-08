@@ -9,7 +9,12 @@ class OnboardingLayout extends StatelessWidget {
   final VoidCallback onRegister;
   final VoidCallback onRestore;
 
-  const OnboardingLayout({required this.state, required this.onRegister, required this.onRestore, super.key});
+  const OnboardingLayout({
+    required this.state,
+    required this.onRegister,
+    required this.onRestore,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

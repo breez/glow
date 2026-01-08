@@ -137,7 +137,11 @@ class CsvExportService {
   }
 
   /// Builds the file name with filter information.
-  String _buildFileName({List<PaymentType>? paymentTypeFilters, DateTime? startDate, DateTime? endDate}) {
+  String _buildFileName({
+    List<PaymentType>? paymentTypeFilters,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
     final StringBuffer name = StringBuffer('GlowPayments');
 
     // Add payment type filter to filename

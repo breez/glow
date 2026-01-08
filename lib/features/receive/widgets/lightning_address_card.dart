@@ -23,13 +23,20 @@ class LightningAddressCard extends ConsumerWidget {
         showMenu(
           context: context,
           color: themeData.colorScheme.surfaceContainer,
-          position: RelativeRect.fromRect(Rect.fromPoints(offset, offset), Offset.zero & overlay.size),
+          position: RelativeRect.fromRect(
+            Rect.fromPoints(offset, offset),
+            Offset.zero & overlay.size,
+          ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
           items: const <PopupMenuItem<String>>[
             PopupMenuItem<String>(
               value: customizeValue,
               child: Row(
-                children: <Widget>[Icon(Icons.edit), SizedBox(width: 8.0), Text('Customize Address')],
+                children: <Widget>[
+                  Icon(Icons.edit),
+                  SizedBox(width: 8.0),
+                  Text('Customize Address'),
+                ],
               ),
             ),
           ],

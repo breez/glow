@@ -20,7 +20,8 @@ sealed class Bolt12InvoiceState extends Equatable implements PaymentFlowState {
   @override
   bool get isError => this is Bolt12InvoiceError;
   @override
-  String? get errorMessage => this is Bolt12InvoiceError ? (this as Bolt12InvoiceError).message : null;
+  String? get errorMessage =>
+      this is Bolt12InvoiceError ? (this as Bolt12InvoiceError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];
@@ -42,7 +43,11 @@ class Bolt12InvoiceReady extends Bolt12InvoiceState {
   final BigInt amountSats;
   final BigInt feeSats;
 
-  const Bolt12InvoiceReady({required this.prepareResponse, required this.amountSats, required this.feeSats});
+  const Bolt12InvoiceReady({
+    required this.prepareResponse,
+    required this.amountSats,
+    required this.feeSats,
+  });
 
   @override
   List<Object?> get props => <Object?>[prepareResponse, amountSats, feeSats];

@@ -40,7 +40,12 @@ class PaymentAmountDisplay extends StatelessWidget {
 
 /// Dedicated widget for displaying a detail row with optional copy functionality
 class PaymentDetailRow extends StatelessWidget {
-  const PaymentDetailRow({required this.label, required this.value, super.key, this.copyable = false});
+  const PaymentDetailRow({
+    required this.label,
+    required this.value,
+    super.key,
+    this.copyable = false,
+  });
 
   final String label;
   final String value;
@@ -65,7 +70,10 @@ class PaymentDetailRow extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 Expanded(
-                  child: Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  child: Text(
+                    value,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
                 ),
                 if (copyable)
                   IconButton(
@@ -84,9 +92,9 @@ class PaymentDetailRow extends StatelessWidget {
 
   void _copyToClipboard(BuildContext context, String text) {
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Copied to clipboard'), duration: Duration(seconds: 2)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Copied to clipboard'), duration: Duration(seconds: 2)),
+    );
   }
 }
 

@@ -212,7 +212,9 @@ class _RestorePhraseGridState extends State<RestorePhraseGrid> {
                                   border: OutlineInputBorder(),
                                 ),
                                 style: const TextStyle(fontFamily: 'monospace'),
-                                textInputAction: index < 11 ? TextInputAction.next : TextInputAction.done,
+                                textInputAction: index < 11
+                                    ? TextInputAction.next
+                                    : TextInputAction.done,
                                 onSubmitted: (String value) {
                                   _moveToNextEmptyField(index);
                                 },

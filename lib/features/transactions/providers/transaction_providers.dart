@@ -10,31 +10,36 @@ import 'package:glow/features/wallet/providers/wallet_provider.dart';
 import 'package:glow/providers/sdk_provider.dart';
 
 /// Provider for filtered payments
-final Provider<AsyncValue<List<Payment>>> filteredPaymentsProvider = Provider<AsyncValue<List<Payment>>>((
-  Ref ref,
-) {
-  final AsyncValue<List<Payment>> paymentsAsync = ref.watch(paymentsProvider);
-  final TransactionFilterState filterState = ref.watch(transactionFilterProvider);
+final Provider<AsyncValue<List<Payment>>> filteredPaymentsProvider =
+    Provider<AsyncValue<List<Payment>>>((Ref ref) {
+      final AsyncValue<List<Payment>> paymentsAsync = ref.watch(paymentsProvider);
+      final TransactionFilterState filterState = ref.watch(transactionFilterProvider);
 
-  return paymentsAsync.whenData((List<Payment> payments) {
-    return payments.where((Payment payment) {
-      // Convert payment timestamp to DateTime for comparison
-      final DateTime paymentDate = DateTime.fromMillisecondsSinceEpoch(payment.timestamp.toInt() * 1000);
+      return paymentsAsync.whenData((List<Payment> payments) {
+        return payments.where((Payment payment) {
+          // Convert payment timestamp to DateTime for comparison
+          final DateTime paymentDate = DateTime.fromMillisecondsSinceEpoch(
+            payment.timestamp.toInt() * 1000,
+          );
 
-      final bool afterStartDate =
-          filterState.startDate == null || paymentDate.isAfter(filterState.startDate!);
-      final bool beforeEndDate = filterState.endDate == null || paymentDate.isBefore(filterState.endDate!);
-      final bool ofPaymentType =
-          filterState.paymentTypes.isEmpty || filterState.paymentTypes.contains(payment.paymentType);
+          final bool afterStartDate =
+              filterState.startDate == null || paymentDate.isAfter(filterState.startDate!);
+          final bool beforeEndDate =
+              filterState.endDate == null || paymentDate.isBefore(filterState.endDate!);
+          final bool ofPaymentType =
+              filterState.paymentTypes.isEmpty ||
+              filterState.paymentTypes.contains(payment.paymentType);
 
-      return afterStartDate && beforeEndDate && ofPaymentType;
-    }).toList();
-  });
-});
+          return afterStartDate && beforeEndDate && ofPaymentType;
+        }).toList();
+      });
+    });
 
 /// Provider for TransactionListState
 /// Converts raw payments from sdk_provider to formatted TransactionListState
-final Provider<TransactionListState> transactionListStateProvider = Provider<TransactionListState>((Ref ref) {
+final Provider<TransactionListState> transactionListStateProvider = Provider<TransactionListState>((
+  Ref ref,
+) {
   final TransactionFormatter formatter = const TransactionFormatter();
   final AsyncValue<List<Payment>> filteredPaymentsAsync = ref.watch(filteredPaymentsProvider);
   final AsyncValue<WalletMetadata?> activeWallet = ref.watch(activeWalletProvider);
@@ -46,7 +51,9 @@ final Provider<TransactionListState> transactionListStateProvider = Provider<Tra
   return filteredPaymentsAsync.when(
     data: (List<Payment> filteredPayments) {
       final bool hasActiveFilter =
-          filterState.paymentTypes.isNotEmpty || filterState.startDate != null || filterState.endDate != null;
+          filterState.paymentTypes.isNotEmpty ||
+          filterState.startDate != null ||
+          filterState.endDate != null;
 
       final bool shouldWait = shouldWaitAsync.hasValue ? shouldWaitAsync.value! : false;
       final Profile? profile = activeWallet.value?.profile;

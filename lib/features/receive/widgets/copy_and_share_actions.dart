@@ -28,7 +28,10 @@ class CopyAndShareActions extends ConsumerWidget {
       children: <Widget>[
         Expanded(
           child: DataActionButton(
-            icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon'), size: DataActionButtonTheme.iconSize),
+            icon: const Icon(
+              IconData(0xe90b, fontFamily: 'icomoon'),
+              size: DataActionButtonTheme.iconSize,
+            ),
             label: 'COPY',
             onPressed: () => _onCopyPressed(ref, context),
             textGroup: textGroup,
@@ -37,7 +40,10 @@ class CopyAndShareActions extends ConsumerWidget {
         const SizedBox(width: DataActionButtonTheme.spacing),
         Expanded(
           child: DataActionButton(
-            icon: const Icon(IconData(0xe917, fontFamily: 'icomoon'), size: DataActionButtonTheme.iconSize),
+            icon: const Icon(
+              IconData(0xe917, fontFamily: 'icomoon'),
+              size: DataActionButtonTheme.iconSize,
+            ),
             label: 'SHARE',
             onPressed: () => _onSharePressed(ref),
             textGroup: textGroup,

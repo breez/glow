@@ -13,7 +13,13 @@ class PaymentStatusView extends StatelessWidget {
   final VoidCallback? onRetry;
   final VoidCallback? onDone;
 
-  const PaymentStatusView({required this.status, this.errorMessage, this.onRetry, this.onDone, super.key});
+  const PaymentStatusView({
+    required this.status,
+    this.errorMessage,
+    this.onRetry,
+    this.onDone,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +188,10 @@ class _PaymentProcessingAnimationState extends State<PaymentProcessingAnimation>
   /// Custom decoder for Lottie files with retry mechanism.
   ///
   /// Attempts to decode the Lottie file multiple times before giving up.
-  Future<LottieComposition?> _decodeLottieFileWithRetry(List<int> bytes, int remainingAttempts) async {
+  Future<LottieComposition?> _decodeLottieFileWithRetry(
+    List<int> bytes,
+    int remainingAttempts,
+  ) async {
     try {
       return await LottieComposition.decodeZip(bytes, filePicker: _selectLottieFileFromArchive);
     } catch (e, stackTrace) {
@@ -219,7 +228,9 @@ class _PaymentProcessingAnimationState extends State<PaymentProcessingAnimation>
         (ArchiveFile f) => f.name.startsWith('animations/') && f.name.endsWith('.json'),
         orElse: () {
           final String availableFiles = fileNames.join(', ');
-          throw Exception('No Lottie animation file found in the archive. Available files: $availableFiles');
+          throw Exception(
+            'No Lottie animation file found in the archive. Available files: $availableFiles',
+          );
         },
       );
     } catch (e, stackTrace) {

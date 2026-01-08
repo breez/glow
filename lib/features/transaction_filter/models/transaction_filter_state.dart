@@ -6,9 +6,17 @@ class TransactionFilterState extends Equatable {
   final DateTime? startDate;
   final DateTime? endDate;
 
-  const TransactionFilterState({this.paymentTypes = const <PaymentType>[], this.startDate, this.endDate});
+  const TransactionFilterState({
+    this.paymentTypes = const <PaymentType>[],
+    this.startDate,
+    this.endDate,
+  });
 
-  TransactionFilterState copyWith({List<PaymentType>? paymentTypes, DateTime? startDate, DateTime? endDate}) {
+  TransactionFilterState copyWith({
+    List<PaymentType>? paymentTypes,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
     return TransactionFilterState(
       paymentTypes: paymentTypes ?? this.paymentTypes,
       startDate: startDate ?? this.startDate,

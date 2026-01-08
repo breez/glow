@@ -23,8 +23,16 @@ class DepositClaimer {
   String formatError(DepositClaimError error) {
     return error.when(
       maxDepositClaimFeeExceeded:
-          (String tx, int vout, Fee? maxFee, BigInt requiredFeeSats, BigInt requiredFeeRateSatPerVbyte) {
-            final String maxFeeStr = (maxFee != null) ? ' (your max: ${formatMaxFee(maxFee)}). ' : '';
+          (
+            String tx,
+            int vout,
+            Fee? maxFee,
+            BigInt requiredFeeSats,
+            BigInt requiredFeeRateSatPerVbyte,
+          ) {
+            final String maxFeeStr = (maxFee != null)
+                ? ' (your max: ${formatMaxFee(maxFee)}). '
+                : '';
             return 'Fee exceeds limit: $requiredFeeSats sats needed$maxFeeStr'
                 'Tap "Retry Claim" after increasing your maximum deposit claim fee rate(sat/vByte) to at least $requiredFeeRateSatPerVbyte sat/vBye.';
           },

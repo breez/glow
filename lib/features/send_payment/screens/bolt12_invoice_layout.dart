@@ -85,7 +85,10 @@ class _BodyContent extends StatelessWidget {
             )
           // Error display
           else if (state is Bolt12InvoiceError)
-            ErrorCard(title: 'Failed to prepare payment', message: (state as Bolt12InvoiceError).message),
+            ErrorCard(
+              title: 'Failed to prepare payment',
+              message: (state as Bolt12InvoiceError).message,
+            ),
         ],
       ),
     );

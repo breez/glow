@@ -48,7 +48,11 @@ class SecurityBackupLayout extends StatelessWidget {
         child: ListView(
           children: <Widget>[
             if (isPinEnabled) ...<Widget>[
-              SwitchListTile(title: const Text('Deactivate PIN'), value: true, onChanged: onTogglePin),
+              SwitchListTile(
+                title: const Text('Deactivate PIN'),
+                value: true,
+                onChanged: onTogglePin,
+              ),
               const Divider(),
               ListTile(
                 title: const Text('Change PIN'),

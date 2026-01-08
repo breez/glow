@@ -70,8 +70,10 @@ class HomeDemoScreen extends StatelessWidget {
             ListTile(
               title: const Text('Transactions - Error'),
               subtitle: const Text('Error state'),
-              onTap: () =>
-                  _openTransactionDemo(context, TransactionListState.error('Failed to load transactions')),
+              onTap: () => _openTransactionDemo(
+                context,
+                TransactionListState.error('Failed to load transactions'),
+              ),
             ),
           ],
         ),
@@ -105,7 +107,11 @@ class HomeDemoScreen extends StatelessWidget {
 
   // Demo state factories
   BalanceState _createLoadedBalanceState() {
-    return BalanceState.loaded(balance: BigInt.from(1000000), hasSynced: true, formattedBalance: '1,000,000');
+    return BalanceState.loaded(
+      balance: BigInt.from(1000000),
+      hasSynced: true,
+      formattedBalance: '1,000,000',
+    );
   }
 
   BalanceState _createBalanceWithFiatState() {
@@ -152,7 +158,9 @@ class HomeDemoScreen extends StatelessWidget {
       status: PaymentStatus.completed,
       paymentType: PaymentType.send,
       method: PaymentMethod.lightning,
-      timestamp: BigInt.from(DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch ~/ 1000),
+      timestamp: BigInt.from(
+        DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch ~/ 1000,
+      ),
       details: const PaymentDetails_Lightning(
         description: 'Lunch',
         invoice: 'lnbc250n1...',

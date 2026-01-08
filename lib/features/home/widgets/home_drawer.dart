@@ -88,11 +88,19 @@ class _DrawerHeader extends ConsumerWidget {
 
     return Container(
       height: statusBarHeight + _kBreezDrawerHeaderHeight,
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 16, left: 16, right: 16, bottom: 16),
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 16,
+        left: 16,
+        right: 16,
+        bottom: 16,
+      ),
       color: BreezColors.darkBackground,
       child: GestureDetector(
         onTap: () {
-          showDialog<void>(context: context, builder: (BuildContext context) => const ProfileEditorDialog());
+          showDialog<void>(
+            context: context,
+            builder: (BuildContext context) => const ProfileEditorDialog(),
+          );
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +120,9 @@ class _DrawerHeader extends ConsumerWidget {
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
                             wallet.displayName,
-                            style: theme.textTheme.titleMedium?.copyWith(color: BreezColors.grey600),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: BreezColors.grey600,
+                            ),
                           ),
                         )
                       : const SizedBox.shrink(),
@@ -151,7 +161,10 @@ class _DrawerItem extends StatelessWidget {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.horizontal(right: Radius.circular(32)),
           ),
-          leading: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Icon(icon, size: 26)),
+          leading: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Icon(icon, size: 26),
+          ),
           title: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Text(title)),
           onTap: onTap,
         ),
@@ -188,7 +201,10 @@ class _DrawerSectionState extends State<_DrawerSection> {
       child: ExpansionTile(
         leading: Padding(
           padding: const EdgeInsets.only(left: 8),
-          child: Text(widget.title, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
+          child: Text(
+            widget.title,
+            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+          ),
         ),
         title: const SizedBox.shrink(),
         initiallyExpanded: _isExpanded,

@@ -153,7 +153,10 @@ class _BodyContent extends StatelessWidget {
             )
           // Error display
           else if (state is Bolt12OfferError)
-            ErrorCard(title: 'Failed to prepare payment', message: (state as Bolt12OfferError).message),
+            ErrorCard(
+              title: 'Failed to prepare payment',
+              message: (state as Bolt12OfferError).message,
+            ),
         ],
       ),
     );
@@ -194,7 +197,11 @@ class OfferDetailsCard extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Offer
-          _DetailRow(label: 'Offer', value: _formatOffer(offerDetails.offer.offer), monospace: true),
+          _DetailRow(
+            label: 'Offer',
+            value: _formatOffer(offerDetails.offer.offer),
+            monospace: true,
+          ),
 
           if (offerDetails.description != null) ...<Widget>[
             const SizedBox(height: 12),
@@ -263,7 +270,9 @@ class _DetailRow extends StatelessWidget {
       children: <Widget>[
         Text(
           label,
-          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.7)),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
         ),
         const SizedBox(width: 16),
         Flexible(

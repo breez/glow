@@ -63,7 +63,10 @@ class _RestoreScreenState extends ConsumerState<RestoreScreen> with LoggerMixin 
     if (query.isEmpty) {
       return <String>[];
     }
-    return bip39WordList.where((String word) => word.startsWith(query.toLowerCase())).take(5).toList();
+    return bip39WordList
+        .where((String word) => word.startsWith(query.toLowerCase()))
+        .take(5)
+        .toList();
   }
 
   void _onWordSelected(int index, String selection) {

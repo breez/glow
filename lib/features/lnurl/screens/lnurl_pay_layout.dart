@@ -417,7 +417,8 @@ class _ConfirmationCard extends StatelessWidget {
     }
 
     final LnurlPayReady readyState = state as LnurlPayReady;
-    final String description = readyState.comment ?? _extractDescription(payRequestDetails.metadataStr);
+    final String description =
+        readyState.comment ?? _extractDescription(payRequestDetails.metadataStr);
 
     return PaymentConfirmationView(
       amountSats: readyState.amountSats,

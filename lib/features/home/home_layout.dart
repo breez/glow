@@ -121,7 +121,8 @@ class _CenterDockedFabLocation extends FloatingActionButtonLocation {
   @override
   Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
     final double fabX =
-        (scaffoldGeometry.scaffoldSize.width - scaffoldGeometry.floatingActionButtonSize.width) / 2.0;
+        (scaffoldGeometry.scaffoldSize.width - scaffoldGeometry.floatingActionButtonSize.width) /
+        2.0;
     final double fabY =
         scaffoldGeometry.scaffoldSize.height -
         scaffoldGeometry.floatingActionButtonSize.height -

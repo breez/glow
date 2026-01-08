@@ -53,7 +53,10 @@ class _UnclaimedDepositsWarning extends ConsumerWidget {
 
         return countAsync.when(
           data: (int count) => IconButton(
-            icon: Badge(label: Text(count.toString()), child: const Icon(Icons.warning_amber_rounded)),
+            icon: Badge(
+              label: Text(count.toString()),
+              child: const Icon(Icons.warning_amber_rounded),
+            ),
             onPressed: () => Navigator.pushNamed(context, AppRoutes.unclaimedDeposits),
             tooltip: 'Pending deposits',
           ),
@@ -79,7 +82,10 @@ class _VerificationWarning extends StatelessWidget {
       data: (WalletMetadata? wallet) => wallet != null && !wallet.isVerified
           ? IconButton(
               onPressed: () => _handleVerification(context, wallet),
-              icon: Icon(Icons.warning_amber_rounded, color: Theme.of(context).appBarTheme.iconTheme?.color),
+              icon: Icon(
+                Icons.warning_amber_rounded,
+                color: Theme.of(context).appBarTheme.iconTheme?.color,
+              ),
               tooltip: 'Verify backup phrase',
             )
           : const SizedBox.shrink(),

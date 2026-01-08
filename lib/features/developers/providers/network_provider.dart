@@ -20,6 +20,5 @@ class NetworkNotifier extends Notifier<Network> {
   }
 }
 
-final NotifierProvider<NetworkNotifier, Network> networkProvider = NotifierProvider<NetworkNotifier, Network>(
-  NetworkNotifier.new,
-);
+final NotifierProvider<NetworkNotifier, Network> networkProvider =
+    NotifierProvider<NetworkNotifier, Network>(NetworkNotifier.new);

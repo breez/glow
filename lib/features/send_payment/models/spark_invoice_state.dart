@@ -20,7 +20,8 @@ sealed class SparkInvoiceState extends Equatable implements PaymentFlowState {
   @override
   bool get isError => this is SparkInvoiceError;
   @override
-  String? get errorMessage => this is SparkInvoiceError ? (this as SparkInvoiceError).message : null;
+  String? get errorMessage =>
+      this is SparkInvoiceError ? (this as SparkInvoiceError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];
@@ -53,7 +54,13 @@ class SparkInvoiceReady extends SparkInvoiceState {
   });
 
   @override
-  List<Object?> get props => <Object?>[prepareResponse, amountSats, feeSats, tokenIdentifier, description];
+  List<Object?> get props => <Object?>[
+    prepareResponse,
+    amountSats,
+    feeSats,
+    tokenIdentifier,
+    description,
+  ];
 }
 
 /// Sending the payment

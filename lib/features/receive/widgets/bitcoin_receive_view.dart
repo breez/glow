@@ -18,7 +18,8 @@ class BitcoinReceiveView extends ConsumerWidget {
       data: (BitcoinAddressData? address) =>
           address != null ? _BitcoinAddressContent(address: address) : const _NoBitcoinAddress(),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (Object err, _) => ErrorView(message: 'Failed to load Bitcoin address', error: err.toString()),
+      error: (Object err, _) =>
+          ErrorView(message: 'Failed to load Bitcoin address', error: err.toString()),
     );
   }
 }
@@ -53,7 +54,9 @@ class _NoBitcoinAddress extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool isGenerating = ref.watch(
-      generateBitcoinAddressProvider(null).select((AsyncValue<BitcoinAddressData?> state) => state.isLoading),
+      generateBitcoinAddressProvider(
+        null,
+      ).select((AsyncValue<BitcoinAddressData?> state) => state.isLoading),
     );
 
     return Center(

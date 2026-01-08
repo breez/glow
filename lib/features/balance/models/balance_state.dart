@@ -39,7 +39,12 @@ class BalanceState extends Equatable {
 
   /// Factory for error state
   factory BalanceState.error(String error) {
-    return BalanceState(balance: BigInt.zero, hasSynced: false, formattedBalance: '0', error: error);
+    return BalanceState(
+      balance: BigInt.zero,
+      hasSynced: false,
+      formattedBalance: '0',
+      error: error,
+    );
   }
 
   bool get hasBalance => balance > BigInt.zero;

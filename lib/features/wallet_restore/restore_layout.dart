@@ -47,13 +47,20 @@ class RestoreLayout extends StatelessWidget {
               if (mnemonicError != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: WarningCard(message: mnemonicError!, textColor: Theme.of(context).colorScheme.error),
+                  child: WarningCard(
+                    message: mnemonicError!,
+                    textColor: Theme.of(context).colorScheme.error,
+                  ),
                 ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavButton(text: 'RESTORE', onPressed: onRestore, loading: isRestoring),
+      bottomNavigationBar: BottomNavButton(
+        text: 'RESTORE',
+        onPressed: onRestore,
+        loading: isRestoring,
+      ),
     );
   }
 }

@@ -27,7 +27,10 @@ void main() {
 
     test('formats balance with unit', () {
       expect(formatter.formatBalance(BigInt.from(1000)), '1,000 sats');
-      expect(formatter.formatBalance(BigInt.from(100000000), unit: BalanceUnit.btc), '1.00000000 BTC');
+      expect(
+        formatter.formatBalance(BigInt.from(100000000), unit: BalanceUnit.btc),
+        '1.00000000 BTC',
+      );
     });
 
     test('formats fiat correctly', () {
@@ -103,7 +106,10 @@ void main() {
       final TransactionItemState state = TransactionItemState(
         payment: payment,
         formattedAmount: formatter.formatSats(payment.amount),
-        formattedAmountWithSign: formatter.formatAmountWithSign(payment.amount, payment.paymentType),
+        formattedAmountWithSign: formatter.formatAmountWithSign(
+          payment.amount,
+          payment.paymentType,
+        ),
         formattedTime: formatter.formatRelativeTime(payment.timestamp),
         formattedStatus: formatter.formatStatus(payment.status),
         formattedMethod: formatter.formatMethod(payment.method),

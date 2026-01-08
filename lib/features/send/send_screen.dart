@@ -60,7 +60,9 @@ class _SendScreenState extends ConsumerState<SendScreen> {
       await _validateInput();
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Clipboard is empty')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Clipboard is empty')));
       }
     }
   }

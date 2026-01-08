@@ -75,7 +75,12 @@ class TransactionListItem extends StatelessWidget {
 
     return Text(
       title,
-      style: const TextStyle(fontSize: 12.25, fontWeight: FontWeight.w400, height: 1.2, letterSpacing: 0.25),
+      style: const TextStyle(
+        fontSize: 12.25,
+        fontWeight: FontWeight.w400,
+        height: 1.2,
+        letterSpacing: 0.25,
+      ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );
@@ -126,7 +131,9 @@ class TransactionListItem extends StatelessWidget {
     return SizedBox(
       height: 44,
       child: Column(
-        mainAxisAlignment: (hasFees && !isPending) ? MainAxisAlignment.spaceAround : MainAxisAlignment.center,
+        mainAxisAlignment: (hasFees && !isPending)
+            ? MainAxisAlignment.spaceAround
+            : MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
           Text(

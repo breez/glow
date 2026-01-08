@@ -149,7 +149,9 @@ class BreezSdkService with LoggerMixin {
   /// Register a Lightning Address
   Future<void> registerLightningAddress(BreezSdk sdk, String username) async {
     try {
-      await sdk.registerLightningAddress(request: RegisterLightningAddressRequest(username: username));
+      await sdk.registerLightningAddress(
+        request: RegisterLightningAddressRequest(username: username),
+      );
       log.i('Lightning Address registered: $username');
     } catch (e, stack) {
       log.e('Failed to register Lightning Address', error: e, stackTrace: stack);

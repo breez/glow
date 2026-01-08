@@ -27,7 +27,12 @@ class BorderPainter extends CustomPainter {
     const Rect clippingRect0 = Rect.fromLTWH(0, 0, tRadius, tRadius);
     final Rect clippingRect1 = Rect.fromLTWH(size.width - tRadius, 0, tRadius, tRadius);
     final Rect clippingRect2 = Rect.fromLTWH(0, size.height - tRadius, tRadius, tRadius);
-    final Rect clippingRect3 = Rect.fromLTWH(size.width - tRadius, size.height - tRadius, tRadius, tRadius);
+    final Rect clippingRect3 = Rect.fromLTWH(
+      size.width - tRadius,
+      size.height - tRadius,
+      tRadius,
+      tRadius,
+    );
 
     final Path path = Path()
       ..addRect(clippingRect0)

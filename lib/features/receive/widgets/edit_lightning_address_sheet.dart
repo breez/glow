@@ -110,13 +110,15 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
       }
 
       await widget.sdk.deleteLightningAddress();
-      await widget.sdk.registerLightningAddress(request: RegisterLightningAddressRequest(username: cleaned));
+      await widget.sdk.registerLightningAddress(
+        request: RegisterLightningAddressRequest(username: cleaned),
+      );
 
       if (mounted) {
         widget.onSuccess();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Lightning Address updated: $value@${AppConfig.lnurlDomain}')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lightning Address updated: $value@${AppConfig.lnurlDomain}')),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -165,7 +167,12 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
           if (!_showDeleteConfirmation) ...<Widget>[
             const Text(
               'Customize Address',
-              style: TextStyle(fontSize: 18.0, letterSpacing: 0.0, height: 1.28, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 18.0,
+                letterSpacing: 0.0,
+                height: 1.28,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 32),
             TextField(
@@ -176,7 +183,10 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
                 labelText: 'Username',
                 errorText: _errorText,
                 suffixText: '@${AppConfig.lnurlDomain}',
-                suffixStyle: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                suffixStyle: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
                 border: const OutlineInputBorder(),
               ),
               onChanged: (_) => setState(() => _errorText = null),
@@ -193,7 +203,9 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
               const SizedBox(height: 8),
               FilledButton.icon(
                 style: FilledButton.styleFrom(backgroundColor: BreezColors.debugRed),
-                onPressed: _isProcessing ? null : () => setState(() => _showDeleteConfirmation = true),
+                onPressed: _isProcessing
+                    ? null
+                    : () => setState(() => _showDeleteConfirmation = true),
                 icon: const Icon(Icons.delete_outline),
                 label: _isProcessing
                     ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
@@ -212,7 +224,9 @@ class _EditLightningAddressSheetState extends State<EditLightningAddressSheet> {
             ),
             const SizedBox(height: 8),
             FilledButton(
-              onPressed: _isProcessing ? null : () => setState(() => _showDeleteConfirmation = false),
+              onPressed: _isProcessing
+                  ? null
+                  : () => setState(() => _showDeleteConfirmation = false),
               child: const Text('CANCEL'),
             ),
           ],

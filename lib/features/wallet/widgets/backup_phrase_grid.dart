@@ -22,7 +22,9 @@ class BackupPhraseGrid extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Expanded(child: Text('Backup Phrase', style: Theme.of(context).textTheme.titleMedium)),
+                Expanded(
+                  child: Text('Backup Phrase', style: Theme.of(context).textTheme.titleMedium),
+                ),
                 if (showCopyButton)
                   IconButton(
                     icon: const Icon(Icons.copy, size: 20),

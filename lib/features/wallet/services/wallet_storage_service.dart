@@ -30,8 +30,14 @@ class WalletStorageService with LoggerMixin {
         sharedPreferencesName: 'glow_prefs$suffix',
         preferencesKeyPrefix: 'glow${suffix}_',
       ),
-      iOptions: IOSOptions(accountName: '$_accountName$suffix', accessibility: _keychainAccessibility),
-      mOptions: MacOsOptions(accountName: '$_accountName$suffix', accessibility: _keychainAccessibility),
+      iOptions: IOSOptions(
+        accountName: '$_accountName$suffix',
+        accessibility: _keychainAccessibility,
+      ),
+      mOptions: MacOsOptions(
+        accountName: '$_accountName$suffix',
+        accessibility: _keychainAccessibility,
+      ),
     );
   }
 
@@ -260,6 +266,8 @@ class WalletStorageService with LoggerMixin {
       sha256.convert(utf8.encode(mnemonic)).toString().substring(0, 8);
 }
 
-final Provider<WalletStorageService> walletStorageServiceProvider = Provider<WalletStorageService>((Ref ref) {
+final Provider<WalletStorageService> walletStorageServiceProvider = Provider<WalletStorageService>((
+  Ref ref,
+) {
   return WalletStorageService();
 });

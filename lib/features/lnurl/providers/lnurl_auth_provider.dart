@@ -11,10 +11,9 @@ final Logger _log = AppLogger.getLogger('LnurlAuthNotifier');
 /// Provider for LNURL auth state
 ///
 /// This provider manages the state for authenticating via LNURL
-final NotifierProviderFamily<LnurlAuthNotifier, LnurlAuthState, LnurlAuthRequestDetails> lnurlAuthProvider =
-    NotifierProvider.autoDispose.family<LnurlAuthNotifier, LnurlAuthState, LnurlAuthRequestDetails>(
-      LnurlAuthNotifier.new,
-    );
+final NotifierProviderFamily<LnurlAuthNotifier, LnurlAuthState, LnurlAuthRequestDetails>
+lnurlAuthProvider = NotifierProvider.autoDispose
+    .family<LnurlAuthNotifier, LnurlAuthState, LnurlAuthRequestDetails>(LnurlAuthNotifier.new);
 
 /// Notifier for LNURL auth flow
 class LnurlAuthNotifier extends Notifier<LnurlAuthState> {

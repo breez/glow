@@ -39,7 +39,9 @@ class _PhraseVerificationContainerState extends ConsumerState<PhraseVerification
   }
 
   Future<void> _handleVerify() async {
-    final List<String> providedWords = _controllers.map((TextEditingController c) => c.text).toList();
+    final List<String> providedWords = _controllers
+        .map((TextEditingController c) => c.text)
+        .toList();
     final bool success = await ref
         .read(phraseVerificationProvider.notifier)
         .verifyWords(providedWords, widget.wallet);
@@ -52,9 +54,9 @@ class _PhraseVerificationContainerState extends ConsumerState<PhraseVerification
 
     if (success) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Backup phrase verified!'), backgroundColor: Colors.green));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Backup phrase verified!'), backgroundColor: Colors.green),
+      );
     } else if (errorMessage != null) {
       ScaffoldMessenger.of(
         context,

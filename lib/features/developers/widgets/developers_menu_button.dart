@@ -39,7 +39,11 @@ class DevelopersMenuButton extends StatelessWidget {
         const PopupMenuItem<String>(
           value: 'network',
           child: Row(
-            children: <Widget>[Icon(Icons.swap_horiz, size: 20), SizedBox(width: 12), Text('Switch Network')],
+            children: <Widget>[
+              Icon(Icons.swap_horiz, size: 20),
+              SizedBox(width: 12),
+              Text('Switch Network'),
+            ],
           ),
         ),
       );
@@ -51,7 +55,11 @@ class DevelopersMenuButton extends StatelessWidget {
         const PopupMenuItem<String>(
           value: 'max_fee',
           child: Row(
-            children: <Widget>[Icon(Icons.speed, size: 20), SizedBox(width: 12), Text('Deposit Claim Fee')],
+            children: <Widget>[
+              Icon(Icons.speed, size: 20),
+              SizedBox(width: 12),
+              Text('Deposit Claim Fee'),
+            ],
           ),
         ),
       );

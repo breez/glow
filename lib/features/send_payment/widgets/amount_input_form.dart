@@ -102,7 +102,12 @@ class _AmountInputFormState extends State<AmountInputForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         widget.header!,
-        const Divider(height: 32.0, color: Color.fromRGBO(40, 59, 74, 0.5), indent: 0.0, endIndent: 0.0),
+        const Divider(
+          height: 32.0,
+          color: Color.fromRGBO(40, 59, 74, 0.5),
+          indent: 0.0,
+          endIndent: 0.0,
+        ),
         _buildContent(),
       ],
     );

@@ -74,7 +74,11 @@ class TransactionListState extends Equatable {
 
   /// Factory for error state
   factory TransactionListState.error(String error) {
-    return TransactionListState(transactions: const <TransactionItemState>[], hasSynced: false, error: error);
+    return TransactionListState(
+      transactions: const <TransactionItemState>[],
+      hasSynced: false,
+      error: error,
+    );
   }
 
   /// Factory for empty state (synced but no transactions)

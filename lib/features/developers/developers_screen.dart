@@ -32,7 +32,9 @@ class DevelopersScreen extends ConsumerWidget {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Network changed to ${network == Network.mainnet ? 'Mainnet' : 'Regtest'}'),
+                  content: Text(
+                    'Network changed to ${network == Network.mainnet ? 'Mainnet' : 'Regtest'}',
+                  ),
                   duration: const Duration(seconds: 2),
                 ),
               );
@@ -66,9 +68,9 @@ class DevelopersScreen extends ConsumerWidget {
             ref.invalidate(sdkProvider);
 
             if (context.mounted) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Fee updated.'), duration: Duration(seconds: 2)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Fee updated.'), duration: Duration(seconds: 2)),
+              );
             }
           } catch (e) {
             if (context.mounted) {
@@ -98,14 +100,18 @@ class DevelopersScreen extends ConsumerWidget {
   Future<void> _shareCurrentSession(BuildContext context) async {
     try {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preparing logs...')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Preparing logs...')));
       }
 
       final File? zipFile = await AppLogger.createCurrentSessionZip();
 
       if (zipFile == null) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No logs to share')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('No logs to share')));
         }
         return;
       }
@@ -119,7 +125,9 @@ class DevelopersScreen extends ConsumerWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to share logs: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to share logs: $e')));
       }
     }
   }
@@ -127,14 +135,18 @@ class DevelopersScreen extends ConsumerWidget {
   Future<void> _shareAllLogs(BuildContext context) async {
     try {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preparing logs...')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Preparing logs...')));
       }
 
       final File? zipFile = await AppLogger.createAllLogsZip();
 
       if (zipFile == null) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No logs to share')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('No logs to share')));
         }
         return;
       }
@@ -148,7 +160,9 @@ class DevelopersScreen extends ConsumerWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to share logs: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to share logs: $e')));
       }
     }
   }

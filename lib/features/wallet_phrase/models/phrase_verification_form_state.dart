@@ -6,9 +6,17 @@ class PhraseVerificationFormState extends Equatable {
   final bool isVerifying;
   final String? errorMessage;
 
-  const PhraseVerificationFormState({required this.wordIndices, this.isVerifying = false, this.errorMessage});
+  const PhraseVerificationFormState({
+    required this.wordIndices,
+    this.isVerifying = false,
+    this.errorMessage,
+  });
 
-  PhraseVerificationFormState copyWith({List<int>? wordIndices, bool? isVerifying, String? errorMessage}) {
+  PhraseVerificationFormState copyWith({
+    List<int>? wordIndices,
+    bool? isVerifying,
+    String? errorMessage,
+  }) {
     return PhraseVerificationFormState(
       wordIndices: wordIndices ?? this.wordIndices,
       isVerifying: isVerifying ?? this.isVerifying,

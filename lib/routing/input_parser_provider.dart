@@ -38,7 +38,10 @@ sealed class ParseResult {
   factory ParseResult.success(InputType inputType) = ParseSuccess;
   factory ParseResult.error(String message) = ParseError;
 
-  T when<T>({required T Function(InputType inputType) success, required T Function(String message) error}) {
+  T when<T>({
+    required T Function(InputType inputType) success,
+    required T Function(String message) error,
+  }) {
     return switch (this) {
       ParseSuccess(:final InputType inputType) => success(inputType),
       ParseError(:final String message) => error(message),

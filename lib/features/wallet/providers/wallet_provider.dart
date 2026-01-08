@@ -25,7 +25,10 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
     return wallets;
   }
 
-  Future<(WalletMetadata, String)> createWallet({Profile? profile, Network network = Network.mainnet}) async {
+  Future<(WalletMetadata, String)> createWallet({
+    Profile? profile,
+    Network network = Network.mainnet,
+  }) async {
     try {
       // Auto-generate profile if not provided
       final Profile walletProfile = profile ?? generateProfile();
@@ -72,7 +75,11 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
       }
 
       // Restored wallets are marked as verified (user already has the phrase)
-      final WalletMetadata wallet = WalletMetadata(id: walletId, profile: walletProfile, isVerified: true);
+      final WalletMetadata wallet = WalletMetadata(
+        id: walletId,
+        profile: walletProfile,
+        isVerified: true,
+      );
       await _storage!.addWallet(wallet, normalized);
 
       state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[...existingWallets, wallet]);
@@ -98,7 +105,9 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
       final WalletMetadata updated = wallets[index].copyWith(profile: updatedProfile);
       await _storage!.updateWallet(updated);
 
-      state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[...wallets]..[index] = updated);
+      state = AsyncValue<List<WalletMetadata>>.data(
+        <WalletMetadata>[...wallets]..[index] = updated,
+      );
       log.i('Wallet profile updated: $walletId');
     } catch (e, stack) {
       log.e('Failed to update wallet profile', error: e, stackTrace: stack);
@@ -119,7 +128,9 @@ class WalletListNotifier extends AsyncNotifier<List<WalletMetadata>> {
       final WalletMetadata updated = wallets[index].copyWith(isVerified: true);
       await _storage!.updateWallet(updated);
 
-      state = AsyncValue<List<WalletMetadata>>.data(<WalletMetadata>[...wallets]..[index] = updated);
+      state = AsyncValue<List<WalletMetadata>>.data(
+        <WalletMetadata>[...wallets]..[index] = updated,
+      );
       log.i('Wallet marked as verified: $walletId');
     } catch (e, stack) {
       log.e('Failed to mark wallet as verified', error: e, stackTrace: stack);
@@ -169,7 +180,9 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
 
     final List<WalletMetadata> wallets = await ref.read(walletListProvider.future);
     log.d('Wallets loaded for active wallet lookup: ${wallets.length}');
-    final WalletMetadata? wallet = wallets.where((WalletMetadata w) => w.id == _activeWalletId).firstOrNull;
+    final WalletMetadata? wallet = wallets
+        .where((WalletMetadata w) => w.id == _activeWalletId)
+        .firstOrNull;
 
     if (wallet != null) {
       log.i('Active wallet: ${wallet.id} (${wallet.displayName})');
@@ -206,7 +219,9 @@ class ActiveWalletNotifier extends AsyncNotifier<WalletMetadata?> {
       log.i('Switching to wallet: $walletId');
 
       final List<WalletMetadata> wallets = await ref.read(walletListProvider.future);
-      final WalletMetadata? wallet = wallets.where((WalletMetadata w) => w.id == walletId).firstOrNull;
+      final WalletMetadata? wallet = wallets
+          .where((WalletMetadata w) => w.id == walletId)
+          .firstOrNull;
       if (wallet == null) {
         throw Exception('Wallet not found: $walletId');
       }

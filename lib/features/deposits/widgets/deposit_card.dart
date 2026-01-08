@@ -53,7 +53,11 @@ class _DepositCardState extends State<DepositCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _DepositCardHeader(deposit: widget.deposit, isExpanded: _isExpanded, hasError: hasError),
+              _DepositCardHeader(
+                deposit: widget.deposit,
+                isExpanded: _isExpanded,
+                hasError: hasError,
+              ),
               if (_isExpanded)
                 _DepositCardExpandedContent(
                   deposit: widget.deposit,
@@ -75,7 +79,11 @@ class _DepositCardState extends State<DepositCard> {
 
 /// Header section of deposit card (always visible)
 class _DepositCardHeader extends StatelessWidget {
-  const _DepositCardHeader({required this.deposit, required this.isExpanded, required this.hasError});
+  const _DepositCardHeader({
+    required this.deposit,
+    required this.isExpanded,
+    required this.hasError,
+  });
 
   final DepositInfo deposit;
   final bool isExpanded;
@@ -114,7 +122,9 @@ class _DepositIconContainer extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: hasError ? theme.colorScheme.error.withValues(alpha: 0.1) : theme.colorScheme.primaryContainer,
+        color: hasError
+            ? theme.colorScheme.error.withValues(alpha: 0.1)
+            : theme.colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(
@@ -148,7 +158,9 @@ class _DepositAmountInfo extends StatelessWidget {
         Text(
           hasError ? 'Failed to claim' : 'Waiting to claim',
           style: theme.textTheme.bodySmall?.copyWith(
-            color: hasError ? theme.colorScheme.error : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            color: hasError
+                ? theme.colorScheme.error
+                : theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
       ],
@@ -195,7 +207,10 @@ class _DepositCardExpandedContent extends StatelessWidget {
         ],
         const SizedBox(height: 16),
         _RetryClaimButton(onPressed: onRetryClaim),
-        if (hasRefund) ...<Widget>[const SizedBox(height: 8), _ViewRefundButton(onPressed: onShowRefundInfo)],
+        if (hasRefund) ...<Widget>[
+          const SizedBox(height: 8),
+          _ViewRefundButton(onPressed: onShowRefundInfo),
+        ],
       ],
     );
   }

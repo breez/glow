@@ -37,7 +37,10 @@ class _PhraseScreenState extends ConsumerState<PhraseScreen> {
     setState(() {
       switch (currentStep) {
         case PhraseVerificationStep.info:
-          _state = _state.copyWith(currentStep: PhraseVerificationStep.display, currentPageIndex: 1);
+          _state = _state.copyWith(
+            currentStep: PhraseVerificationStep.display,
+            currentPageIndex: 1,
+          );
           break;
         case PhraseVerificationStep.display:
           _state = _state.copyWith(currentStep: PhraseVerificationStep.verify, currentPageIndex: 2);

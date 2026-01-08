@@ -18,9 +18,9 @@ class LogsCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Share logs for debugging',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 16),
             ListTile(

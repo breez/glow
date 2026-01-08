@@ -48,10 +48,14 @@ final FilledButtonThemeData darkFilledButtonTheme = FilledButtonThemeData(
 );
 
 final OutlinedButtonThemeData darkOutlinedButtonTheme = OutlinedButtonThemeData(
-  style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+  style: OutlinedButton.styleFrom(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  ),
 );
 
-const SliderThemeData darkSliderTheme = SliderThemeData(valueIndicatorColor: BreezColors.primaryLight);
+const SliderThemeData darkSliderTheme = SliderThemeData(
+  valueIndicatorColor: BreezColors.primaryLight,
+);
 
 const FloatingActionButtonThemeData darkFabTheme = FloatingActionButtonThemeData(
   backgroundColor: BreezColors.primaryLight,
@@ -114,7 +118,12 @@ final DatePickerThemeData darkDatePickerTheme = DatePickerThemeData(
 const SnackBarThemeData darkSnackBarTheme = SnackBarThemeData(
   backgroundColor: Color(0xFF334560),
   actionTextColor: BreezColors.warningDark,
-  contentTextStyle: TextStyle(color: Colors.white, fontSize: 14.0, letterSpacing: 0.25, height: 1.2),
+  contentTextStyle: TextStyle(
+    color: Colors.white,
+    fontSize: 14.0,
+    letterSpacing: 0.25,
+    height: 1.2,
+  ),
   behavior: SnackBarBehavior.fixed,
 );
 

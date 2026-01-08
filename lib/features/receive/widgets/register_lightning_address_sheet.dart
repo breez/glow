@@ -73,7 +73,9 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
         return;
       }
       log.i('Registering Lightning Address for username: $cleaned');
-      await widget.sdk.registerLightningAddress(request: RegisterLightningAddressRequest(username: cleaned));
+      await widget.sdk.registerLightningAddress(
+        request: RegisterLightningAddressRequest(username: cleaned),
+      );
 
       if (mounted) {
         widget.onSuccess();
@@ -120,7 +122,10 @@ class _RegisterLightningAddressSheetState extends State<RegisterLightningAddress
               labelText: 'Username',
               errorText: _errorText,
               suffixText: '@${AppConfig.lnurlDomain}',
-              suffixStyle: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              suffixStyle: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
               border: const OutlineInputBorder(),
             ),
             onChanged: (_) => setState(() => _errorText = null),

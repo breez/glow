@@ -37,7 +37,9 @@ class SparkInvoiceScreen extends ConsumerWidget {
       invoiceDetails: invoiceDetails,
       state: state,
       onPreparePayment: (BigInt amountSats) {
-        ref.read(sparkInvoiceProvider(invoiceDetails).notifier).preparePayment(amountSats: amountSats);
+        ref
+            .read(sparkInvoiceProvider(invoiceDetails).notifier)
+            .preparePayment(amountSats: amountSats);
       },
       onSendPayment: () {
         ref.read(sparkInvoiceProvider(invoiceDetails).notifier).sendPayment();

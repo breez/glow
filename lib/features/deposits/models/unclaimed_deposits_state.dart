@@ -131,5 +131,6 @@ class DepositCardData {
   }
 
   @override
-  int get hashCode => Object.hash(deposit, hasError, hasRefund, formattedTxid, formattedErrorMessage);
+  int get hashCode =>
+      Object.hash(deposit, hasError, hasRefund, formattedTxid, formattedErrorMessage);
 }

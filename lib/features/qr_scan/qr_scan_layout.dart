@@ -30,9 +30,18 @@ class QRScanLayout extends StatelessWidget {
             const ScanOverlay(),
             Stack(
               children: <Widget>[
-                Positioned(right: 10, top: 5, child: _ImagePickerIcon(onImagePickerTap: onImagePickerTap)),
+                Positioned(
+                  right: 10,
+                  top: 5,
+                  child: _ImagePickerIcon(onImagePickerTap: onImagePickerTap),
+                ),
                 if (defaultTargetPlatform == TargetPlatform.iOS)
-                  Positioned(bottom: 30.0, right: 0, left: 0, child: _CancelButton(onCancel: onCancel)),
+                  Positioned(
+                    bottom: 30.0,
+                    right: 0,
+                    left: 0,
+                    child: _CancelButton(onCancel: onCancel),
+                  ),
               ],
             ),
           ],

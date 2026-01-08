@@ -111,7 +111,10 @@ class _PinDotsDisplay extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: List<Widget>.generate(pinLength, (int index) => _PinDot(isFilled: index < currentLength)),
+        children: List<Widget>.generate(
+          pinLength,
+          (int index) => _PinDot(isFilled: index < currentLength),
+        ),
       ),
     );
   }
@@ -193,7 +196,10 @@ class _NumericPad extends StatelessWidget {
         final double heightBasedSize = availableHeight / 4;
         final double widthBasedSize = availableWidth / 3;
         final double resolvedSize = heightBasedSize.isFinite && widthBasedSize.isFinite
-            ? math.min(maxButtonSize, math.max(minButtonSize, math.min(heightBasedSize, widthBasedSize)))
+            ? math.min(
+                maxButtonSize,
+                math.max(minButtonSize, math.min(heightBasedSize, widthBasedSize)),
+              )
             : maxButtonSize;
 
         return Padding(
@@ -241,14 +247,21 @@ class _NumericPadRow extends StatelessWidget {
   final ValueChanged<String> onNumberPressed;
   final double buttonSize;
 
-  const _NumericPadRow({required this.numbers, required this.onNumberPressed, required this.buttonSize});
+  const _NumericPadRow({
+    required this.numbers,
+    required this.onNumberPressed,
+    required this.buttonSize,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: numbers
-          .map((String number) => _NumberButton(number: number, onPressed: onNumberPressed, size: buttonSize))
+          .map(
+            (String number) =>
+                _NumberButton(number: number, onPressed: onNumberPressed, size: buttonSize),
+          )
           .toList(),
     );
   }
@@ -321,7 +334,11 @@ class _DeleteButton extends StatelessWidget {
       child: SizedBox(
         width: size,
         height: size,
-        child: IconButton(onPressed: onPressed, icon: const Icon(Icons.delete_forever), iconSize: 20),
+        child: IconButton(
+          onPressed: onPressed,
+          icon: const Icon(Icons.delete_forever),
+          iconSize: 20,
+        ),
       ),
     );
   }

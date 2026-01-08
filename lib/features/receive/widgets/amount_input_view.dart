@@ -151,7 +151,10 @@ class PaymentDisplayView extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
     if (state.method == ReceiveMethod.lightning) {
-      return _LightningPaymentDisplay(amountSats: state.amountSats!, response: state.receivePaymentResponse);
+      return _LightningPaymentDisplay(
+        amountSats: state.amountSats!,
+        response: state.receivePaymentResponse,
+      );
     } else {
       return _BitcoinPaymentDisplay(amountSats: state.amountSats!);
     }
@@ -175,7 +178,10 @@ class _LightningPaymentDisplay extends ConsumerWidget {
           children: <Widget>[
             QRCodeCard(data: response!.paymentRequest),
             const SizedBox(height: 24),
-            CopyAndShareActions(copyData: response!.paymentRequest, shareData: response!.paymentRequest),
+            CopyAndShareActions(
+              copyData: response!.paymentRequest,
+              shareData: response!.paymentRequest,
+            ),
             if (response!.fee > BigInt.zero) ...<Widget>[
               const SizedBox(height: 24),
               Container(
@@ -241,7 +247,12 @@ class _BitcoinPaymentDisplay extends ConsumerWidget {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Expanded(child: Text('Bitcoin Address', style: Theme.of(context).textTheme.headlineSmall)),
+                  Expanded(
+                    child: Text(
+                      'Bitcoin Address',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () {
@@ -253,13 +264,20 @@ class _BitcoinPaymentDisplay extends ConsumerWidget {
               const SizedBox(height: 16),
               Text(
                 formatSats(amountSats),
-                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w300, letterSpacing: -2),
+                style: const TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w300,
+                  letterSpacing: -2,
+                ),
               ),
               const Text('sats', style: TextStyle(fontSize: 14, color: Colors.grey)),
               const SizedBox(height: 8),
               Text(
                 '≈ ${formatSatsToBtc(amountSats)} BTC',
-                style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 32),
               // QR code with BIP21 URI (includes amount)
@@ -277,7 +295,11 @@ class _BitcoinPaymentDisplay extends ConsumerWidget {
                   ),
                   child: Row(
                     children: <Widget>[
-                      Icon(Icons.warning_amber_rounded, size: 20, color: Theme.of(context).colorScheme.error),
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
@@ -330,7 +352,10 @@ class _BitcoinPaymentDisplay extends ConsumerWidget {
   void _copyBip21Uri(BuildContext context, String uri) {
     Clipboard.setData(ClipboardData(text: uri));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Payment URI copied to clipboard'), duration: Duration(seconds: 2)),
+      const SnackBar(
+        content: Text('Payment URI copied to clipboard'),
+        duration: Duration(seconds: 2),
+      ),
     );
   }
 
