@@ -95,7 +95,10 @@ class _AuthDetailsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Authentication Request', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            'Authentication Request',
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 16),
 
           // Domain
@@ -118,7 +121,11 @@ class _AuthDetailsCard extends StatelessWidget {
             ),
             child: Row(
               children: <Widget>[
-                Icon(Icons.security_outlined, size: 20, color: Theme.of(context).colorScheme.primary),
+                Icon(
+                  Icons.security_outlined,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -153,7 +160,9 @@ class _DetailRow extends StatelessWidget {
       children: <Widget>[
         Text(
           label,
-          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.7)),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
         ),
         const SizedBox(width: 16),
         Flexible(

@@ -75,8 +75,10 @@ class _SparkAddressLayoutState extends ConsumerState<SparkAddressLayout> {
     final Network currentNetwork = ref.watch(networkProvider);
     // Check if networks match - SDK Network vs BitcoinNetwork
     final bool networkMismatch =
-        (currentNetwork == Network.mainnet && widget.addressDetails.network != BitcoinNetwork.bitcoin) ||
-        (currentNetwork != Network.mainnet && widget.addressDetails.network == BitcoinNetwork.bitcoin);
+        (currentNetwork == Network.mainnet &&
+            widget.addressDetails.network != BitcoinNetwork.bitcoin) ||
+        (currentNetwork != Network.mainnet &&
+            widget.addressDetails.network == BitcoinNetwork.bitcoin);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Send Payment'), centerTitle: false),
@@ -142,7 +144,10 @@ class _BodyContent extends StatelessWidget {
     if (networkMismatch) {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
-        child: NetworkMismatchError(currentNetwork: currentNetwork, addressNetwork: addressDetails.network),
+        child: NetworkMismatchError(
+          currentNetwork: currentNetwork,
+          addressNetwork: addressDetails.network,
+        ),
       );
     }
 
@@ -176,7 +181,10 @@ class _BodyContent extends StatelessWidget {
             )
           // Error display
           else if (state is SparkAddressError)
-            ErrorCard(title: 'Failed to prepare payment', message: (state as SparkAddressError).message),
+            ErrorCard(
+              title: 'Failed to prepare payment',
+              message: (state as SparkAddressError).message,
+            ),
         ],
       ),
     );
@@ -248,11 +256,18 @@ class AddressDetailsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Address Details', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            'Address Details',
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 16),
 
           // Spark Address
-          _DetailRow(label: 'Spark Address', value: _formatAddress(addressDetails.address), monospace: true),
+          _DetailRow(
+            label: 'Spark Address',
+            value: _formatAddress(addressDetails.address),
+            monospace: true,
+          ),
           const SizedBox(height: 12),
 
           // Identity Public Key
@@ -312,7 +327,9 @@ class _DetailRow extends StatelessWidget {
       children: <Widget>[
         Text(
           label,
-          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.7)),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
         ),
         const SizedBox(width: 16),
         Flexible(

@@ -20,7 +20,8 @@ sealed class SilentPaymentState extends Equatable implements PaymentFlowState {
   @override
   bool get isError => this is SilentPaymentError;
   @override
-  String? get errorMessage => this is SilentPaymentError ? (this as SilentPaymentError).message : null;
+  String? get errorMessage =>
+      this is SilentPaymentError ? (this as SilentPaymentError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];
@@ -42,7 +43,11 @@ class SilentPaymentReady extends SilentPaymentState {
   final BigInt amountSats;
   final BigInt feeSats;
 
-  const SilentPaymentReady({required this.prepareResponse, required this.amountSats, required this.feeSats});
+  const SilentPaymentReady({
+    required this.prepareResponse,
+    required this.amountSats,
+    required this.feeSats,
+  });
 
   @override
   List<Object?> get props => <Object?>[prepareResponse, amountSats, feeSats];

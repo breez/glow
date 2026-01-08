@@ -36,7 +36,10 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     log.d('PinSetupScreen building with state: ${state.runtimeType}');
 
     // Navigate back on success
-    ref.listen<PinSetupState>(pinSetupNotifierProvider, (PinSetupState? previous, PinSetupState current) {
+    ref.listen<PinSetupState>(pinSetupNotifierProvider, (
+      PinSetupState? previous,
+      PinSetupState current,
+    ) {
       log.d('State changed to ${current.runtimeType}');
       if (current is PinSetupSuccess) {
         // Refresh PIN status before popping
@@ -52,7 +55,8 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
       body: SafeArea(
         child: PinSetupLayout(
           state: state,
-          onPinEntered: (String pin) => ref.read(pinSetupNotifierProvider.notifier).onPinEntered(pin),
+          onPinEntered: (String pin) =>
+              ref.read(pinSetupNotifierProvider.notifier).onPinEntered(pin),
           onInputStarted: () => ref.read(pinSetupNotifierProvider.notifier).clearError(),
         ),
       ),

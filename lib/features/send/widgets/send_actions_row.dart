@@ -8,7 +8,12 @@ class SendActionsRow extends StatelessWidget {
   final VoidCallback onScan;
   final AutoSizeGroup textGroup;
 
-  const SendActionsRow({required this.onPaste, required this.onScan, required this.textGroup, super.key});
+  const SendActionsRow({
+    required this.onPaste,
+    required this.onScan,
+    required this.textGroup,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

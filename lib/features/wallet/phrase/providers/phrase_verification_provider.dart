@@ -61,7 +61,10 @@ class PhraseVerificationNotifier extends Notifier<PhraseVerificationFormState> {
       return true;
     } catch (e, stack) {
       log.e('Failed to verify backup phrase', error: e, stackTrace: stack);
-      state = state.copyWith(isVerifying: false, errorMessage: 'Failed to verify backup phrase: $e');
+      state = state.copyWith(
+        isVerifying: false,
+        errorMessage: 'Failed to verify backup phrase: $e',
+      );
       return false;
     }
   }
@@ -73,7 +76,8 @@ class PhraseVerificationNotifier extends Notifier<PhraseVerificationFormState> {
 
 /// Provider for phrase verification
 /// Uses autoDispose since this is screen-scoped
-final NotifierProvider<PhraseVerificationNotifier, PhraseVerificationFormState> phraseVerificationProvider =
+final NotifierProvider<PhraseVerificationNotifier, PhraseVerificationFormState>
+phraseVerificationProvider =
     NotifierProvider.autoDispose<PhraseVerificationNotifier, PhraseVerificationFormState>(
       PhraseVerificationNotifier.new,
     );

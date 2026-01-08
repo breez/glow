@@ -38,7 +38,11 @@ class _RegisterButton extends StatelessWidget {
   final AutoSizeGroup autoSizeGroup;
   final VoidCallback onRegister;
 
-  const _RegisterButton({required this.state, required this.autoSizeGroup, required this.onRegister});
+  const _RegisterButton({
+    required this.state,
+    required this.autoSizeGroup,
+    required this.onRegister,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +61,11 @@ class _RegisterButton extends StatelessWidget {
         ),
         onPressed: state.isLoading ? null : onRegister,
         child: state.isLoading
-            ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: themeData.primaryColor))
+            ? SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(color: themeData.primaryColor),
+              )
             : Semantics(
                 button: true,
                 label: "LET'S GLOW!",
@@ -89,7 +97,10 @@ class _RestoreButton extends StatelessWidget {
       height: 48.0,
       width: min(screenSize.width * 0.5, 168),
       child: OutlinedButton(
-        style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.white), elevation: 0.0),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.white),
+          elevation: 0.0,
+        ),
         onPressed: onRestore,
         child: Semantics(
           button: true,

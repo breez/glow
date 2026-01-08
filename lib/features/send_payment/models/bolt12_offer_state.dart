@@ -47,7 +47,11 @@ class Bolt12OfferReady extends Bolt12OfferState {
   final BigInt amountSats;
   final BigInt feeSats;
 
-  const Bolt12OfferReady({required this.prepareResponse, required this.amountSats, required this.feeSats});
+  const Bolt12OfferReady({
+    required this.prepareResponse,
+    required this.amountSats,
+    required this.feeSats,
+  });
 
   @override
   List<Object?> get props => <Object?>[prepareResponse, amountSats, feeSats];

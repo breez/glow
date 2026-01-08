@@ -59,7 +59,11 @@ class PaymentBottomNav extends StatelessWidget {
 
     // Show initial button if callback provided
     if (state.isInitial && onInitial != null) {
-      return BottomNavButton(stickToBottom: stickToBottom, text: initialLabel, onPressed: onInitial);
+      return BottomNavButton(
+        stickToBottom: stickToBottom,
+        text: initialLabel,
+        onPressed: onInitial,
+      );
     }
 
     // Hide button when preparing, or state is unknown

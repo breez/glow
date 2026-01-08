@@ -20,7 +20,8 @@ sealed class LnurlWithdrawState extends Equatable implements PaymentFlowState {
   @override
   bool get isError => this is LnurlWithdrawError;
   @override
-  String? get errorMessage => this is LnurlWithdrawError ? (this as LnurlWithdrawError).message : null;
+  String? get errorMessage =>
+      this is LnurlWithdrawError ? (this as LnurlWithdrawError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];
@@ -31,7 +32,10 @@ class LnurlWithdrawInitial extends LnurlWithdrawState {
   final BigInt minWithdrawableMsat;
   final BigInt maxWithdrawableMsat;
 
-  const LnurlWithdrawInitial({required this.minWithdrawableMsat, required this.maxWithdrawableMsat});
+  const LnurlWithdrawInitial({
+    required this.minWithdrawableMsat,
+    required this.maxWithdrawableMsat,
+  });
 
   @override
   List<Object?> get props => <Object?>[minWithdrawableMsat, maxWithdrawableMsat];

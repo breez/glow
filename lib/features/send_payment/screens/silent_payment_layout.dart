@@ -86,7 +86,10 @@ class _BodyContent extends StatelessWidget {
             )
           // Error display
           else if (state is SilentPaymentError)
-            ErrorCard(title: 'Failed to prepare payment', message: (state as SilentPaymentError).message),
+            ErrorCard(
+              title: 'Failed to prepare payment',
+              message: (state as SilentPaymentError).message,
+            ),
         ],
       ),
     );
@@ -107,11 +110,18 @@ class AddressDetailsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Address Details', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            'Address Details',
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 16),
 
           // Silent Payment Address
-          _DetailRow(label: 'Silent Address', value: _formatAddress(addressDetails.address), monospace: true),
+          _DetailRow(
+            label: 'Silent Address',
+            value: _formatAddress(addressDetails.address),
+            monospace: true,
+          ),
           const SizedBox(height: 12),
 
           // Network
@@ -144,7 +154,11 @@ class AddressDetailsCard extends StatelessWidget {
             ),
             child: Row(
               children: <Widget>[
-                Icon(Icons.privacy_tip_outlined, size: 20, color: Theme.of(context).colorScheme.primary),
+                Icon(
+                  Icons.privacy_tip_outlined,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -188,7 +202,9 @@ class _DetailRow extends StatelessWidget {
       children: <Widget>[
         Text(
           label,
-          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.7)),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
         ),
         const SizedBox(width: 16),
         Flexible(

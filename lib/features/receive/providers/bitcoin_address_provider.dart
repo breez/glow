@@ -35,7 +35,11 @@ bitcoinAddressProvider = FutureProvider.autoDispose<BitcoinAddressData?>((Ref re
         log.d(
           'Successfully parsed Bitcoin address: ${details.address}, network: ${details.network}, source: ${details.source}',
         );
-        return BitcoinAddressData(address: details.address, network: details.network, source: details.source);
+        return BitcoinAddressData(
+          address: details.address,
+          network: details.network,
+          source: details.source,
+        );
       },
       orElse: () {
         // Fallback: create data without parsing
@@ -90,7 +94,11 @@ generateBitcoinAddressProvider = FutureProvider.autoDispose.family<BitcoinAddres
           'Parsed generated address: ${details.address}, network: ${details.network}, source: ${details.source}',
         );
 
-        return BitcoinAddressData(address: details.address, network: details.network, source: details.source);
+        return BitcoinAddressData(
+          address: details.address,
+          network: details.network,
+          source: details.source,
+        );
       },
       orElse: () {
         log.w('Failed to parse generated address, using fallback');
@@ -116,9 +124,11 @@ generateBitcoinAddressProvider = FutureProvider.autoDispose.family<BitcoinAddres
 /// Provider for Bitcoin address with amount (BIP21 URI)
 /// Currently, the SDK has TODO for supporting amount in BitcoinAddress method
 /// So we get the base address and create the BIP21 URI manually
-final FutureProviderFamily<BitcoinBip21Data?, BigInt> bitcoinAddressWithAmountProvider = FutureProvider
-    .autoDispose
-    .family<BitcoinBip21Data?, BigInt>((Ref ref, BigInt amountSats) async {
+final FutureProviderFamily<BitcoinBip21Data?, BigInt> bitcoinAddressWithAmountProvider =
+    FutureProvider.autoDispose.family<BitcoinBip21Data?, BigInt>((
+      Ref ref,
+      BigInt amountSats,
+    ) async {
       log.d('Creating BIP21 URI with amount: $amountSats sats');
 
       // First get the base address
@@ -148,24 +158,27 @@ final FutureProviderFamily<BitcoinBip21Data?, BigInt> bitcoinAddressWithAmountPr
 
 /// Provider for creating BIP21 URI from parameters
 /// This is a synchronous provider since we're just building a string
-final ProviderFamily<String, Bip21UriParams> bip21UriProvider = Provider.family<String, Bip21UriParams>((
-  Ref ref,
-  Bip21UriParams params,
-) {
-  log.d('bip21UriProvider called with params: $params');
-  final String uri = _createBip21Uri(
-    address: params.address,
-    amountSats: params.amountSats,
-    label: params.label,
-    message: params.message,
-  );
-  log.d('Generated BIP21 URI: $uri');
-  return uri;
-});
+final ProviderFamily<String, Bip21UriParams> bip21UriProvider =
+    Provider.family<String, Bip21UriParams>((Ref ref, Bip21UriParams params) {
+      log.d('bip21UriProvider called with params: $params');
+      final String uri = _createBip21Uri(
+        address: params.address,
+        amountSats: params.amountSats,
+        label: params.label,
+        message: params.message,
+      );
+      log.d('Generated BIP21 URI: $uri');
+      return uri;
+    });
 
 /// Helper: Create BIP21 URI
 /// Format: bitcoin:ADDRESS?amount=0.00000000&label=LABEL&message=MESSAGE
-String _createBip21Uri({required String address, BigInt? amountSats, String? label, String? message}) {
+String _createBip21Uri({
+  required String address,
+  BigInt? amountSats,
+  String? label,
+  String? message,
+}) {
   final StringBuffer buffer = StringBuffer('bitcoin:$address');
   final List<String> queryParams = <String>[];
 

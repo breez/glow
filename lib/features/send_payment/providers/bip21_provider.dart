@@ -10,9 +10,8 @@ final Logger _log = AppLogger.getLogger('Bip21Notifier');
 /// Provider for BIP21 unified payment state
 ///
 /// This provider manages the state for BIP21 payments with multiple payment methods
-final NotifierProviderFamily<Bip21Notifier, Bip21State, Bip21Details> bip21Provider = NotifierProvider
-    .autoDispose
-    .family<Bip21Notifier, Bip21State, Bip21Details>(Bip21Notifier.new);
+final NotifierProviderFamily<Bip21Notifier, Bip21State, Bip21Details> bip21Provider =
+    NotifierProvider.autoDispose.family<Bip21Notifier, Bip21State, Bip21Details>(Bip21Notifier.new);
 
 /// Notifier for BIP21 payment flow
 class Bip21Notifier extends Notifier<Bip21State> {

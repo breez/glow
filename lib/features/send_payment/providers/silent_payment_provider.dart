@@ -52,15 +52,20 @@ class SilentPaymentNotifier extends Notifier<SilentPaymentState> {
           return feeQuote.speedMedium.userFeeSat + feeQuote.speedMedium.l1BroadcastFeeSat;
         },
         bolt11Invoice:
-            (Bolt11InvoiceDetails invoiceDetails, BigInt? sparkTransferFeeSats, BigInt lightningFeeSats) {
+            (
+              Bolt11InvoiceDetails invoiceDetails,
+              BigInt? sparkTransferFeeSats,
+              BigInt lightningFeeSats,
+            ) {
               return (sparkTransferFeeSats ?? BigInt.zero) + lightningFeeSats;
             },
         sparkAddress: (String address, BigInt fee, String? tokenIdentifier) {
           return fee;
         },
-        sparkInvoice: (SparkInvoiceDetails sparkInvoiceDetails, BigInt fee, String? tokenIdentifier) {
-          return fee;
-        },
+        sparkInvoice:
+            (SparkInvoiceDetails sparkInvoiceDetails, BigInt fee, String? tokenIdentifier) {
+              return fee;
+            },
       );
 
       _log.i('Payment prepared - Amount: ${response.amount} sats, Fee: $feeSats sats');
@@ -75,7 +80,11 @@ class SilentPaymentNotifier extends Notifier<SilentPaymentState> {
         );
       }
 
-      state = SilentPaymentReady(prepareResponse: response, amountSats: response.amount, feeSats: feeSats);
+      state = SilentPaymentReady(
+        prepareResponse: response,
+        amountSats: response.amount,
+        feeSats: feeSats,
+      );
     } catch (e) {
       _log.e('Failed to prepare payment: $e');
       final PaymentService paymentService = ref.read(paymentServiceProvider);

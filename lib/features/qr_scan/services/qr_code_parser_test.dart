@@ -48,8 +48,13 @@ void main() {
     test('returns first valid code from multiple barcodes', () {
       final Barcode barcode1 = const Barcode(format: BarcodeFormat.qrCode);
       final Barcode barcode2 = const Barcode(rawValue: 'valid-code', format: BarcodeFormat.qrCode);
-      final Barcode barcode3 = const Barcode(rawValue: 'another-code', format: BarcodeFormat.qrCode);
-      final BarcodeCapture capture = BarcodeCapture(barcodes: <Barcode>[barcode1, barcode2, barcode3]);
+      final Barcode barcode3 = const Barcode(
+        rawValue: 'another-code',
+        format: BarcodeFormat.qrCode,
+      );
+      final BarcodeCapture capture = BarcodeCapture(
+        barcodes: <Barcode>[barcode1, barcode2, barcode3],
+      );
 
       final String? code = parser.extractCode(capture);
 

@@ -16,7 +16,9 @@ class TransactionFormatter {
 
   static final DateFormat _monthDateFormat = DateFormat.Md(Platform.localeName);
   static final DateFormat _yearMonthDayFormat = DateFormat.yMd(Platform.localeName);
-  static final DateFormat _yearMonthDayHourMinuteFormat = DateFormat.yMd(Platform.localeName).add_jm();
+  static final DateFormat _yearMonthDayHourMinuteFormat = DateFormat.yMd(
+    Platform.localeName,
+  ).add_jm();
   static final DateFormat _hourMinuteDayFormat = DateFormat.jm(Platform.localeName);
 
   // Bitcoin conversion constants

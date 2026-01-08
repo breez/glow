@@ -46,9 +46,10 @@ class LightningAddressManuallyDeletedNotifier extends Notifier<bool> {
 }
 
 final NotifierProvider<LightningAddressManuallyDeletedNotifier, bool>
-lightningAddressManuallyDeletedProvider = NotifierProvider<LightningAddressManuallyDeletedNotifier, bool>(
-  LightningAddressManuallyDeletedNotifier.new,
-);
+lightningAddressManuallyDeletedProvider =
+    NotifierProvider<LightningAddressManuallyDeletedNotifier, bool>(
+      LightningAddressManuallyDeletedNotifier.new,
+    );
 
 /// Connected SDK instance - auto-reconnects on wallet/network changes
 final FutureProvider<BreezSdk> sdkProvider = FutureProvider<BreezSdk>((Ref ref) async {
@@ -76,7 +77,10 @@ final FutureProvider<BreezSdk> sdkProvider = FutureProvider<BreezSdk>((Ref ref) 
 
   // Create config with app settings and user preferences
   final ConfigService configService = ref.read(configServiceProvider);
-  final Config config = configService.createConfig(network: network, maxDepositClaimFee: maxDepositClaimFee);
+  final Config config = configService.createConfig(
+    network: network,
+    maxDepositClaimFee: maxDepositClaimFee,
+  );
 
   final BreezSdkService service = ref.read(breezSdkServiceProvider);
   return await service.connect(walletId: walletId, mnemonic: mnemonic, config: config);
@@ -164,7 +168,8 @@ final Provider<AsyncValue<BigInt>> balanceProvider = Provider<AsyncValue<BigInt>
 });
 
 /// Lightning address - with optional auto-registration
-final FutureProviderFamily<LightningAddressInfo?, bool> lightningAddressProvider = FutureProvider.autoDispose
+final FutureProviderFamily<LightningAddressInfo?, bool> lightningAddressProvider = FutureProvider
+    .autoDispose
     .family<LightningAddressInfo?, bool>((Ref ref, bool autoRegister) async {
       log.d('lightningAddressProvider called, autoRegister=$autoRegister');
       final BreezSdk sdk = await ref.watch(sdkProvider.future);
@@ -248,25 +253,26 @@ final Provider<void> sdkEventListenerProvider = Provider<void>((Ref ref) {
 });
 
 /// Provider to list unclaimed deposits
-final FutureProvider<List<DepositInfo>> unclaimedDepositsProvider = FutureProvider<List<DepositInfo>>((
-  Ref ref,
-) async {
-  final BreezSdk sdk = await ref.watch(sdkProvider.future);
-  final BreezSdkService service = ref.read(breezSdkServiceProvider);
+final FutureProvider<List<DepositInfo>> unclaimedDepositsProvider =
+    FutureProvider<List<DepositInfo>>((Ref ref) async {
+      final BreezSdk sdk = await ref.watch(sdkProvider.future);
+      final BreezSdkService service = ref.read(breezSdkServiceProvider);
 
-  // Watch the event stream to know when to refresh
-  // This creates a dependency on the stream but doesn't create circular invalidation
-  ref.watch(sdkEventsStreamProvider);
+      // Watch the event stream to know when to refresh
+      // This creates a dependency on the stream but doesn't create circular invalidation
+      ref.watch(sdkEventsStreamProvider);
 
-  final List<DepositInfo> deposits = await service.listUnclaimedDeposits(sdk);
-  if (deposits.isNotEmpty) {
-    log.d('Unclaimed deposits: ${deposits.length}');
-  }
-  return deposits;
-});
+      final List<DepositInfo> deposits = await service.listUnclaimedDeposits(sdk);
+      if (deposits.isNotEmpty) {
+        log.d('Unclaimed deposits: ${deposits.length}');
+      }
+      return deposits;
+    });
 
 /// Check if there are any unclaimed deposits that need attention
-final Provider<AsyncValue<bool>> hasUnclaimedDepositsProvider = Provider<AsyncValue<bool>>((Ref ref) {
+final Provider<AsyncValue<bool>> hasUnclaimedDepositsProvider = Provider<AsyncValue<bool>>((
+  Ref ref,
+) {
   return ref.watch(unclaimedDepositsProvider).whenData((List<DepositInfo> deposits) {
     final bool hasUnclaimed = deposits.isNotEmpty;
     if (hasUnclaimed) {
@@ -277,8 +283,12 @@ final Provider<AsyncValue<bool>> hasUnclaimedDepositsProvider = Provider<AsyncVa
 });
 
 /// Get count of unclaimed deposits for UI display
-final Provider<AsyncValue<int>> unclaimedDepositsCountProvider = Provider<AsyncValue<int>>((Ref ref) {
-  return ref.watch(unclaimedDepositsProvider).whenData((List<DepositInfo> deposits) => deposits.length);
+final Provider<AsyncValue<int>> unclaimedDepositsCountProvider = Provider<AsyncValue<int>>((
+  Ref ref,
+) {
+  return ref
+      .watch(unclaimedDepositsProvider)
+      .whenData((List<DepositInfo> deposits) => deposits.length);
 });
 
 /// Provider that ensures SDK is connected and initial data is loaded before showing HomeScreen
@@ -336,7 +346,10 @@ class HasSyncedNotifier extends Notifier<bool> {
     await ref.read(sdkProvider.future);
     log.d('HasSyncedNotifier: SDK connected, now waiting for first sync...');
 
-    ref.listen(sdkEventsStreamProvider, (AsyncValue<SdkEvent>? previous, AsyncValue<SdkEvent> next) {
+    ref.listen(sdkEventsStreamProvider, (
+      AsyncValue<SdkEvent>? previous,
+      AsyncValue<SdkEvent> next,
+    ) {
       (next as AsyncValue<SdkEvent>?)?.whenData((SdkEvent event) async {
         if (event is SdkEvent_Synced) {
           final WalletMetadata? wallet = ref.read(activeWalletProvider).value;
@@ -362,11 +375,10 @@ class HasSyncedNotifier extends Notifier<bool> {
   }
 }
 
-final NotifierProvider<HasSyncedNotifier, bool> hasSyncedProvider = NotifierProvider<HasSyncedNotifier, bool>(
-  () {
-    return HasSyncedNotifier();
-  },
-);
+final NotifierProvider<HasSyncedNotifier, bool> hasSyncedProvider =
+    NotifierProvider<HasSyncedNotifier, bool>(() {
+      return HasSyncedNotifier();
+    });
 
 /// Whether to wait for initial sync before showing balance/payments
 /// Returns true if this is the first run and we should wait for sync

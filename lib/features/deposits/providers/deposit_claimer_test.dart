@@ -79,7 +79,9 @@ void main() {
       expect(claimer.formatError(error), 'Transaction output not found on chain');
     });
     test('generic error', () {
-      final DepositClaimError error = const DepositClaimError.generic(message: 'Custom error message');
+      final DepositClaimError error = const DepositClaimError.generic(
+        message: 'Custom error message',
+      );
       expect(claimer.formatError(error), 'Custom error message');
     });
   });

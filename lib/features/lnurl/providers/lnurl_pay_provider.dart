@@ -12,10 +12,9 @@ final Logger _log = AppLogger.getLogger('LnurlPayNotifier');
 /// Provider for LNURL-Pay and Lightning Address payment state
 ///
 /// This provider manages the state for sending an LNURL-Pay payment
-final NotifierProviderFamily<LnurlPayNotifier, LnurlPayState, LnurlPayRequestDetails> lnurlPayProvider =
-    NotifierProvider.autoDispose.family<LnurlPayNotifier, LnurlPayState, LnurlPayRequestDetails>(
-      LnurlPayNotifier.new,
-    );
+final NotifierProviderFamily<LnurlPayNotifier, LnurlPayState, LnurlPayRequestDetails>
+lnurlPayProvider = NotifierProvider.autoDispose
+    .family<LnurlPayNotifier, LnurlPayState, LnurlPayRequestDetails>(LnurlPayNotifier.new);
 
 /// Notifier for LNURL-Pay and Lightning Address payment flow
 class LnurlPayNotifier extends Notifier<LnurlPayState> {
@@ -64,7 +63,9 @@ class LnurlPayNotifier extends Notifier<LnurlPayState> {
         validateSuccessActionUrl: true,
       );
 
-      _log.i('LNURL-Pay prepared - Amount: ${response.amountSats} sats, Fee: ${response.feeSats} sats');
+      _log.i(
+        'LNURL-Pay prepared - Amount: ${response.amountSats} sats, Fee: ${response.feeSats} sats',
+      );
 
       // Validate balance after calculating fees
       final AsyncValue<BigInt> balanceAsync = ref.read(balanceProvider);
@@ -85,7 +86,10 @@ class LnurlPayNotifier extends Notifier<LnurlPayState> {
     } catch (e) {
       _log.e('Failed to prepare LNURL-Pay: $e');
       final PaymentService paymentService = ref.read(paymentServiceProvider);
-      state = LnurlPayError(message: paymentService.extractErrorMessage(e), technicalDetails: e.toString());
+      state = LnurlPayError(
+        message: paymentService.extractErrorMessage(e),
+        technicalDetails: e.toString(),
+      );
     }
   }
 
@@ -113,14 +117,20 @@ class LnurlPayNotifier extends Notifier<LnurlPayState> {
 
       _log.i('LNURL-Pay sent successfully - ID: ${payment.id}');
 
-      state = LnurlPaySuccess(payment: payment, successAction: currentState.prepareResponse.successAction);
+      state = LnurlPaySuccess(
+        payment: payment,
+        successAction: currentState.prepareResponse.successAction,
+      );
 
       // Refresh payments list
       ref.invalidate(paymentsProvider);
     } catch (e) {
       _log.e('Failed to send LNURL-Pay: $e');
       final PaymentService paymentService = ref.read(paymentServiceProvider);
-      state = LnurlPayError(message: paymentService.extractErrorMessage(e), technicalDetails: e.toString());
+      state = LnurlPayError(
+        message: paymentService.extractErrorMessage(e),
+        technicalDetails: e.toString(),
+      );
     }
   }
 

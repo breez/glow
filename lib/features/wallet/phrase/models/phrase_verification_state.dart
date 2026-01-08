@@ -31,7 +31,10 @@ class PhraseVerificationState extends Equatable {
   });
 
   /// Factory constructor for initial state
-  factory PhraseVerificationState.initial({required WalletMetadata wallet, required String mnemonic}) {
+  factory PhraseVerificationState.initial({
+    required WalletMetadata wallet,
+    required String mnemonic,
+  }) {
     // If backup phrase is already verified, go directly to complete step
     if (wallet.isVerified) {
       return PhraseVerificationState(

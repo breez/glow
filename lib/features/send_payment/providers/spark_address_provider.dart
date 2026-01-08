@@ -26,7 +26,9 @@ class SparkAddressPaymentDetails {
 /// For Spark addresses, the amount must be set in the request.
 final NotifierProviderFamily<SparkAddressNotifier, SparkAddressState, SparkAddressPaymentDetails>
 sparkAddressProvider = NotifierProvider.autoDispose
-    .family<SparkAddressNotifier, SparkAddressState, SparkAddressPaymentDetails>(SparkAddressNotifier.new);
+    .family<SparkAddressNotifier, SparkAddressState, SparkAddressPaymentDetails>(
+      SparkAddressNotifier.new,
+    );
 
 /// Notifier for Spark Address payment flow
 class SparkAddressNotifier extends Notifier<SparkAddressState> {

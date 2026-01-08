@@ -18,7 +18,9 @@ class RestoreNotifier extends Notifier<RestoreState> with LoggerMixin {
       return;
     }
 
-    final (bool isValid, String? error) = ref.read(mnemonicServiceProvider).validateMnemonic(mnemonic);
+    final (bool isValid, String? error) = ref
+        .read(mnemonicServiceProvider)
+        .validateMnemonic(mnemonic);
     state = state.copyWith(mnemonicError: isValid ? null : error);
   }
 

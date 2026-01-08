@@ -41,9 +41,7 @@ class InputHandler {
         },
         error: (String message) {
           _log.e('Failed to parse input: $message');
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Invalid payment info: $message'),
               padding: kHomeScreenSnackBarPadding,
@@ -116,9 +114,7 @@ class InputHandler {
       },
       url: (_) {
         _log.w('URL input type not supported');
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('URL payments are not supported'),
             padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0),
@@ -195,9 +191,7 @@ class InputHandler {
       },
       url: (_) {
         _log.w('URL input type not supported');
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('URL payments are not supported'),
             padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0),

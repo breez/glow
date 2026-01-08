@@ -118,12 +118,20 @@ class _BalanceContentView extends StatelessWidget {
             onPressed: onBalanceTap,
             child: RichText(
               text: TextSpan(
-                style: TextStyle(fontSize: balanceFontSize, fontWeight: FontWeight.w600, height: 1.56),
+                style: TextStyle(
+                  fontSize: balanceFontSize,
+                  fontWeight: FontWeight.w600,
+                  height: 1.56,
+                ),
                 text: state.formattedBalance,
                 children: <InlineSpan>[
                   TextSpan(
                     text: ' sats',
-                    style: TextStyle(fontSize: labelFontSize, fontWeight: FontWeight.w600, height: 1.52),
+                    style: TextStyle(
+                      fontSize: labelFontSize,
+                      fontWeight: FontWeight.w600,
+                      height: 1.52,
+                    ),
                   ),
                 ],
               ),

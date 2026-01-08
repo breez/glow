@@ -5,7 +5,11 @@ class NetworkBottomSheet extends StatelessWidget {
   final Network currentNetwork;
   final Function(Network) onNetworkChanged;
 
-  const NetworkBottomSheet({required this.currentNetwork, required this.onNetworkChanged, super.key});
+  const NetworkBottomSheet({
+    required this.currentNetwork,
+    required this.onNetworkChanged,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +45,9 @@ class NetworkBottomSheet extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Switch between mainnet and regtest',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
 
                 const SizedBox(height: 24),

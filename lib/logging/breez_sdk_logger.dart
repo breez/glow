@@ -30,15 +30,15 @@ class BreezSdkLogger {
   }
 
   static void _logEntry(LogEntry entry, Logger log) {
-    final void Function(dynamic message, {Object? error, StackTrace? stackTrace, DateTime? time}) logFn =
-        switch (entry.level) {
-          'ERROR' => log.e,
-          'WARN' => log.w,
-          'INFO' => log.i,
-          'DEBUG' => log.d,
-          'TRACE' => log.t,
-          _ => log.i,
-        };
+    final void Function(dynamic message, {Object? error, StackTrace? stackTrace, DateTime? time})
+    logFn = switch (entry.level) {
+      'ERROR' => log.e,
+      'WARN' => log.w,
+      'INFO' => log.i,
+      'DEBUG' => log.d,
+      'TRACE' => log.t,
+      _ => log.i,
+    };
     logFn(entry.line);
   }
 }

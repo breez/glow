@@ -181,7 +181,9 @@ void main() {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: cardDataAsync(const AsyncValue<List<DepositInfo>>.data(<DepositInfo>[])),
+              depositsAsync: cardDataAsync(
+                const AsyncValue<List<DepositInfo>>.data(<DepositInfo>[]),
+              ),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -270,7 +272,10 @@ void main() {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: AsyncValue<List<DepositCardData>>.error(Exception('Error'), StackTrace.empty),
+              depositsAsync: AsyncValue<List<DepositCardData>>.error(
+                Exception('Error'),
+                StackTrace.empty,
+              ),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -299,7 +304,10 @@ void main() {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: AsyncValue<List<DepositCardData>>.error(Exception('Error'), StackTrace.empty),
+              depositsAsync: AsyncValue<List<DepositCardData>>.error(
+                Exception('Error'),
+                StackTrace.empty,
+              ),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -541,7 +549,10 @@ void main() {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: AsyncValue<List<DepositCardData>>.error(Exception('Error'), StackTrace.empty),
+              depositsAsync: AsyncValue<List<DepositCardData>>.error(
+                Exception('Error'),
+                StackTrace.empty,
+              ),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -650,7 +661,10 @@ void main() {
         await tester.pumpWidget(
           makeTestable(
             UnclaimedDepositsLayout(
-              depositsAsync: const AsyncValue<List<DepositCardData>>.error('String error', StackTrace.empty),
+              depositsAsync: const AsyncValue<List<DepositCardData>>.error(
+                'String error',
+                StackTrace.empty,
+              ),
               onRetryClaim: (_) async {},
               onShowRefundInfo: (_) {},
               onCopyTxid: (_) {},
@@ -717,7 +731,8 @@ AsyncValue<List<DepositCardData>> cardDataAsync(AsyncValue<List<DepositInfo>> de
       }).toList();
       return AsyncData<List<DepositCardData>>(cardDataList);
     },
-    loading: (AsyncLoading<List<DepositInfo>> loading) => const AsyncLoading<List<DepositCardData>>(),
+    loading: (AsyncLoading<List<DepositInfo>> loading) =>
+        const AsyncLoading<List<DepositCardData>>(),
     error: (AsyncError<List<DepositInfo>> error) =>
         AsyncError<List<DepositCardData>>(error.error, error.stackTrace),
   );

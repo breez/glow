@@ -172,7 +172,9 @@ class _BodyContent extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColorLight.withValues(alpha: .1),
-                      border: Border.all(color: Theme.of(context).primaryColorLight.withValues(alpha: .7)),
+                      border: Border.all(
+                        color: Theme.of(context).primaryColorLight.withValues(alpha: .7),
+                      ),
                       borderRadius: const BorderRadius.all(Radius.circular(4.0)),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -209,7 +211,10 @@ class _BodyContent extends StatelessWidget {
             )
           // Error display
           else if (state is BitcoinAddressError)
-            ErrorCard(title: 'Failed to prepare payment', message: (state as BitcoinAddressError).message),
+            ErrorCard(
+              title: 'Failed to prepare payment',
+              message: (state as BitcoinAddressError).message,
+            ),
         ],
       ),
     );
@@ -234,7 +239,8 @@ class _FeeSelectionView extends StatelessWidget {
   Widget build(BuildContext context) {
     // Use provided affordability or default to all enabled
     final Map<FeeSpeed, bool> feeAffordability =
-        affordability ?? <FeeSpeed, bool>{FeeSpeed.slow: true, FeeSpeed.medium: true, FeeSpeed.fast: true};
+        affordability ??
+        <FeeSpeed, bool>{FeeSpeed.slow: true, FeeSpeed.medium: true, FeeSpeed.fast: true};
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,7 +370,10 @@ class _FeeSpeedTab extends StatelessWidget {
 
     switch (position) {
       case _TabPosition.left:
-        borderRadius = const BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5));
+        borderRadius = const BorderRadius.only(
+          topLeft: Radius.circular(5),
+          bottomLeft: Radius.circular(5),
+        );
         // Left tab: top, left, bottom borders (no right border to avoid doubling)
         border = Border.all(color: borderColor);
         break;
@@ -377,7 +386,10 @@ class _FeeSpeedTab extends StatelessWidget {
         );
         break;
       case _TabPosition.right:
-        borderRadius = const BorderRadius.only(topRight: Radius.circular(5), bottomRight: Radius.circular(5));
+        borderRadius = const BorderRadius.only(
+          topRight: Radius.circular(5),
+          bottomRight: Radius.circular(5),
+        );
         // Right tab: all borders
         border = Border.all(color: borderColor);
         break;
@@ -389,7 +401,9 @@ class _FeeSpeedTab extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isEnabled ? (isSelected ? Theme.of(context).primaryColor : Colors.transparent) : Colors.grey,
+          color: isEnabled
+              ? (isSelected ? Theme.of(context).primaryColor : Colors.transparent)
+              : Colors.grey,
           border: border,
           borderRadius: borderRadius,
         ),
@@ -454,7 +468,10 @@ class _PaymentBreakdownCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    const Text('Transaction fee:', style: TextStyle(color: Colors.white60, fontSize: 18.0)),
+                    const Text(
+                      'Transaction fee:',
+                      style: TextStyle(color: Colors.white60, fontSize: 18.0),
+                    ),
                     Text(
                       '-${formatSats(feeSats)} sats',
                       style: TextStyle(
@@ -469,7 +486,10 @@ class _PaymentBreakdownCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    const Text('To receive:', style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                    const Text(
+                      'To receive:',
+                      style: TextStyle(color: Colors.white, fontSize: 18.0),
+                    ),
                     Text(
                       '${formatSats(recipientReceives)} sats (\$${_formatUSD(recipientReceives)})',
                       style: TextStyle(

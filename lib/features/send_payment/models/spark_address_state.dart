@@ -20,7 +20,8 @@ sealed class SparkAddressState extends Equatable implements PaymentFlowState {
   @override
   bool get isError => this is SparkAddressError;
   @override
-  String? get errorMessage => this is SparkAddressError ? (this as SparkAddressError).message : null;
+  String? get errorMessage =>
+      this is SparkAddressError ? (this as SparkAddressError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];

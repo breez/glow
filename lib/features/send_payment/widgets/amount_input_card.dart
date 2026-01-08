@@ -182,7 +182,11 @@ class _PaymentLimitsHelper extends StatelessWidget {
   final BigInt? maxAmount;
   final void Function(BigInt amountSat) onTap;
 
-  const _PaymentLimitsHelper({required this.minAmount, required this.maxAmount, required this.onTap});
+  const _PaymentLimitsHelper({
+    required this.minAmount,
+    required this.maxAmount,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

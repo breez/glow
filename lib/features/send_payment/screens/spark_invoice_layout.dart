@@ -70,8 +70,10 @@ class _SparkInvoiceLayoutState extends ConsumerState<SparkInvoiceLayout> {
     final Network currentNetwork = ref.watch(networkProvider);
     // Check if networks match - SDK Network vs BitcoinNetwork
     final bool networkMismatch =
-        (currentNetwork == Network.mainnet && widget.invoiceDetails.network != BitcoinNetwork.bitcoin) ||
-        (currentNetwork != Network.mainnet && widget.invoiceDetails.network == BitcoinNetwork.bitcoin);
+        (currentNetwork == Network.mainnet &&
+            widget.invoiceDetails.network != BitcoinNetwork.bitcoin) ||
+        (currentNetwork != Network.mainnet &&
+            widget.invoiceDetails.network == BitcoinNetwork.bitcoin);
 
     return Scaffold(
       appBar: AppBar(
@@ -137,7 +139,10 @@ class _BodyContent extends StatelessWidget {
     if (networkMismatch) {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
-        child: NetworkMismatchError(currentNetwork: currentNetwork, addressNetwork: invoiceDetails.network),
+        child: NetworkMismatchError(
+          currentNetwork: currentNetwork,
+          addressNetwork: invoiceDetails.network,
+        ),
       );
     }
 
@@ -185,7 +190,10 @@ class _BodyContent extends StatelessWidget {
             )
           // Error display
           else if (state is SparkInvoiceError)
-            ErrorCard(title: 'Failed to prepare payment', message: (state as SparkInvoiceError).message),
+            ErrorCard(
+              title: 'Failed to prepare payment',
+              message: (state as SparkInvoiceError).message,
+            ),
         ],
       ),
     );

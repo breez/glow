@@ -16,9 +16,9 @@ class WalletCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Manage your wallets',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 16),
             SizedBox(

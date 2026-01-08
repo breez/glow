@@ -41,7 +41,10 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
     log.d('PinLockScreen building with state: ${state.runtimeType}');
 
     // Handle successful unlock
-    ref.listen<PinSetupState>(pinSetupNotifierProvider, (PinSetupState? previous, PinSetupState current) {
+    ref.listen<PinSetupState>(pinSetupNotifierProvider, (
+      PinSetupState? previous,
+      PinSetupState current,
+    ) {
       log.d('State changed to ${current.runtimeType}');
       if (current is PinSetupSuccess) {
         widget.onUnlocked?.call();
@@ -58,7 +61,8 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
         body: SafeArea(
           child: PinSetupLayout(
             state: state,
-            onPinEntered: (String pin) => ref.read(pinSetupNotifierProvider.notifier).onPinEntered(pin),
+            onPinEntered: (String pin) =>
+                ref.read(pinSetupNotifierProvider.notifier).onPinEntered(pin),
             onInputStarted: () => ref.read(pinSetupNotifierProvider.notifier).clearError(),
             label: 'Enter your PIN',
           ),

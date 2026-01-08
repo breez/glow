@@ -6,14 +6,20 @@ class NetworkMismatchError extends StatelessWidget {
   final Network currentNetwork;
   final BitcoinNetwork addressNetwork;
 
-  const NetworkMismatchError({required this.currentNetwork, required this.addressNetwork, super.key});
+  const NetworkMismatchError({
+    required this.currentNetwork,
+    required this.addressNetwork,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextTheme textTheme = Theme.of(context).textTheme;
     final String currentNetworkName = currentNetwork == Network.mainnet ? 'Mainnet' : 'Testnet';
-    final String addressNetworkName = addressNetwork == BitcoinNetwork.bitcoin ? 'Mainnet' : 'Testnet';
+    final String addressNetworkName = addressNetwork == BitcoinNetwork.bitcoin
+        ? 'Mainnet'
+        : 'Testnet';
 
     return CardWrapper(
       child: Column(

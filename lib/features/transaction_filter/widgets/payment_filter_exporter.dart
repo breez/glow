@@ -38,9 +38,7 @@ class PaymentFilterExporter extends ConsumerWidget {
 
       if (!filteredPaymentsAsync.hasValue) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Payment data not available'),
               padding: kHomeScreenSnackBarPadding,
@@ -84,10 +82,7 @@ class PaymentFilterExporter extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Export failed: $e'),
-            padding: kHomeScreenSnackBarPadding,
-          ),
+          SnackBar(content: Text('Export failed: $e'), padding: kHomeScreenSnackBarPadding),
         );
       }
     }

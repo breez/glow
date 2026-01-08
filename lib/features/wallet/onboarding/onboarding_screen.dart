@@ -27,7 +27,10 @@ class WalletSetupScreen extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to register wallet: $e'), duration: const Duration(seconds: 3)),
+          SnackBar(
+            content: Text('Failed to register wallet: $e'),
+            duration: const Duration(seconds: 3),
+          ),
         );
       }
     }

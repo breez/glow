@@ -25,7 +25,11 @@ class _PhraseInfoViewState extends State<PhraseInfoView> {
             children: <Widget>[
               const Expanded(
                 flex: 2,
-                child: Image(image: AssetImage('assets/image/phrase_info.png'), height: 100, width: 100),
+                child: Image(
+                  image: AssetImage('assets/image/phrase_info.png'),
+                  height: 100,
+                  width: 100,
+                ),
               ),
               ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 96),

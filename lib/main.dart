@@ -83,7 +83,9 @@ class MainApp extends ConsumerWidget {
         title: 'Glow',
         navigatorKey: appNavigatorKey,
         initialRoute: AppRoutes.homeScreen,
-        routes: <String, WidgetBuilder>{AppRoutes.homeScreen: (BuildContext context) => const _AppRouter()},
+        routes: <String, WidgetBuilder>{
+          AppRoutes.homeScreen: (BuildContext context) => const _AppRouter(),
+        },
         onGenerateRoute: AppRoutes.generateRoute,
         theme: themeData,
         darkTheme: themeData,
@@ -132,7 +134,11 @@ class _AppRouter extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                   const SizedBox(height: 16),
                   Text('Failed to load wallets', style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 8),
@@ -178,7 +184,11 @@ class _AppRouter extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Icon(Icons.error_outline_rounded, size: 64, color: Theme.of(context).colorScheme.error),
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                   const SizedBox(height: 16),
                   Text('Failed to load wallet', style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 8),
@@ -209,8 +219,9 @@ class _AppRouter extends ConsumerWidget {
 
       return sdkReady.when(
         data: (_) => const HomeScreen(),
-        loading: () =>
-            Container(color: Theme.of(context).appBarTheme.systemOverlayStyle?.systemNavigationBarColor),
+        loading: () => Container(
+          color: Theme.of(context).appBarTheme.systemOverlayStyle?.systemNavigationBarColor,
+        ),
         error: (Object error, StackTrace stack) => const HomeScreen(),
       );
     }

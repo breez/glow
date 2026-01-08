@@ -17,7 +17,9 @@ class LightningReceiveView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<LightningAddressInfo?> lightningAddress = ref.watch(lightningAddressProvider(true));
+    final AsyncValue<LightningAddressInfo?> lightningAddress = ref.watch(
+      lightningAddressProvider(true),
+    );
     final AsyncValue<BreezSdk> sdkAsync = ref.watch(sdkProvider);
 
     return lightningAddress.when(
@@ -36,7 +38,8 @@ class LightningReceiveView extends ConsumerWidget {
               },
             ),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (Object err, _) => ErrorView(message: 'Failed to load Lightning Address', error: err.toString()),
+      error: (Object err, _) =>
+          ErrorView(message: 'Failed to load Lightning Address', error: err.toString()),
     );
   }
 }

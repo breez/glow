@@ -5,7 +5,11 @@ class MaxDepositClaimFeeCard extends StatelessWidget {
   final Fee currentFee;
   final VoidCallback onTapMaxFeeCard;
 
-  const MaxDepositClaimFeeCard({required this.currentFee, required this.onTapMaxFeeCard, super.key});
+  const MaxDepositClaimFeeCard({
+    required this.currentFee,
+    required this.onTapMaxFeeCard,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

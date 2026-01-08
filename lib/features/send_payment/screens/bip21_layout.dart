@@ -45,7 +45,11 @@ class Bip21Layout extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavButton(stickToBottom: true, text: 'CANCEL', onPressed: onCancel),
+      bottomNavigationBar: BottomNavButton(
+        stickToBottom: true,
+        text: 'CANCEL',
+        onPressed: onCancel,
+      ),
     );
   }
 }
@@ -64,7 +68,10 @@ class _Bip21DetailsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Payment Request', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            'Payment Request',
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 16),
 
           // Amount (if specified)
@@ -170,7 +177,10 @@ class _PaymentMethodTile extends StatelessWidget {
             Icon(methodIcon, color: colorScheme.primary),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(methodName, style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+              child: Text(
+                methodName,
+                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+              ),
             ),
             Icon(Icons.chevron_right, color: colorScheme.onSurface.withValues(alpha: 0.5)),
           ],
@@ -236,7 +246,9 @@ class _DetailRow extends StatelessWidget {
       children: <Widget>[
         Text(
           label,
-          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.7)),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
         ),
         const SizedBox(width: 16),
         Flexible(

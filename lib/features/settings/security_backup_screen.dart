@@ -50,9 +50,9 @@ class SecurityBackupScreen extends ConsumerWidget {
       // This ensures the UI updates without requiring PIN verification again
     } else {
       // Deactivate happened, show feedback
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('PIN deactivated'), backgroundColor: Colors.green));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('PIN deactivated'), backgroundColor: Colors.green),
+      );
     }
   }
 

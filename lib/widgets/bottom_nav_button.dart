@@ -46,7 +46,9 @@ class BottomNavButton extends StatelessWidget {
     return Padding(
       padding:
           padding ??
-          EdgeInsets.only(bottom: !stickToBottom ? MediaQuery.of(context).viewInsets.bottom + 40.0 : 40.0),
+          EdgeInsets.only(
+            bottom: !stickToBottom ? MediaQuery.of(context).viewInsets.bottom + 40.0 : 40.0,
+          ),
       child: Column(
         mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
         children: <Widget>[
@@ -57,7 +59,9 @@ class BottomNavButton extends StatelessWidget {
                 backgroundColor: backgroundColor ?? theme.primaryColorLight,
                 elevation: elevation ?? 0.0,
                 disabledBackgroundColor: disabledColor ?? theme.disabledColor,
-                shape: RoundedRectangleBorder(borderRadius: borderRadius ?? BorderRadius.circular(8.0)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: borderRadius ?? BorderRadius.circular(8.0),
+                ),
                 minimumSize: expand ? Size(screenWidth, 48) : null,
               ),
               onPressed: (enabled && !loading) ? onPressed : null,

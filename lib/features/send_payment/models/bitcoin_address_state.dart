@@ -23,7 +23,8 @@ sealed class BitcoinAddressState extends Equatable implements PaymentFlowState {
   @override
   bool get isError => this is BitcoinAddressError;
   @override
-  String? get errorMessage => this is BitcoinAddressError ? (this as BitcoinAddressError).message : null;
+  String? get errorMessage =>
+      this is BitcoinAddressError ? (this as BitcoinAddressError).message : null;
 
   @override
   List<Object?> get props => <Object?>[];

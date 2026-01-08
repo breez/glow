@@ -55,7 +55,9 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
     }
 
     try {
-      await ref.read(walletListProvider.notifier).updateWalletProfile(wallet.id, customName: newName);
+      await ref
+          .read(walletListProvider.notifier)
+          .updateWalletProfile(wallet.id, customName: newName);
       _cancelEditing();
       if (mounted) {
         _showSnackBar('Renamed to "$newName"', Colors.green);
@@ -159,7 +161,9 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
   }
 
   void _showSnackBar(String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
   @override
@@ -170,7 +174,9 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Wallets'),
-        actions: <Widget>[IconButton(icon: const Icon(Icons.add), onPressed: () => _showAddWalletSheet())],
+        actions: <Widget>[
+          IconButton(icon: const Icon(Icons.add), onPressed: () => _showAddWalletSheet()),
+        ],
       ),
       body: SafeArea(
         child: wallets.when(
@@ -246,7 +252,11 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
                         ),
                         child: const Text(
                           'ACTIVE',
-                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
                         ),
                       ),
                     ],
@@ -282,7 +292,11 @@ class _WalletListScreenState extends ConsumerState<WalletListScreen> with Logger
                     const PopupMenuItem<String>(
                       value: 'rename',
                       child: Row(
-                        children: <Widget>[Icon(Icons.edit, size: 20), SizedBox(width: 12), Text('Rename')],
+                        children: <Widget>[
+                          Icon(Icons.edit, size: 20),
+                          SizedBox(width: 12),
+                          Text('Rename'),
+                        ],
                       ),
                     ),
                     const PopupMenuItem<String>(

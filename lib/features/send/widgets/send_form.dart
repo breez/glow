@@ -33,7 +33,12 @@ class SendForm extends StatelessWidget {
           helperText: 'Paste or scan payee information',
           errorText: errorMessage.isNotEmpty ? errorMessage : null,
         ),
-        style: const TextStyle(fontSize: 18.0, color: Colors.white, letterSpacing: 0.15, height: 1.234),
+        style: const TextStyle(
+          fontSize: 18.0,
+          color: Colors.white,
+          letterSpacing: 0.15,
+          height: 1.234,
+        ),
         validator: (String? value) => errorMessage.isNotEmpty ? errorMessage : null,
         onFieldSubmitted: onSubmit,
       ),

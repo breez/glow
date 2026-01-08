@@ -20,9 +20,9 @@ class NetworkCard extends ConsumerWidget {
             const SizedBox(height: 8),
             Text(
               'Switch between mainnet and regtest',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -45,7 +45,9 @@ class NetworkCard extends ConsumerWidget {
                     child: Text(
                       'Mainnet',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: network == Network.mainnet ? Theme.of(context).colorScheme.onPrimary : null,
+                        color: network == Network.mainnet
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : null,
                       ),
                     ),
                   ),
@@ -69,7 +71,9 @@ class NetworkCard extends ConsumerWidget {
                     child: Text(
                       'Regtest',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: network == Network.regtest ? Theme.of(context).colorScheme.onPrimary : null,
+                        color: network == Network.regtest
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : null,
                       ),
                     ),
                   ),

@@ -18,28 +18,28 @@ class ReceiveNotifier extends Notifier<ReceiveState> {
   @override
   ReceiveState build() {
     // Listen to payment tracker state changes
-    ref.listen<PaymentTrackingState>(
-      paymentTrackerProvider,
-      (PaymentTrackingState? previous, PaymentTrackingState next) {
-        // Early exit if provider is already disposed
-        if (!ref.mounted) {
-          return;
-        }
+    ref.listen<PaymentTrackingState>(paymentTrackerProvider, (
+      PaymentTrackingState? previous,
+      PaymentTrackingState next,
+    ) {
+      // Early exit if provider is already disposed
+      if (!ref.mounted) {
+        return;
+      }
 
-        if (next is PaymentReceived) {
-          // Schedule state update after current build cycle to avoid lifecycle violation
-          Future<void>.microtask(() {
-            if (!ref.mounted) {
-              return;
-            }
-            state = state.copyWith(
-              flowStep: AmountInputFlowStep.paymentReceived,
-              amountSats: BigInt.from(next.payment.amount.toInt()),
-            );
-          });
-        }
-      },
-    );
+      if (next is PaymentReceived) {
+        // Schedule state update after current build cycle to avoid lifecycle violation
+        Future<void>.microtask(() {
+          if (!ref.mounted) {
+            return;
+          }
+          state = state.copyWith(
+            flowStep: AmountInputFlowStep.paymentReceived,
+            amountSats: BigInt.from(next.payment.amount.toInt()),
+          );
+        });
+      }
+    });
 
     // Schedule payment tracking to start after build completes
     Future<void>.microtask(() {
@@ -80,14 +80,21 @@ class ReceiveNotifier extends Notifier<ReceiveState> {
 
   /// Store amount and transition to payment display
   Future<void> generatePaymentRequest(BigInt amount, {String description = 'Payment'}) async {
-    state = state.copyWith(amountSats: amount, flowStep: AmountInputFlowStep.displayPayment, isLoading: true);
+    state = state.copyWith(
+      amountSats: amount,
+      flowStep: AmountInputFlowStep.displayPayment,
+      isLoading: true,
+    );
 
     try {
       if (state.method == ReceiveMethod.lightning) {
         final ReceivePaymentResponse response = await ref.watch(
           receivePaymentProvider(
             ReceivePaymentRequest(
-              paymentMethod: ReceivePaymentMethod.bolt11Invoice(description: description, amountSats: amount),
+              paymentMethod: ReceivePaymentMethod.bolt11Invoice(
+                description: description,
+                amountSats: amount,
+              ),
             ),
           ).future,
         );

@@ -12,10 +12,9 @@ final Logger _log = AppLogger.getLogger('Bolt12OfferNotifier');
 /// Provider for BOLT12 offer payment state
 ///
 /// This provider manages the state for sending a BOLT12 offer payment
-final NotifierProviderFamily<Bolt12OfferNotifier, Bolt12OfferState, Bolt12OfferDetails> bolt12OfferProvider =
-    NotifierProvider.autoDispose.family<Bolt12OfferNotifier, Bolt12OfferState, Bolt12OfferDetails>(
-      Bolt12OfferNotifier.new,
-    );
+final NotifierProviderFamily<Bolt12OfferNotifier, Bolt12OfferState, Bolt12OfferDetails>
+bolt12OfferProvider = NotifierProvider.autoDispose
+    .family<Bolt12OfferNotifier, Bolt12OfferState, Bolt12OfferDetails>(Bolt12OfferNotifier.new);
 
 /// Notifier for BOLT12 offer payment flow
 class Bolt12OfferNotifier extends Notifier<Bolt12OfferState> {
@@ -27,7 +26,8 @@ class Bolt12OfferNotifier extends Notifier<Bolt12OfferState> {
     // Start in initial state, waiting for amount input
     final BigInt? minAmountMsat = arg.minAmount?.when(
       bitcoin: (BigInt amountMsat) => amountMsat,
-      currency: (String iso4217Code, BigInt fractionalAmount) => null, // Don't support currency amounts
+      currency: (String iso4217Code, BigInt fractionalAmount) =>
+          null, // Don't support currency amounts
     );
 
     return Bolt12OfferInitial(minAmountMsat: minAmountMsat);
@@ -65,20 +65,29 @@ class Bolt12OfferNotifier extends Notifier<Bolt12OfferState> {
           return feeQuote.speedMedium.userFeeSat + feeQuote.speedMedium.l1BroadcastFeeSat;
         },
         bolt11Invoice:
-            (Bolt11InvoiceDetails invoiceDetails, BigInt? sparkTransferFeeSats, BigInt lightningFeeSats) {
+            (
+              Bolt11InvoiceDetails invoiceDetails,
+              BigInt? sparkTransferFeeSats,
+              BigInt lightningFeeSats,
+            ) {
               return (sparkTransferFeeSats ?? BigInt.zero) + lightningFeeSats;
             },
         sparkAddress: (String address, BigInt fee, String? tokenIdentifier) {
           return fee;
         },
-        sparkInvoice: (SparkInvoiceDetails sparkInvoiceDetails, BigInt fee, String? tokenIdentifier) {
-          return fee;
-        },
+        sparkInvoice:
+            (SparkInvoiceDetails sparkInvoiceDetails, BigInt fee, String? tokenIdentifier) {
+              return fee;
+            },
       );
 
       _log.i('Payment prepared - Amount: ${response.amount} sats, Fee: $feeSats sats');
 
-      state = Bolt12OfferReady(prepareResponse: response, amountSats: response.amount, feeSats: feeSats);
+      state = Bolt12OfferReady(
+        prepareResponse: response,
+        amountSats: response.amount,
+        feeSats: feeSats,
+      );
     } catch (e) {
       _log.e('Failed to prepare payment: $e');
       final PaymentService paymentService = ref.read(paymentServiceProvider);

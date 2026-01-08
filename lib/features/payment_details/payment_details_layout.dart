@@ -27,7 +27,8 @@ class PaymentDetailsLayout extends StatelessWidget {
             PaymentDetailRow(label: 'Type', value: state.formattedType),
             PaymentDetailRow(label: 'Method', value: state.formattedMethod),
 
-            if (state.shouldShowFees) PaymentDetailRow(label: 'Fee', value: '${state.formattedFees} sats'),
+            if (state.shouldShowFees)
+              PaymentDetailRow(label: 'Fee', value: '${state.formattedFees} sats'),
 
             PaymentDetailRow(label: 'Date', value: state.formattedDate),
 

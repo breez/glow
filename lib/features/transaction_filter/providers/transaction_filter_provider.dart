@@ -25,5 +25,7 @@ class TransactionFilterNotifier extends Notifier<TransactionFilterState> {
   }
 }
 
-final NotifierProvider<TransactionFilterNotifier, TransactionFilterState> transactionFilterProvider =
-    NotifierProvider<TransactionFilterNotifier, TransactionFilterState>(() => TransactionFilterNotifier());
+final NotifierProvider<TransactionFilterNotifier, TransactionFilterState>
+transactionFilterProvider = NotifierProvider<TransactionFilterNotifier, TransactionFilterState>(
+  () => TransactionFilterNotifier(),
+);

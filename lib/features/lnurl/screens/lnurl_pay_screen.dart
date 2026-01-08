@@ -48,7 +48,9 @@ class LnurlPayScreen extends ConsumerWidget {
       },
       onSendPayment: () => ref.read(lnurlPayProvider(payRequestDetails).notifier).sendPayment(),
       onRetry: (BigInt amount, String? comment) {
-        ref.read(lnurlPayProvider(payRequestDetails).notifier).retry(amountSats: amount, comment: comment);
+        ref
+            .read(lnurlPayProvider(payRequestDetails).notifier)
+            .retry(amountSats: amount, comment: comment);
       },
       onCancel: () => Navigator.of(context).pop(),
     );

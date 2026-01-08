@@ -43,8 +43,12 @@ class MnemonicService with LoggerMixin {
   }
 
   /// Normalize a mnemonic string
-  String normalizeMnemonic(String mnemonic) =>
-      mnemonic.trim().toLowerCase().split(RegExp(r'\s+')).where((String w) => w.isNotEmpty).join(' ');
+  String normalizeMnemonic(String mnemonic) => mnemonic
+      .trim()
+      .toLowerCase()
+      .split(RegExp(r'\s+'))
+      .where((String w) => w.isNotEmpty)
+      .join(' ');
 }
 
 final Provider<MnemonicService> mnemonicServiceProvider = Provider<MnemonicService>(

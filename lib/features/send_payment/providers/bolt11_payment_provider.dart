@@ -14,7 +14,9 @@ final Logger _log = AppLogger.getLogger('Bolt11PaymentNotifier');
 /// This provider manages the state for sending a BOLT11 payment
 final NotifierProviderFamily<Bolt11PaymentNotifier, Bolt11PaymentState, Bolt11InvoiceDetails>
 bolt11PaymentProvider = NotifierProvider.autoDispose
-    .family<Bolt11PaymentNotifier, Bolt11PaymentState, Bolt11InvoiceDetails>(Bolt11PaymentNotifier.new);
+    .family<Bolt11PaymentNotifier, Bolt11PaymentState, Bolt11InvoiceDetails>(
+      Bolt11PaymentNotifier.new,
+    );
 
 /// Notifier for BOLT11 invoice payment flow
 class Bolt11PaymentNotifier extends Notifier<Bolt11PaymentState> {
@@ -51,15 +53,20 @@ class Bolt11PaymentNotifier extends Notifier<Bolt11PaymentState> {
           return feeQuote.speedMedium.userFeeSat + feeQuote.speedMedium.l1BroadcastFeeSat;
         },
         bolt11Invoice:
-            (Bolt11InvoiceDetails invoiceDetails, BigInt? sparkTransferFeeSats, BigInt lightningFeeSats) {
+            (
+              Bolt11InvoiceDetails invoiceDetails,
+              BigInt? sparkTransferFeeSats,
+              BigInt lightningFeeSats,
+            ) {
               return (sparkTransferFeeSats ?? BigInt.zero) + lightningFeeSats;
             },
         sparkAddress: (String address, BigInt fee, String? tokenIdentifier) {
           return fee;
         },
-        sparkInvoice: (SparkInvoiceDetails sparkInvoiceDetails, BigInt fee, String? tokenIdentifier) {
-          return fee;
-        },
+        sparkInvoice:
+            (SparkInvoiceDetails sparkInvoiceDetails, BigInt fee, String? tokenIdentifier) {
+              return fee;
+            },
       );
 
       _log.i('Payment prepared - Amount: ${response.amount} sats, Fee: $feeSats sats');
