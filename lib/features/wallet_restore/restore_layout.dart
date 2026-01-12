@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glow/features/wallet/widgets/restore_phrase_grid.dart';
-import 'package:glow/widgets/warning_card.dart';
+import 'package:glow/widgets/warning_box.dart';
 import 'package:glow/widgets/bottom_nav_button.dart';
 
 class RestoreLayout extends StatelessWidget {
@@ -47,9 +47,9 @@ class RestoreLayout extends StatelessWidget {
               if (mnemonicError != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: WarningCard(
+                  child: WarningBox.text(
+                    boxPadding: const EdgeInsets.symmetric(horizontal: 8),
                     message: mnemonicError!,
-                    textColor: Theme.of(context).colorScheme.error,
                   ),
                 ),
             ],
