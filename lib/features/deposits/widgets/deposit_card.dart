@@ -1,6 +1,5 @@
 import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:flutter/material.dart';
-import 'package:glow/features/deposits/widgets/deposit_error_banner.dart';
 import 'package:glow/widgets/warning_box.dart';
 
 /// Individual deposit card widget - Pure UI component
