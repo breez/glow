@@ -5,6 +5,46 @@ import 'package:glow/theme/colors.dart';
 /// Padding for snackbars on the home screen to ensure they appear below the FAB
 const EdgeInsets kHomeScreenSnackBarPadding = EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0);
 
+/// Theme extension for warning box colors
+class WarningBoxTheme extends ThemeExtension<WarningBoxTheme> {
+  const WarningBoxTheme({
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.textColor,
+  });
+
+  final Color backgroundColor;
+  final Color borderColor;
+  final Color textColor;
+
+  @override
+  WarningBoxTheme copyWith({Color? backgroundColor, Color? borderColor, Color? textColor}) {
+    return WarningBoxTheme(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      borderColor: borderColor ?? this.borderColor,
+      textColor: textColor ?? this.textColor,
+    );
+  }
+
+  @override
+  WarningBoxTheme lerp(WarningBoxTheme? other, double t) {
+    if (other is! WarningBoxTheme) {
+      return this;
+    }
+    return WarningBoxTheme(
+      backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t)!,
+      borderColor: Color.lerp(borderColor, other.borderColor, t)!,
+      textColor: Color.lerp(textColor, other.textColor, t)!,
+    );
+  }
+}
+
+const WarningBoxTheme darkWarningBoxTheme = WarningBoxTheme(
+  backgroundColor: BreezColors.warningBoxBackground,
+  borderColor: BreezColors.warningBoxBorder,
+  textColor: BreezColors.warningDark,
+);
+
 const ColorScheme darkColorScheme = ColorScheme.dark(
   primary: Colors.white,
   onPrimary: Colors.white,
@@ -181,5 +221,6 @@ ThemeData buildDarkTheme() {
       selectionColor: Colors.white.withValues(alpha: .5),
       selectionHandleColor: BreezColors.primary,
     ),
+    extensions: const <ThemeExtension<dynamic>>[darkWarningBoxTheme],
   );
 }

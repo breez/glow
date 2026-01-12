@@ -20,6 +20,10 @@ class BreezColors {
   static const Color warning = Color(0xffffe685);
   static const Color warningDark = Color(0xFFeddc97);
 
+  // Warning box colors
+  static const Color warningBoxBackground = Color(0x1AFBE994);
+  static const Color warningBoxBorder = Color(0x99E3B42F);
+
   // Greys
   static const Color grey500 = Color(0xFF9E9E9E);
   static const Color grey600 = Color(0xFF757575);

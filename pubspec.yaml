@@ -32,6 +32,7 @@ dependencies:
   
   # UI Components
   auto_size_text: ^3.0.0
+  dotted_decoration: ^2.0.0
   flutter_svg: ^2.2.3  # TODO: Replace with icon_bundler or similar
   pretty_qr_code: ^3.5.0
   shimmer: ^3.0.0

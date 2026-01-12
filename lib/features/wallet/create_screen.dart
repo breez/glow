@@ -5,7 +5,7 @@ import 'package:glow/logging/logger_mixin.dart';
 import 'package:glow/features/wallet/models/wallet_metadata.dart';
 import 'package:glow/features/wallet/providers/wallet_provider.dart';
 import 'package:glow/features/wallet/widgets/network_selector.dart';
-import 'package:glow/widgets/warning_card.dart';
+import 'package:glow/widgets/warning_box.dart';
 import 'package:glow/routing/app_routes.dart';
 
 class WalletCreateScreen extends ConsumerStatefulWidget {
@@ -76,7 +76,8 @@ class _WalletCreateScreenState extends ConsumerState<WalletCreateScreen> with Lo
                 onChanged: (Network v) => setState(() => _selectedNetwork = v),
               ),
               const SizedBox(height: 32),
-              const WarningCard(
+              WarningBox.text(
+                textColor: Colors.white,
                 message:
                     'You will see a 12-word backup phrase after creating your wallet. Write it down securely. '
                     'Anyone with this phrase can access your funds.',
