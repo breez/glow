@@ -22,18 +22,25 @@ class TransactionList extends ConsumerWidget {
       scrollController: scrollController,
       state: state,
       hasSynced: hasSynced,
-      onTransactionTap: (Payment payment) => _onTransactionTap(context, payment),
+      onTransactionTap: (TransactionItemState item) => _onTransactionTap(context, item),
       onRetry: () {
         ref.invalidate(paymentsProvider);
       },
     );
   }
 
-  void _onTransactionTap(BuildContext context, Payment payment) {
+  void _onTransactionTap(BuildContext context, TransactionItemState item) {
     if (!context.mounted) {
       return;
     }
 
-    Navigator.of(context).pushNamed(AppRoutes.paymentDetails, arguments: payment);
+    // Check if this is a pending deposit or regular payment
+    if (item.isPendingDeposit) {
+      // Navigate to deposit approval screen
+      Navigator.of(context).pushNamed(AppRoutes.depositApproval, arguments: item.pendingDeposit!);
+    } else {
+      // Navigate to payment details screen
+      Navigator.of(context).pushNamed(AppRoutes.paymentDetails, arguments: item.payment!);
+    }
   }
 }
