@@ -8,7 +8,7 @@ class UnclaimedDepositsLayout extends StatelessWidget {
   const UnclaimedDepositsLayout({
     required this.depositsAsync,
     required this.onRetryClaim,
-    required this.onShowRefundInfo,
+    required this.onRefund,
     required this.onCopyTxid,
     required this.depositCardBuilder,
     super.key,
@@ -16,14 +16,14 @@ class UnclaimedDepositsLayout extends StatelessWidget {
 
   final AsyncValue<List<DepositCardData>> depositsAsync;
   final Future<void> Function(DepositCardData) onRetryClaim;
-  final void Function(DepositCardData) onShowRefundInfo;
+  final void Function(DepositCardData) onRefund;
   final void Function(DepositCardData) onCopyTxid;
   final Widget Function(DepositCardData) depositCardBuilder;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pending Deposits')),
+      appBar: AppBar(title: const Text('Unclaimed Deposits')),
       body: SafeArea(
         child: switch (depositsAsync) {
           AsyncData<List<DepositCardData>>(:final List<DepositCardData> value) => _DepositsListView(
